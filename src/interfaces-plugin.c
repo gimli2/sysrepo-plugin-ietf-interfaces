@@ -24,6 +24,7 @@
 #include <inttypes.h>
 #include "sysrepo.h"
 #include "sysrepo/values.h"
+#include "config.h"
 
 volatile int exit_application = 0;
 
@@ -168,6 +169,14 @@ int main(int argc, char **argv) {
     sr_subscription_ctx_t   *subscription = NULL;
     int rc = SR_ERR_OK;
     char *module_name = "ietf-interfaces";
+
+    ini_table_s* config = ini_table_create();
+    ini_table_create_entry(config, "Section", "one", "two");
+    ini_table_create_entry(config, "Dalsi", "; comment", "");
+    ini_table_create_entry(config, "Dalsi", "key", "val");
+    ini_table_create_entry(config, "Dalsi", "k", "42");
+    ini_table_write_to_file(config, "test.ini");
+
 
     printf("Application will watch for changes in %s\n", module_name);
     

@@ -9,7 +9,7 @@ include(GNUInstallDirs)
 find_package(PkgConfig)
 pkg_check_modules(SYSREPO REQUIRED libsysrepo)
 
-set(CMAKE_CFLAGS "-Wall -pedantic -O2 ${CMAKE_CFLAGS}")
+set(CMAKE_CFLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
 
 add_definitions(${SYSREPO_CFLAGS})
 include_directories(${SYSREPO_INCLUDE_DIRS})
@@ -24,8 +24,11 @@ add_custom_target(YANG_files ${YANG_SRCS})
 #add_library(sysrepo-plugin-ietf-interfaces SHARED ${CMAKE_CURRENT_SOURCE_DIR}/interfaces-plugin.c)
 #target_link_libraries(sysrepo-plugin-ietf-system ${SYSREPO_LIBRARIES})
 
-add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/interfaces-plugin.c)
+add_library(config STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/config.c)
+
+add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.c)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
+target_link_libraries(stest ${CMAKE_BINARY_DIR}/libconfig.a)
 
 set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 
