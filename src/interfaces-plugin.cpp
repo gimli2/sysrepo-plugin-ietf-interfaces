@@ -17,20 +17,57 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <inttypes.h>
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+// your functions here for the header
 #include "sysrepo.h"
 #include "sysrepo/values.h"
 #include "config.h"
 
+#ifdef __cplusplus
+}
+#endif
+
+#include <inttypes.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <unistd.h>
+
+#include <string>
+#include <iostream>
+
+using namespace std;
+
 volatile int exit_application = 0;
 
 #define APP "SR_PLUGIN_ietf-interfaces"
-#define XPATH_MAX_LEN 100
+#define XPATH_MAX_LEN 256
 #define PRIORITY 0 // greater numbers mean later called callback
+#define OK 1
+#define ERR 0
+#define DSTPATH "/etc/systemd/network"
+#define IFEXT "network"
+#define PATH_MAX_LEN 256
+
+static int handle_sr_return(int rc) {
+    if (SR_ERR_NOT_FOUND == rc) {
+        syslog(LOG_DEBUG, "NOT FOUND error by retrieving keys: %s", sr_strerror(rc));
+        printf("NOT FOUND error by retrieving keys: %s", sr_strerror(rc));
+        return ERR;
+    } else if (SR_ERR_OK != rc) {
+        syslog(LOG_DEBUG, "GENERIC error by retrieving keys: %s", sr_strerror(rc));
+        printf("GENERIC error by retrieving keys: %s", sr_strerror(rc));
+        return ERR;
+    } else {
+        return OK; // no error
+    }
+}
 
 static void print_change(sr_change_oper_t op, sr_val_t *old_val, sr_val_t *new_val) {
     switch(op) {
@@ -63,20 +100,59 @@ static void print_change(sr_change_oper_t op, sr_val_t *old_val, sr_val_t *new_v
     }
 }
 
-static void print_current_config(sr_session_ctx_t *session, const char *module_name) {
+static void print_current_config(sr_session_ctx_t *session) {
     sr_val_t *values = NULL;
     size_t count = 0;
     int rc = SR_ERR_OK;
     char select_xpath[XPATH_MAX_LEN];
-    snprintf(select_xpath, XPATH_MAX_LEN, "/%s:*//*", module_name);
+    snprintf(select_xpath, XPATH_MAX_LEN, "/ietf-interfaces:*//*");
 
     rc = sr_get_items(session, select_xpath, &values, &count);
-    if (SR_ERR_OK != rc) {
-        printf("Error by sr_get_items: %s", sr_strerror(rc));
-        return;
-    }
+    if (handle_sr_return(rc) == ERR) return;
+    
     for (size_t i = 0; i < count; i++){
         sr_print_val(&values[i]);
+    }
+    sr_free_values(values, count);
+}
+
+static sr_val_t *get_val(sr_session_ctx_t *session, char *xpath) {
+    int rc = SR_ERR_OK;
+    sr_val_t *data = NULL;
+    rc = sr_get_item(session, xpath, &data);
+    handle_sr_return(rc);
+    return data;
+}
+
+static void create_interface(sr_session_ctx_t *session, char *name) {
+    printf("Creating interface %s\n", name);
+    char dst[PATH_MAX_LEN];
+    sprintf(dst, "%s/%s.%s", DSTPATH, name, IFEXT);
+    printf("Ouput file = %s\n", dst);
+    
+    string xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/enabled";
+    printf("xpath = %s\n", xpath.c_str());
+    sr_val_t *enabled = get_val(session, &xpath[0u]);
+    printf("Enabled = %s\n", enabled->data.bool_val ? "true" : "false");
+    
+    
+    
+    sr_free_val(enabled);
+}
+
+static void apply_current_config(sr_session_ctx_t *session) {
+    sr_val_t *values = NULL;
+    size_t count = 0;
+    int rc = SR_ERR_OK;
+    char xpath[XPATH_MAX_LEN];
+    printf("-------------------------------------------------\n");
+    snprintf(xpath, XPATH_MAX_LEN, "/ietf-interfaces:interfaces/interface/name");
+
+    rc = sr_get_items(session, xpath, &values, &count);
+    if (handle_sr_return(rc) == ERR) return;
+    
+    for (size_t i = 0; i < count; i++){
+        create_interface(session, (&values[i])->data.string_val);
     }
     sr_free_values(values, count);
 }
@@ -105,7 +181,7 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
     printf("\n\n ========== Notification  %s =============================================", ev_to_str(event));
     if (SR_EV_APPLY == event) {
         printf("\n\n ========== CONFIG HAS CHANGED, CURRENT RUNNING CONFIG: ==========\n\n");
-        print_current_config(session, module_name);
+        print_current_config(session);
     }
 
     printf("\n\n ========== CHANGES: =============================================\n\n");
@@ -114,13 +190,12 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
     snprintf(change_path, XPATH_MAX_LEN, "/%s:*", module_name);
 
     rc = sr_get_changes_iter(session, change_path , &it);
-    if (SR_ERR_OK != rc) {
+    if (handle_sr_return(rc) == ERR) {
         printf("Get changes iter failed for xpath %s", change_path);
         goto cleanup;
     }
 
-    while (SR_ERR_OK == (rc = sr_get_change_next(session, it,
-                &oper, &old_value, &new_value))) {
+    while (SR_ERR_OK == (rc = sr_get_change_next(session, it, &oper, &old_value, &new_value))) {
         print_change(oper, old_value, new_value);
         sr_free_val(old_value);
         sr_free_val(new_value);
@@ -168,7 +243,6 @@ int main(int argc, char **argv) {
     sr_session_ctx_t        *session = NULL;
     sr_subscription_ctx_t   *subscription = NULL;
     int rc = SR_ERR_OK;
-    char *module_name = "ietf-interfaces";
 
     ini_table_s* config = ini_table_create();
     ini_table_create_entry(config, "Section", "one", "two");
@@ -176,17 +250,19 @@ int main(int argc, char **argv) {
     ini_table_create_entry(config, "Dalsi", "key", "val");
     ini_table_create_entry(config, "Dalsi", "k", "42");
     ini_table_write_to_file(config, "test.ini");
+    ini_table_destroy(config);
 
 
-    printf("Application will watch for changes in %s\n", module_name);
+    printf("Application will watch for changes in ietf-interfaces\n");
     
     if (init_session(&connection, &session)) {
        
         printf("\n\n ========== READING STARTUP CONFIG: ==========\n\n");
-        print_current_config(session, module_name);
+        print_current_config(session);
+        apply_current_config(session);
 
         // pripadne: int sr_subtree_change_subscribe(...)
-        rc = sr_module_change_subscribe(session, module_name, module_change_cb, NULL, PRIORITY, SR_SUBSCR_DEFAULT, &subscription);
+        rc = sr_module_change_subscribe(session, "ietf-interfaces", module_change_cb, NULL, PRIORITY, SR_SUBSCR_DEFAULT, &subscription);
         if (SR_ERR_OK != rc) {
             fprintf(stderr, "Error by sr_module_change_subscribe: %s\n", sr_strerror(rc));
             cleanup(connection, session, subscription);
@@ -206,4 +282,5 @@ int main(int argc, char **argv) {
 
     return rc;
 }
+
 

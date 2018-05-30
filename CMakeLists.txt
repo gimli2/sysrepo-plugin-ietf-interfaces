@@ -1,15 +1,20 @@
 # required to set:
 # export PKG_CONFIG_PATH="/root/libyang/"
 
-project(sysrepo-plugin-ietf-interfaces C)
+project(sysrepo-plugin-ietf-interfaces C CXX)
 cmake_minimum_required(VERSION 3.0)
+cmake_policy(SET CMP0053 OLD) 
 
 include(GNUInstallDirs)
 
 find_package(PkgConfig)
 pkg_check_modules(SYSREPO REQUIRED libsysrepo)
 
+SET(CMAKE_C_COMPILER gcc)
+SET(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CFLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_C_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
 
 add_definitions(${SYSREPO_CFLAGS})
 include_directories(${SYSREPO_INCLUDE_DIRS})
@@ -26,11 +31,11 @@ add_custom_target(YANG_files ${YANG_SRCS})
 
 add_library(config STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/config.c)
 
-add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.c)
+add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.cpp)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
 target_link_libraries(stest ${CMAKE_BINARY_DIR}/libconfig.a)
 
-set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
+#set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 
 # get sysrepo plugins directory
 if (NOT SR_PLUGINS_DIR)
