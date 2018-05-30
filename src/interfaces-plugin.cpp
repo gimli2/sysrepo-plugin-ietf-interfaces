@@ -55,14 +55,14 @@ volatile int exit_application = 0;
 #define IFEXT "network"
 #define PATH_MAX_LEN 256
 
-static int handle_sr_return(int rc) {
+static int handle_sr_return(int rc, string xpath = "") {
     if (SR_ERR_NOT_FOUND == rc) {
-        syslog(LOG_DEBUG, "NOT FOUND error by retrieving keys: %s", sr_strerror(rc));
-        printf("NOT FOUND error by retrieving keys: %s", sr_strerror(rc));
+        syslog(LOG_DEBUG, "NOT FOUND error %s : %s\n", &xpath[0u], sr_strerror(rc));
+        printf("NOT FOUND error %s : %s\n", &xpath[0u], sr_strerror(rc));
         return ERR;
     } else if (SR_ERR_OK != rc) {
-        syslog(LOG_DEBUG, "GENERIC error by retrieving keys: %s", sr_strerror(rc));
-        printf("GENERIC error by retrieving keys: %s", sr_strerror(rc));
+        syslog(LOG_DEBUG, "GENERIC error %s : %s\n", &xpath[0u], sr_strerror(rc));
+        printf("GENERIC error %s : %s\n", &xpath[0u], sr_strerror(rc));
         return ERR;
     } else {
         return OK; // no error
@@ -116,11 +116,11 @@ static void print_current_config(sr_session_ctx_t *session) {
     sr_free_values(values, count);
 }
 
-static sr_val_t *get_val(sr_session_ctx_t *session, char *xpath) {
+static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
     int rc = SR_ERR_OK;
     sr_val_t *data = NULL;
-    rc = sr_get_item(session, xpath, &data);
-    handle_sr_return(rc);
+    rc = sr_get_item(session, &xpath[0u], &data);
+    handle_sr_return(rc, xpath);
     return data;
 }
 
@@ -130,25 +130,117 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
     sprintf(dst, "%s/%s.%s", DSTPATH, name, IFEXT);
     printf("Ouput file = %s\n", dst);
     
-    string xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/enabled";
-    printf("xpath = %s\n", xpath.c_str());
-    sr_val_t *enabled = get_val(session, &xpath[0u]);
-    printf("Enabled = %s\n", enabled->data.bool_val ? "true" : "false");
+    string xpath = "";
     
+    sr_val_t *enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/enabled");
+    //printf("Enabled = %s\n", enabled->data.bool_val ? "true" : "false");
     
+    sr_val_t *type = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/type");
+    //printf("Type %d %d = %s\n", type->type, SR_IDENTITYREF_T, type->data.identityref_val);
+    
+    // proceed only to enabled and known interface type
+    if (enabled->data.bool_val && strcmp("iana-if-type:ethernetCsmacd", type->data.identityref_val) == 0) {
+        // shortcut for xpath queries
+        string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
+        
+        // prepare dict for output config
+        ini_table_s* ifcfg = ini_table_create();
+        ini_table_create_entry(ifcfg, "Match", "Name", name);
+        
+        sr_val_t *ipv4enabled = get_val(session, ifipv4xpath + "/enabled");
+        //if (ipv4enabled != NULL) printf("IPv4 enabled = %s\n", ipv4enabled->data.bool_val ? "true" : "false");
+        
+        // FIX: default je true
+        // iface has ipv4 enabled
+        if (ipv4enabled != NULL && ipv4enabled->data.bool_val) {
+        
+            sr_val_t *ipv4forward = get_val(session, ifipv4xpath + "/forwarding");
+            //printf("IPv4 forward = %s\n", ipv4forward->data.bool_val ? "true" : "false");
+            if (ipv4forward->data.bool_val) ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
+            
+            sr_val_t *ipv4mtu = get_val(session, ifipv4xpath + "/mtu");
+            //printf("IPv4 mtu = %d\n", ipv4mtu->data.uint16_val);
+            string mtu = to_string(ipv4mtu->data.uint16_val);
+            if (ipv4mtu != NULL) ini_table_create_entry(ifcfg, "Link", "MTUBytes", &mtu[0u]);
+            
+            sr_val_t *values = NULL;
+            size_t count = 0;
+            int rc = SR_ERR_OK;
+            xpath = ifipv4xpath + "/address/ip";
+            rc = sr_get_items(session, &xpath[0u], &values, &count);
+            if (handle_sr_return(rc) == OK) {        
+                for (size_t i = 0; i < count; i++){
+                    //printf("IPv4 ip = %s\n", (&values[i])->data.string_val);
+                   
+                    sr_val_t *ipv4prefixlen = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/prefix-length");
+                    //printf("IPv4 prefixlen = %d\n", ipv4prefixlen->data.uint8_val);
+                    
+                    // TODO: also netmask keyword is possible
+                    
+                    // possible origins: other, static, dhcp, link-layer (stateless IPv6), random -- see rfc7277
+                    sr_val_t *ipv4origin = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/origin");
+                    if (ipv4origin != NULL) printf("IPv4 origin = %s\n", ipv4origin->data.string_val);
+                    
+                     if (ipv4origin == NULL || strcmp(ipv4origin->data.string_val, "static") == 0) {
+                        // static is default
+                        string addr = (string)(&values[i])->data.string_val + "/" + to_string(ipv4prefixlen->data.uint8_val);
+                        // it is possible to have more addres, need to create entry allowing duplicate key
+                        ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
+                    } else if (ipv4origin != NULL && strcmp(ipv4origin->data.string_val, "dhcp") == 0) {
+                        // DHCP
+                        ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv4");
+                    } else {
+                        printf("Not implemented.");
+                    }
+                    
+                    // TODO: Gateway DNS
+                    // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
+                    // ini_table_create_entry(ifcfg, "Network", "DNS", "");
+                    
+                    sr_free_val(ipv4origin);
+                    sr_free_val(ipv4prefixlen);
+                }
+                sr_free_values(values, count);
+            }            
+            
+            // TODO: get also neighbor* -> ip, link-layer-address
+
+            sr_free_val(ipv4forward);
+            sr_free_val(ipv4mtu);
+        }
+        sr_free_val(ipv4enabled);
+        
+        
+        string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6";
+        sr_val_t *ipv6enabled = get_val(session, ifipv6xpath + "/enabled");
+        if (ipv6enabled != NULL) printf("IPv6 enabled = %s\n", ipv6enabled->data.bool_val ? "true" : "false");
+        
+        // FIX: default je true
+        // iface has ipv6 enabled
+        if (ipv6enabled != NULL && ipv6enabled->data.bool_val) {
+            // TODO: ipv6
+        }
+        sr_free_val(ipv6enabled);
+                    
+        // write cfg to file
+        ini_table_write_to_file(ifcfg, dst);
+        ini_table_print(ifcfg);
+        ini_table_destroy(ifcfg);
+
+    }
     
     sr_free_val(enabled);
+    sr_free_val(type);
 }
 
 static void apply_current_config(sr_session_ctx_t *session) {
     sr_val_t *values = NULL;
     size_t count = 0;
     int rc = SR_ERR_OK;
-    char xpath[XPATH_MAX_LEN];
     printf("-------------------------------------------------\n");
-    snprintf(xpath, XPATH_MAX_LEN, "/ietf-interfaces:interfaces/interface/name");
+    string xpath = "/ietf-interfaces:interfaces/interface/name";
 
-    rc = sr_get_items(session, xpath, &values, &count);
+    rc = sr_get_items(session, &xpath[0u], &values, &count);
     if (handle_sr_return(rc) == ERR) return;
     
     for (size_t i = 0; i < count; i++){
