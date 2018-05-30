@@ -230,6 +230,24 @@ bool ini_table_write_to_file(ini_table_s* table, const char* file)
     return true;
 }
 
+void ini_table_print(ini_table_s* table)
+{
+    printf("===============================================================\n");
+    for (int i = 0; i < table->size; i++) {
+        ini_section_s* section = &table->section[i];
+        printf(i > 0 ? "\n[%s]\n" : "[%s]\n", section->name);
+        for (int q = 0; q < section->size; q++) {
+            ini_entry_s* entry = &section->entry[q];
+            if (entry->key[0] == ';') {
+                printf("%s\n", entry->key);
+            } else {
+                printf("%s = %s\n", entry->key, entry->value);
+            }
+        }
+    }
+    printf("===============================================================\n");
+}
+
 
 void ini_table_create_entry(ini_table_s* table, const char* section_name,
         const char* key, const char* value)
@@ -246,6 +264,17 @@ void ini_table_create_entry(ini_table_s* table, const char* section_name,
         entry->value = malloc((strlen(value)+1) * sizeof(char));
         strcpy(entry->value, value);
     }
+}
+
+// allows duplicity in entry keys
+void ini_table_create_entry_duplicate(ini_table_s* table, const char* section_name,
+        const char* key, const char* value)
+{
+    ini_section_s* section = _ini_section_find(table, section_name);
+    if (section == NULL) {
+        section = _ini_section_create(table, section_name);
+    }
+    _ini_entry_create(section, key, value);
 }
 
 bool ini_table_check_entry(ini_table_s* table, const char* section_name,

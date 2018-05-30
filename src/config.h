@@ -36,6 +36,14 @@ bool ini_table_read_from_file(ini_table_s* table, const char* file);
 bool ini_table_write_to_file(ini_table_s* table, const char* file);
 
 /**
+ * @brief Print the specified ini_table_s struct to the stdout.
+ * @param table
+ * @param file
+ * @return bool
+ */
+void ini_table_print(ini_table_s* table);
+
+/**
  * @brief Creates a new entry in the `table' containing the `key' and `value'
  *        provided if it does not exist.  Otherwise, modifies an exsiting `key'
  *        with the new `value'
@@ -46,6 +54,18 @@ bool ini_table_write_to_file(ini_table_s* table, const char* file);
  */
 void ini_table_create_entry(ini_table_s* table, const char* section_name,
         const char* key, const char* value);
+
+/**
+ * @brief Creates a new entry in the `table' containing the `key' and `value'
+ *        provided even if it does exist and causes possible duplicity.
+ * @param table
+ * @param section_name
+ * @param key
+ * @param value
+ */
+void ini_table_create_entry_duplicate(ini_table_s* table, const char* section_name,
+        const char* key, const char* value);
+
 
 /**
  * @brief Checks for the existance of an entry in the specified `table'.  Returns
