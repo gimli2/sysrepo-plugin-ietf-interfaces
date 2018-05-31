@@ -25,15 +25,16 @@ include_directories(${SYSREPO_INCLUDE_DIRS})
 link_directories(${SYSREPO_LIBRARY_DIRS})
 
 set(YANG_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/iana-if-type@2017-01-19.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-inet-types@2015-09-30.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-interfaces@2017-12-16.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv4-unicast-routing@2018-03-21.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv6-unicast-routing@2018-03-21.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ip@2018-04-17.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-routing@2018-03-22.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-system@2017-09-15.yang.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-yang-types@2015-09-30.yang.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/iana-if-type@2017-01-19.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-inet-types@2015-09-30.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-interfaces@2017-12-16.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv4-unicast-routing@2018-03-21.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv6-unicast-routing@2018-03-21.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv6-router-advertisements@2018-03-13.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ip@2018-04-17.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-routing@2018-03-22.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-system@2017-09-15.yang
+    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-yang-types@2015-09-30.yang
 )
 add_custom_target(YANG_files ${YANG_SRCS})
 
