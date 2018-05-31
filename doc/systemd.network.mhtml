@@ -1,0 +1,2043 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://www.freedesktop.org/software/systemd/man/systemd.network.html
+Subject: systemd.network
+Date: Thu, 30 May 2018 21:39:26 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--q7WLZNcnG5zwic8ulWxZWyEkTJHe7sYYWpht28pCAr----"
+
+------MultipartBoundary--q7WLZNcnG5zwic8ulWxZWyEkTJHe7sYYWpht28pCAr----
+Content-Type: text/html
+Content-ID: <frame-1715-56474f85-3e74-4d0d-bca2-b2812dbe0c6c@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://www.freedesktop.org/software/systemd/man/systemd.network.html
+
+<html slick-uniqueid=3D"3"><head><meta http-equiv=3D"Content-Type" content=
+=3D"text/html; charset=3DUTF-8"><title>systemd.network</title><meta name=3D=
+"generator" content=3D"DocBook XSL Stylesheets Vsnapshot"><style></style></=
+head><body bgcolor=3D"white" text=3D"black" link=3D"#0000FF" vlink=3D"#8400=
+84" alink=3D"#0000FF"><style>
+    a.headerlink {
+      color: #c60f0f;
+      font-size: 0.8em;
+      padding: 0 4px 0 4px;
+      text-decoration: none;
+      visibility: hidden;
+    }
+
+    a.headerlink:hover {
+      background-color: #c60f0f;
+      color: white;
+    }
+
+    h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerli=
+nk, dt:hover > a.headerlink {
+      visibility: visible;
+    }
+  </style><a href=3D"https://www.freedesktop.org/software/systemd/man/index=
+.html">Index </a>=C2=B7
+  <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.direc=
+tives.html">Directives </a><span style=3D"float:right">systemd 238</span><h=
+r><div class=3D"refentry"><a name=3D"systemd.network"></a><div class=3D"tit=
+lepage"></div><div class=3D"refnamediv"><h2>Name</h2><p>systemd.network =E2=
+=80=94 Network configuration</p></div><div class=3D"refsynopsisdiv"><h2>Syn=
+opsis</h2><p><code class=3D"filename"><em class=3D"replaceable"><code>netwo=
+rk</code></em>.network</code></p></div><div class=3D"refsect1"><a name=3D"i=
+d-1.5"></a><h2 id=3D"Description">Description<a class=3D"headerlink" title=
+=3D"Permalink to this headline" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.network.html#Description">=C2=B6</a></h2><p>Network s=
+etup is performed by
+    <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd-net=
+workd.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">sys=
+temd-networkd</span>(8)</span></a>.
+    </p><p>The main network file must have the extension <code class=3D"fil=
+ename">.network</code>; other
+    extensions are ignored. Networks are applied to links whenever the link=
+s appear.</p><p>The <code class=3D"filename">.network</code> files are read=
+ from the files located in the system
+    network directory <code class=3D"filename">/usr/lib/systemd/network</co=
+de>, the volatile runtime network
+    directory <code class=3D"filename">/run/systemd/network</code> and the =
+local administration network
+    directory <code class=3D"filename">/etc/systemd/network</code>. All con=
+figuration files are collectively
+    sorted and processed in lexical order, regardless of the directories in=
+ which they live.
+    However, files with identical filenames replace each other. Files in <c=
+ode class=3D"filename">/etc</code>
+    have the highest priority, files in <code class=3D"filename">/run</code=
+> take precedence over files with
+    the same name in <code class=3D"filename">/usr/lib</code>. This can be =
+used to override a system-supplied
+    configuration file with a local file if needed. As a special case, an e=
+mpty file (file size 0)
+    or symlink with the same name pointing to <code class=3D"filename">/dev=
+/null</code> disables the
+    configuration file entirely (it is "masked").</p><p>Along with the netw=
+ork file <code class=3D"filename">foo.network</code>, a "drop-in" directory
+    <code class=3D"filename">foo.network.d/</code> may exist. All files wit=
+h the suffix
+    "<code class=3D"literal">.conf</code>" from this directory will be pars=
+ed after the file itself is
+    parsed. This is useful to alter or add configuration settings, without =
+having to modify the main
+    configuration file. Each drop-in file must have appropriate section hea=
+ders.</p><p>In addition to <code class=3D"filename">/etc/systemd/network</c=
+ode>, drop-in "<code class=3D"literal">.d</code>"
+    directories can be placed in <code class=3D"filename">/usr/lib/systemd/=
+network</code> or
+    <code class=3D"filename">/run/systemd/network</code> directories. Drop-=
+in files in
+    <code class=3D"filename">/etc</code> take precedence over those in <cod=
+e class=3D"filename">/run</code> which in turn
+    take precedence over those in <code class=3D"filename">/usr/lib</code>.=
+ Drop-in files under any of these
+    directories take precedence over the main netdev file wherever located.=
+ (Of course, since
+    <code class=3D"filename">/run</code> is temporary and <code class=3D"fi=
+lename">/usr/lib</code> is for vendors, it is
+    unlikely drop-ins should be used in either of those places.)</p><p>Note=
+ that an interface without any static IPv6 addresses configured, and neithe=
+r DHCPv6
+    nor IPv6LL enabled, shall be considered to have no IPv6 support. IPv6 w=
+ill be automatically
+    disabled for that interface by writing "1" to
+    <code class=3D"filename">/proc/sys/net/ipv6/conf/<em class=3D"replaceab=
+le"><code>ifname</code></em>/disable_ipv6</code>.
+    </p></div><div class=3D"refsect1"><a name=3D"id-1.6"></a><h2 id=3D"[Mat=
+ch] Section Options">[Match] Section Options<a class=3D"headerlink" title=
+=3D"Permalink to this headline" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.network.html#%5BMatch%5D%20Section%20Options">=C2=B6<=
+/a></h2><p>The network file contains a "<code class=3D"literal">[Match]</co=
+de>"
+      section, which determines if a given network file may be applied
+      to a given device; and a "<code class=3D"literal">[Network]</code>" s=
+ection
+      specifying how the device should be configured. The first (in
+      lexical order) of the network files that matches a given device
+      is applied, all later files are ignored, even if they match as
+      well.</p><p>A network file is said to match a device if each of the
+      entries in the "<code class=3D"literal">[Match]</code>" section match=
+es, or if
+      the section is empty. The following keys are accepted:</p><div class=
+=3D"variablelist"><dl class=3D"variablelist"><dt id=3D"MACAddress=3D"><span=
+ class=3D"term"><code class=3D"varname">MACAddress=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.network.html#MACAddress=3D">=C2=B6</=
+a></dt><dd><p>The hardware address of the interface (use full colon-delimit=
+ed hexadecimal, e.g.,
+            01:23:45:67:89:ab).</p></dd><dt id=3D"Path=3D"><span class=3D"t=
+erm"><code class=3D"varname">Path=3D</code></span><a class=3D"headerlink" t=
+itle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.network.html#Path=3D">=C2=B6</a></dt><dd><p>A whitesp=
+ace-separated list of shell-style globs
+            matching the persistent path, as exposed by the udev
+            property "<code class=3D"literal">ID_PATH</code>". If the list =
+is
+            prefixed with a "!", the test is inverted; i.e. it is
+            true when "<code class=3D"literal">ID_PATH</code>" does not mat=
+ch any
+            item in the list.</p></dd><dt id=3D"Driver=3D"><span class=3D"t=
+erm"><code class=3D"varname">Driver=3D</code></span><a class=3D"headerlink"=
+ title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softw=
+are/systemd/man/systemd.network.html#Driver=3D">=C2=B6</a></dt><dd><p>A whi=
+tespace-separated list of shell-style globs
+            matching the driver currently bound to the device, as
+            exposed by the udev property "<code class=3D"literal">DRIVER</c=
+ode>"
+            of its parent device, or if that is not set the driver
+            as exposed by "<code class=3D"literal">ethtool -i</code>" of th=
+e
+            device itself. If the list is prefixed with a "!", the
+            test is inverted.</p></dd><dt id=3D"Type=3D"><span class=3D"ter=
+m"><code class=3D"varname">Type=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.network.html#Type=3D">=C2=B6</a></dt><dd><p>A whitespac=
+e-separated list of shell-style globs
+            matching the device type, as exposed by the udev property
+            "<code class=3D"literal">DEVTYPE</code>". If the list is prefix=
+ed with
+            a "!", the test is inverted.</p></dd><dt id=3D"Name=3D"><span c=
+lass=3D"term"><code class=3D"varname">Name=3D</code></span><a class=3D"head=
+erlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.or=
+g/software/systemd/man/systemd.network.html#Name=3D">=C2=B6</a></dt><dd><p>=
+A whitespace-separated list of shell-style globs
+            matching the device name, as exposed by the udev property
+            "<code class=3D"literal">INTERFACE</code>". If the list is pref=
+ixed
+            with a "!", the test is inverted.</p></dd><dt id=3D"Host=3D"><s=
+pan class=3D"term"><code class=3D"varname">Host=3D</code></span><a class=3D=
+"headerlink" title=3D"Permalink to this term" href=3D"https://www.freedeskt=
+op.org/software/systemd/man/systemd.network.html#Host=3D">=C2=B6</a></dt><d=
+d><p>Matches against the hostname or machine ID of the
+            host. See "<code class=3D"literal">ConditionHost=3D</code>" in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>systemd.unit</span>(5)</span></a>
+            for details.
+            </p></dd><dt id=3D"Virtualization=3D"><span class=3D"term"><cod=
+e class=3D"varname">Virtualization=3D</code></span><a class=3D"headerlink" =
+title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwa=
+re/systemd/man/systemd.network.html#Virtualization=3D">=C2=B6</a></dt><dd><=
+p>Checks whether the system is executed in a virtualized
+            environment and optionally test whether it is a specific
+            implementation. See "<code class=3D"literal">ConditionVirtualiz=
+ation=3D</code>" in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>systemd.unit</span>(5)</span></a>
+            for details.
+            </p></dd><dt id=3D"KernelCommandLine=3D"><span class=3D"term"><=
+code class=3D"varname">KernelCommandLine=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.network.html#KernelCommandLine=3D">=C2=B6</a><=
+/dt><dd><p>Checks whether a specific kernel command line option is
+            set (or if prefixed with the exclamation mark unset). See
+            "<code class=3D"literal">ConditionKernelCommandLine=3D</code>" =
+in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>systemd.unit</span>(5)</span></a>
+            for details.
+            </p></dd><dt id=3D"KernelVersion=3D"><span class=3D"term"><code=
+ class=3D"varname">KernelVersion=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.network.html#KernelVersion=3D">=C2=B6</a></dt><dd><p>C=
+hecks whether the kernel version (as reported by <span class=3D"command"><s=
+trong>uname -r</strong></span>) matches a certain
+            expression (or if prefixed with the exclamation mark does not m=
+atch it). See
+            "<code class=3D"literal">ConditionKernelVersion=3D</code>" in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>systemd.unit</span>(5)</span></a> for
+            details.
+            </p></dd><dt id=3D"Architecture=3D"><span class=3D"term"><code =
+class=3D"varname">Architecture=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.network.html#Architecture=3D">=C2=B6</a></dt><dd><p>Chec=
+ks whether the system is running on a specific
+            architecture. See "<code class=3D"literal">ConditionArchitectur=
+e=3D</code>" in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>systemd.unit</span>(5)</span></a>
+            for details.
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.7"></a><h2 id=3D"[Link] Section Options">[Link] Section Options<a class=
+=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.network.html#%5BLink%5D%20Sectio=
+n%20Options">=C2=B6</a></h2><p> The "<code class=3D"literal">[Link]</code>"=
+ section accepts the following keys:</p><div class=3D"variablelist"><dl cla=
+ss=3D"variablelist"><dt id=3D"MACAddress=3D1"><span class=3D"term"><code cl=
+ass=3D"varname">MACAddress=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.network.html#MACAddress=3D1">=C2=B6</a></dt><dd><p>The hardw=
+are address to set for the device.</p></dd><dt id=3D"MTUBytes=3D"><span cla=
+ss=3D"term"><code class=3D"varname">MTUBytes=3D</code></span><a class=3D"he=
+aderlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.=
+org/software/systemd/man/systemd.network.html#MTUBytes=3D">=C2=B6</a></dt><=
+dd><p>The maximum transmission unit in bytes to set for the
+          device. The usual suffixes K, M, G, are supported and are
+          understood to the base of 1024.</p><p>Note that if IPv6 is enable=
+d on the interface, and the MTU is chosen
+          below 1280 (the minimum MTU for IPv6) it will automatically be in=
+creased to this value.</p></dd><dt id=3D"ARP=3D"><span class=3D"term"><code=
+ class=3D"varname">ARP=3D</code></span><a class=3D"headerlink" title=3D"Per=
+malink to this term" href=3D"https://www.freedesktop.org/software/systemd/m=
+an/systemd.network.html#ARP=3D">=C2=B6</a></dt><dd><p> A boolean. Enables o=
+r disables the ARP (low-level Address Resolution Protocol)
+          for this interface. Defaults to unset, which means that the kerne=
+l default will be used.</p><p> For example, disabling ARP is useful when cr=
+eating multiple MACVLAN or VLAN virtual
+          interfaces atop a single lower-level physical interface, which wi=
+ll then only serve as a
+          link/"bridge" device aggregating traffic to the same physical lin=
+k and not participate in
+          the network otherwise.</p></dd><dt id=3D"Unmanaged=3D"><span clas=
+s=3D"term"><code class=3D"varname">Unmanaged=3D</code></span><a class=3D"he=
+aderlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.=
+org/software/systemd/man/systemd.network.html#Unmanaged=3D">=C2=B6</a></dt>=
+<dd><p>A boolean. When "<code class=3D"literal">yes</code>", no attempts ar=
+e
+          made to bring up or configure matching links, equivalent to
+          when there are no matching network files. Defaults to
+          "<code class=3D"literal">no</code>".</p><p>This is useful for pre=
+venting later matching network
+          files from interfering with certain interfaces that are fully
+          controlled by other applications.</p></dd><dt id=3D"RequiredForOn=
+line=3D"><span class=3D"term"><code class=3D"varname">RequiredForOnline=3D<=
+/code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#R=
+equiredForOnline=3D">=C2=B6</a></dt><dd><p>A boolean. When "<code class=3D"=
+literal">yes</code>", the network is deemed
+          required when determining whether the system is online when runni=
+ng
+          "<code class=3D"literal">systemd-networkd-wait-online</code>".
+          When "<code class=3D"literal">no</code>", the network is ignored =
+when checking for
+          online state. Defaults to "<code class=3D"literal">yes</code>".</=
+p><p>The network will be brought up normally in all cases, but in
+          the event that there is no address being assigned by DHCP or the
+          cable is not plugged in, the link will simply remain offline and =
+be
+          skipped automatically by "<code class=3D"literal">systemd-network=
+d-wait-online</code>"
+          if "<code class=3D"literal">RequiredForOnline=3Dtrue</code>".</p>=
+</dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1.8"></a><h2 id=
+=3D"[Network] Section Options">[Network] Section Options<a class=3D"headerl=
+ink" title=3D"Permalink to this headline" href=3D"https://www.freedesktop.o=
+rg/software/systemd/man/systemd.network.html#%5BNetwork%5D%20Section%20Opti=
+ons">=C2=B6</a></h2><p>The "<code class=3D"literal">[Network]</code>" secti=
+on accepts the following keys:</p><div class=3D"variablelist"><dl class=3D"=
+variablelist"><dt id=3D"Description=3D"><span class=3D"term"><code class=3D=
+"varname">Description=3D</code></span><a class=3D"headerlink" title=3D"Perm=
+alink to this term" href=3D"https://www.freedesktop.org/software/systemd/ma=
+n/systemd.network.html#Description=3D">=C2=B6</a></dt><dd><p>A description =
+of the device. This is only used for
+            presentation purposes.</p></dd><dt id=3D"DHCP=3D"><span class=
+=3D"term"><code class=3D"varname">DHCP=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.network.html#DHCP=3D">=C2=B6</a></dt><dd><p>Enab=
+les DHCPv4 and/or DHCPv6 client support. Accepts
+            "<code class=3D"literal">yes</code>", "<code class=3D"literal">=
+no</code>",
+            "<code class=3D"literal">ipv4</code>", or "<code class=3D"liter=
+al">ipv6</code>". Defaults
+            to "<code class=3D"literal">no</code>".</p><p>Note that DHCPv6 =
+will by default be triggered by Router
+            Advertisement, if that is enabled, regardless of this parameter=
+.
+            By enabling DHCPv6 support explicitly, the DHCPv6 client will
+            be started regardless of the presence of routers on the link,
+            or what flags the routers pass. See
+            "<code class=3D"literal">IPv6AcceptRA=3D</code>".</p><p>Further=
+more, note that by default the domain name
+            specified through DHCP is not used for name resolution.
+            See option <code class=3D"option">UseDomains=3D</code> below.</=
+p><p>See the "<code class=3D"literal">[DHCP]</code>" section below for furt=
+her configuration options for the DHCP client
+            support.</p></dd><dt id=3D"DHCPServer=3D"><span class=3D"term">=
+<code class=3D"varname">DHCPServer=3D</code></span><a class=3D"headerlink" =
+title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwa=
+re/systemd/man/systemd.network.html#DHCPServer=3D">=C2=B6</a></dt><dd><p>A =
+boolean. Enables DHCPv4 server support. Defaults
+            to "<code class=3D"literal">no</code>". Further settings for th=
+e DHCP
+            server may be set in the "<code class=3D"literal">[DHCPServer]<=
+/code>"
+            section described below.</p></dd><dt id=3D"LinkLocalAddressing=
+=3D"><span class=3D"term"><code class=3D"varname">LinkLocalAddressing=3D</c=
+ode></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D=
+"https://www.freedesktop.org/software/systemd/man/systemd.network.html#Link=
+LocalAddressing=3D">=C2=B6</a></dt><dd><p>Enables link-local address autoco=
+nfiguration. Accepts
+            "<code class=3D"literal">yes</code>", "<code class=3D"literal">=
+no</code>",
+            "<code class=3D"literal">ipv4</code>", or "<code class=3D"liter=
+al">ipv6</code>". Defaults to
+            "<code class=3D"literal">ipv6</code>".</p></dd><dt id=3D"IPv4LL=
+Route=3D"><span class=3D"term"><code class=3D"varname">IPv4LLRoute=3D</code=
+></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.network.html#IPv4LLR=
+oute=3D">=C2=B6</a></dt><dd><p>A boolean. When true, sets up the route need=
+ed for
+            non-IPv4LL hosts to communicate with IPv4LL-only hosts. Default=
+s
+            to false.
+            </p></dd><dt id=3D"IPv6Token=3D"><span class=3D"term"><code cla=
+ss=3D"varname">IPv6Token=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.network.html#IPv6Token=3D">=C2=B6</a></dt><dd><p>An IPv6 addre=
+ss with the top 64 bits unset. When set, indicates the
+            64-bit interface part of SLAAC IPv6 addresses for this link. No=
+te that
+            the token is only ever used for SLAAC, and not for DHCPv6 addre=
+sses, even
+            in the case DHCP is requested by router advertisement. By defau=
+lt, the
+            token is autogenerated.</p></dd><dt id=3D"LLMNR=3D"><span class=
+=3D"term"><code class=3D"varname">LLMNR=3D</code></span><a class=3D"headerl=
+ink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/s=
+oftware/systemd/man/systemd.network.html#LLMNR=3D">=C2=B6</a></dt><dd><p>A =
+boolean or "<code class=3D"literal">resolve</code>". When true,
+            enables <a class=3D"ulink" href=3D"https://tools.ietf.org/html/=
+rfc4795" target=3D"_top">Link-Local
+            Multicast Name Resolution</a> on the link. When set to
+            "<code class=3D"literal">resolve</code>", only resolution is en=
+abled,
+            but not host registration and announcement. Defaults to
+            true. This setting is read by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"re=
+fentrytitle">systemd-resolved.service</span>(8)</span></a>.</p></dd><dt id=
+=3D"MulticastDNS=3D"><span class=3D"term"><code class=3D"varname">Multicast=
+DNS=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.=
+html#MulticastDNS=3D">=C2=B6</a></dt><dd><p>A boolean or "<code class=3D"li=
+teral">resolve</code>". When true,
+            enables <a class=3D"ulink" href=3D"https://tools.ietf.org/html/=
+rfc6762" target=3D"_top">Multicast
+            DNS</a> support on the link. When set to
+            "<code class=3D"literal">resolve</code>", only resolution is en=
+abled,
+            but not host or service registration and
+            announcement. Defaults to false. This setting is read by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"re=
+fentrytitle">systemd-resolved.service</span>(8)</span></a>.</p></dd><dt id=
+=3D"DNSSEC=3D"><span class=3D"term"><code class=3D"varname">DNSSEC=3D</code=
+></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.network.html#DNSSEC=
+=3D">=C2=B6</a></dt><dd><p>A boolean or
+            "<code class=3D"literal">allow-downgrade</code>". When true, en=
+ables
+            <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc4033"=
+ target=3D"_top">DNSSEC</a>
+            DNS validation support on the link. When set to
+            "<code class=3D"literal">allow-downgrade</code>", compatibility=
+ with
+            non-DNSSEC capable networks is increased, by automatically
+            turning off DNSSEC in this case. This option defines a
+            per-interface setting for
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/res=
+olved.conf.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle=
+">resolved.conf</span>(5)</span></a>'s
+            global <code class=3D"varname">DNSSEC=3D</code> option. Default=
+s to
+            false. This setting is read by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"re=
+fentrytitle">systemd-resolved.service</span>(8)</span></a>.</p></dd><dt id=
+=3D"DNSSECNegativeTrustAnchors=3D"><span class=3D"term"><code class=3D"varn=
+ame">DNSSECNegativeTrustAnchors=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.network.html#DNSSECNegativeTrustAnchors=3D">=C2=B6</a><=
+/dt><dd><p>A space-separated list of DNSSEC negative
+          trust anchor domains. If specified and DNSSEC is enabled,
+          look-ups done via the interface's DNS server will be subject
+          to the list of negative trust anchors, and not require
+          authentication for the specified domains, or anything below
+          it. Use this to disable DNSSEC authentication for specific
+          private domains, that cannot be proven valid using the
+          Internet DNS hierarchy. Defaults to the empty list. This
+          setting is read by
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"refe=
+ntrytitle">systemd-resolved.service</span>(8)</span></a>.</p></dd><dt id=3D=
+"LLDP=3D"><span class=3D"term"><code class=3D"varname">LLDP=3D</code></span=
+><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://w=
+ww.freedesktop.org/software/systemd/man/systemd.network.html#LLDP=3D">=C2=
+=B6</a></dt><dd><p>Controls support for Ethernet LLDP packet reception. LLD=
+P is a link-layer protocol commonly
+            implemented on professional routers and bridges which announces=
+ which physical port a system is connected
+            to, as well as other related data. Accepts a boolean or the spe=
+cial value
+            "<code class=3D"literal">routers-only</code>". When true, incom=
+ing LLDP packets are accepted and a database of all LLDP
+            neighbors maintained. If "<code class=3D"literal">routers-only<=
+/code>" is set only LLDP data of various types of routers
+            is collected and LLDP data about other types of devices ignored=
+ (such as stations, telephones and
+            others). If false, LLDP reception is disabled. Defaults to "<co=
+de class=3D"literal">routers-only</code>". Use
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/net=
+workctl.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">n=
+etworkctl</span>(1)</span></a> to query the
+            collected neighbor data. LLDP is only available on Ethernet lin=
+ks. See <code class=3D"varname">EmitLLDP=3D</code> below
+            for enabling LLDP packet emission from the local system.
+            </p></dd><dt id=3D"EmitLLDP=3D"><span class=3D"term"><code clas=
+s=3D"varname">EmitLLDP=3D</code></span><a class=3D"headerlink" title=3D"Per=
+malink to this term" href=3D"https://www.freedesktop.org/software/systemd/m=
+an/systemd.network.html#EmitLLDP=3D">=C2=B6</a></dt><dd><p>Controls support=
+ for Ethernet LLDP packet emission. Accepts a boolean parameter or the spec=
+ial values
+            "<code class=3D"literal">nearest-bridge</code>", "<code class=
+=3D"literal">non-tpmr-bridge</code>" and
+            "<code class=3D"literal">customer-bridge</code>".  Defaults to =
+false, which turns off LLDP packet emission. If not false,
+            a short LLDP packet with information about the local system is =
+sent out in regular intervals on the
+            link. The LLDP packet will contain information about the local =
+host name, the local machine ID (as stored
+            in <a href=3D"https://www.freedesktop.org/software/systemd/man/=
+machine-id.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle=
+">machine-id</span>(5)</span></a>) and the
+            local interface name, as well as the pretty hostname of the sys=
+tem (as set in
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/mac=
+hine-info.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle"=
+>machine-info</span>(5)</span></a>). LLDP
+            emission is only available on Ethernet links. Note that this se=
+tting passes data suitable for
+            identification of host to the network and should thus not be en=
+abled on untrusted networks, where such
+            identification data should not be made available. Use this opti=
+on to permit other systems to identify on
+            which interfaces they are connected to this system. The three s=
+pecial values control propagation of the
+            LLDP packets. The "<code class=3D"literal">nearest-bridge</code=
+>" setting permits propagation only to the nearest
+            connected bridge, "<code class=3D"literal">non-tpmr-bridge</cod=
+e>" permits propagation across Two-Port MAC Relays, but
+            not any other bridges, and "<code class=3D"literal">customer-br=
+idge</code>" permits propagation until a customer bridge
+            is reached. For details about these concepts, see <a class=3D"u=
+link" href=3D"http://standards.ieee.org/getieee802/download/802.1AB-2009.pd=
+f" target=3D"_top">IEEE 802.1AB-2009</a>. Note that
+            configuring this setting to true is equivalent to "<code class=
+=3D"literal">nearest-bridge</code>", the recommended and
+            most restricted level of propagation. See <code class=3D"varnam=
+e">LLDP=3D</code> above for an option to enable LLDP
+            reception.</p></dd><dt id=3D"BindCarrier=3D"><span class=3D"ter=
+m"><code class=3D"varname">BindCarrier=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.network.html#BindCarrier=3D">=C2=B6</a></dt><dd>=
+<p>A link name or a list of link names. When set, controls the behavior of =
+the current
+            link. When all links in the list are in an operational down sta=
+te, the current link is brought
+            down. When at least one link has carrier, the current interface=
+ is brought up.
+            </p></dd><dt id=3D"Address=3D"><span class=3D"term"><code class=
+=3D"varname">Address=3D</code></span><a class=3D"headerlink" title=3D"Perma=
+link to this term" href=3D"https://www.freedesktop.org/software/systemd/man=
+/systemd.network.html#Address=3D">=C2=B6</a></dt><dd><p>A static IPv4 or IP=
+v6 address and its prefix length,
+            separated by a "<code class=3D"literal">/</code>" character. Sp=
+ecify
+            this key more than once to configure several addresses.
+            The format of the address must be as described in
+            <a href=3D"http://man7.org/linux/man-pages/man3/inet_pton.3.htm=
+l"><span class=3D"citerefentry"><span class=3D"refentrytitle">inet_pton</sp=
+an>(3)</span></a>.
+            This is a short-hand for an [Address] section only
+            containing an Address key (see below). This option may be
+            specified more than once.
+            </p><p>If the specified address is 0.0.0.0 (for IPv4) or
+            [::] (for IPv6), a new address range of the requested size
+            is automatically allocated from a system-wide pool of
+            unused ranges. The allocated range is checked against all
+            current network interfaces and all known network
+            configuration files to avoid address range conflicts. The
+            default system-wide pool consists of 192.168.0.0/16,
+            172.16.0.0/12 and 10.0.0.0/8 for IPv4, and fc00::/7 for
+            IPv6. This functionality is useful to manage a large
+            number of dynamically created network interfaces with the
+            same network configuration and automatic address range
+            assignment.</p></dd><dt id=3D"Gateway=3D"><span class=3D"term">=
+<code class=3D"varname">Gateway=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.network.html#Gateway=3D">=C2=B6</a></dt><dd><p>The gate=
+way address, which must be in the format
+            described in
+            <a href=3D"http://man7.org/linux/man-pages/man3/inet_pton.3.htm=
+l"><span class=3D"citerefentry"><span class=3D"refentrytitle">inet_pton</sp=
+an>(3)</span></a>.
+            This is a short-hand for a [Route] section only containing
+            a Gateway key. This option may be specified more than
+            once.</p></dd><dt id=3D"DNS=3D"><span class=3D"term"><code clas=
+s=3D"varname">DNS=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.network.html#DNS=3D">=C2=B6</a></dt><dd><p>A DNS server address, whic=
+h must be in the format
+            described in
+            <a href=3D"http://man7.org/linux/man-pages/man3/inet_pton.3.htm=
+l"><span class=3D"citerefentry"><span class=3D"refentrytitle">inet_pton</sp=
+an>(3)</span></a>.
+            This option may be specified more than once. This setting is re=
+ad by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"re=
+fentrytitle">systemd-resolved.service</span>(8)</span></a>.</p></dd><dt id=
+=3D"Domains=3D"><span class=3D"term"><code class=3D"varname">Domains=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.network.html#Domai=
+ns=3D">=C2=B6</a></dt><dd><p>A list of domains which should be resolved usi=
+ng the DNS servers on this link. Each item in the list
+            should be a domain name, optionally prefixed with a tilde ("<co=
+de class=3D"literal">~</code>"). The domains with the
+            prefix are called "routing-only domains". The domains without t=
+he prefix are called "search domains" and
+            are first used as search suffixes for extending single-label ho=
+st names (host names containing no dots) to
+            become fully qualified domain names (FQDNs). If a single-label =
+host name is resolved on this interface,
+            each of the specified search domains are appended to it in turn=
+, converting it into a fully qualified
+            domain name, until one of them may be successfully resolved.</p=
+><p>Both "search" and "routing-only" domains are used for routing of DNS qu=
+eries: look-ups for host names
+            ending in those domains (hence also single label names, if any =
+"search domains" are listed), are routed to
+            the DNS servers configured for this interface. The domain routi=
+ng logic is particularly useful on
+            multi-homed hosts with DNS servers serving particular private D=
+NS zones on each interface.</p><p>The "routing-only" domain "<code class=3D=
+"literal">~.</code>" (the tilde indicating definition of a routing domain,
+            the dot referring to the DNS root domain which is the implied s=
+uffix of all valid DNS names) has special
+            effect. It causes all DNS traffic which does not match another =
+configured domain routing entry to be routed
+            to DNS servers specified for this interface. This setting is us=
+eful to prefer a certain set of DNS servers
+            if a link on which they are connected is available.</p><p>This =
+setting is read by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-resolved.service.html#"><span class=3D"citerefentry"><span class=3D"re=
+fentrytitle">systemd-resolved.service</span>(8)</span></a>.
+            "Search domains" correspond to the <code class=3D"varname">doma=
+in</code> and <code class=3D"varname">search</code> entries in
+            <a href=3D"http://man7.org/linux/man-pages/man5/resolv.conf.5.h=
+tml"><span class=3D"citerefentry"><span class=3D"refentrytitle">resolv.conf=
+</span>(5)</span></a>.
+            Domain name routing has no equivalent in the traditional glibc =
+API, which has no concept of domain
+            name servers limited to a specific link.</p></dd><dt id=3D"NTP=
+=3D"><span class=3D"term"><code class=3D"varname">NTP=3D</code></span><a cl=
+ass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fre=
+edesktop.org/software/systemd/man/systemd.network.html#NTP=3D">=C2=B6</a></=
+dt><dd><p>An NTP server address. This option may be specified more than onc=
+e. This setting is read by
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd-timesyncd.service.html#"><span class=3D"citerefentry"><span class=3D"r=
+efentrytitle">systemd-timesyncd.service</span>(8)</span></a>.</p></dd><dt i=
+d=3D"IPForward=3D"><span class=3D"term"><code class=3D"varname">IPForward=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.htm=
+l#IPForward=3D">=C2=B6</a></dt><dd><p>Configures IP packet forwarding for t=
+he
+          system. If enabled, incoming packets on any network
+          interface will be forwarded to any other interfaces
+          according to the routing table. Takes either a boolean
+          argument, or the values "<code class=3D"literal">ipv4</code>" or
+          "<code class=3D"literal">ipv6</code>", which only enable IP packe=
+t
+          forwarding for the specified address family.  This controls
+          the <code class=3D"filename">net.ipv4.ip_forward</code> and
+          <code class=3D"filename">net.ipv6.conf.all.forwarding</code> sysc=
+tl
+          options of the network interface (see <a class=3D"ulink" href=3D"=
+https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt" target=
+=3D"_top">ip-sysctl.txt</a>
+          for details about sysctl options). Defaults to
+          "<code class=3D"literal">no</code>".</p><p>Note: this setting con=
+trols a global kernel option,
+          and does so one way only: if a network that has this setting
+          enabled is set up the global setting is turned on.  However,
+          it is never turned off again, even after all networks with
+          this setting enabled are shut down again.</p><p>To allow IP packe=
+t forwarding only between specific
+          network interfaces use a firewall.</p></dd><dt id=3D"IPMasquerade=
+=3D"><span class=3D"term"><code class=3D"varname">IPMasquerade=3D</code></s=
+pan><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https:=
+//www.freedesktop.org/software/systemd/man/systemd.network.html#IPMasquerad=
+e=3D">=C2=B6</a></dt><dd><p>Configures IP masquerading for the network
+          interface. If enabled, packets forwarded from the network
+          interface will be appear as coming from the local host.
+          Takes a boolean argument. Implies
+          <code class=3D"varname">IPForward=3Dipv4</code>. Defaults to
+          "<code class=3D"literal">no</code>".</p></dd><dt id=3D"IPv6Privac=
+yExtensions=3D"><span class=3D"term"><code class=3D"varname">IPv6PrivacyExt=
+ensions=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this =
+term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netw=
+ork.html#IPv6PrivacyExtensions=3D">=C2=B6</a></dt><dd><p>Configures use of =
+stateless temporary
+          addresses that change over time (see <a class=3D"ulink" href=3D"h=
+ttps://tools.ietf.org/html/rfc4941" target=3D"_top">RFC 4941</a>,
+          Privacy Extensions for Stateless Address Autoconfiguration
+          in IPv6). Takes a boolean or the special values
+          "<code class=3D"literal">prefer-public</code>" and
+          "<code class=3D"literal">kernel</code>". When true, enables the p=
+rivacy
+          extensions and prefers temporary addresses over public
+          addresses. When "<code class=3D"literal">prefer-public</code>", e=
+nables the
+          privacy extensions, but prefers public addresses over
+          temporary addresses. When false, the privacy extensions
+          remain disabled. When "<code class=3D"literal">kernel</code>", th=
+e kernel's
+          default setting will be left in place.  Defaults to
+          "<code class=3D"literal">no</code>".</p></dd><dt id=3D"IPv6Accept=
+RA=3D"><span class=3D"term"><code class=3D"varname">IPv6AcceptRA=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.network.html#IPv6Accep=
+tRA=3D">=C2=B6</a></dt><dd><p>Enable or disable IPv6 Router Advertisement (=
+RA) reception support for the interface.  Takes
+          a boolean parameter. If true, RAs are accepted; if false, RAs are=
+ ignored, independently of the local
+          forwarding state. When not set, the kernel default is used, and R=
+As are accepted only when local forwarding
+          is disabled for that interface.  When RAs are accepted, they may =
+trigger the start of the DHCPv6 client if
+          the relevant flags are set in the RA data, or if no routers are f=
+ound on the link.</p><p>Further settings for the IPv6 RA support may be con=
+figured in the
+          "<code class=3D"literal">[IPv6AcceptRA]</code>" section, see belo=
+w.</p><p>Also see <a class=3D"ulink" href=3D"https://www.kernel.org/doc/Doc=
+umentation/networking/ip-sysctl.txt" target=3D"_top">ip-sysctl.txt</a> in t=
+he kernel
+          documentation regarding "<code class=3D"literal">accept_ra</code>=
+", but note that systemd's setting of
+          <code class=3D"constant">1</code> (i.e. true) corresponds to kern=
+el's setting of <code class=3D"constant">2</code>.</p></dd><dt id=3D"IPv6Du=
+plicateAddressDetection=3D"><span class=3D"term"><code class=3D"varname">IP=
+v6DuplicateAddressDetection=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#IPv6DuplicateAddressDetection=3D">=C2=B6</a>=
+</dt><dd><p>Configures the amount of IPv6 Duplicate
+          Address Detection (DAD) probes to send. Defaults to unset.
+        </p></dd><dt id=3D"IPv6HopLimit=3D"><span class=3D"term"><code clas=
+s=3D"varname">IPv6HopLimit=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.network.html#IPv6HopLimit=3D">=C2=B6</a></dt><dd><p>Configur=
+es IPv6 Hop Limit. For each router that
+          forwards the packet, the hop limit is decremented by 1. When the
+          hop limit field reaches zero, the packet is discarded.
+          Defaults to unset.
+        </p></dd><dt id=3D"IPv4ProxyARP=3D"><span class=3D"term"><code clas=
+s=3D"varname">IPv4ProxyARP=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.network.html#IPv4ProxyARP=3D">=C2=B6</a></dt><dd><p>A boolea=
+n. Configures proxy ARP for IPv4. Proxy ARP is the technique in which one h=
+ost,
+          usually a router, answers ARP requests intended for another machi=
+ne. By "faking" its identity,
+          the router accepts responsibility for routing packets to the "rea=
+l" destination. (see <a class=3D"ulink" href=3D"https://tools.ietf.org/html=
+/rfc1027" target=3D"_top">RFC 1027</a>.
+          Defaults to unset.
+        </p></dd><dt id=3D"IPv6ProxyNDP=3D"><span class=3D"term"><code clas=
+s=3D"varname">IPv6ProxyNDP=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.network.html#IPv6ProxyNDP=3D">=C2=B6</a></dt><dd><p>A boolea=
+n. Configures proxy NDP for IPv6. Proxy NDP (Neighbor Discovery
+          Protocol) is a technique for IPv6 to allow routing of addresses t=
+o a different
+          destination when peers expect them to be present on a certain phy=
+sical link.
+          In this case a router answers Neighbour Advertisement messages in=
+tended for
+          another machine by offering its own MAC address as destination.
+          Unlike proxy ARP for IPv4, it is not enabled globally, but will o=
+nly send Neighbour
+          Advertisement messages for addresses in the IPv6 neighbor proxy t=
+able,
+          which can also be shown by <span class=3D"command"><strong>ip -6 =
+neighbour show proxy</strong></span>.
+          systemd-networkd will control the per-interface `proxy_ndp` switc=
+h for each configured
+          interface depending on this option.
+          Defautls to unset.
+        </p></dd><dt id=3D"IPv6ProxyNDPAddress=3D"><span class=3D"term"><co=
+de class=3D"varname">IPv6ProxyNDPAddress=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.network.html#IPv6ProxyNDPAddress=3D">=C2=B6</a=
+></dt><dd><p>An IPv6 address, for which Neighbour Advertisement messages wi=
+ll be
+          proxied. This option may be specified more than once. systemd-net=
+workd will add the
+          <code class=3D"option">IPv6ProxyNDPAddress=3D</code> entries to t=
+he kernel's IPv6 neighbor proxy table.
+          This option implies <code class=3D"option">IPv6ProxyNDP=3Dtrue</c=
+ode> but has no effect if
+          <code class=3D"option">IPv6ProxyNDP</code> has been set to false.=
+ Defaults to unset.
+        </p></dd><dt id=3D"IPv6PrefixDelegation=3D"><span class=3D"term"><c=
+ode class=3D"varname">IPv6PrefixDelegation=3D</code></span><a class=3D"head=
+erlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.or=
+g/software/systemd/man/systemd.network.html#IPv6PrefixDelegation=3D">=C2=B6=
+</a></dt><dd><p>Whether to enable or disable Router Advertisement sending o=
+n a link.
+          Allowed values are "<code class=3D"literal">static</code>" which =
+distributes prefixes as defined in
+          the "<code class=3D"literal">[IPv6PrefixDelegation]</code>" and a=
+ny "<code class=3D"literal">[IPv6Prefix]</code>"
+          sections, "<code class=3D"literal">dhcpv6</code>" which requests =
+prefixes using a DHCPv6 client
+          configured for another link and any values configured in the
+          "<code class=3D"literal">[IPv6PrefixDelegation]</code>" section w=
+hile ignoring all static prefix
+          configuration sections, "<code class=3D"literal">yes</code>" whic=
+h uses both static configuration
+          and DHCPv6, and "<code class=3D"literal">false</code>" which turn=
+s off IPv6 prefix delegation
+          altogether. Defaults to "<code class=3D"literal">false</code>". S=
+ee the
+          "<code class=3D"literal">[IPv6PrefixDelegation]</code>" and the "=
+<code class=3D"literal">[IPv6Prefix]</code>"
+          sections for more configuration options.
+          </p></dd><dt id=3D"Bridge=3D"><span class=3D"term"><code class=3D=
+"varname">Bridge=3D</code></span><a class=3D"headerlink" title=3D"Permalink=
+ to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.network.html#Bridge=3D">=C2=B6</a></dt><dd><p>The name of the bridge t=
+o add the link to. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            </p></dd><dt id=3D"Bond=3D"><span class=3D"term"><code class=3D=
+"varname">Bond=3D</code></span><a class=3D"headerlink" title=3D"Permalink t=
+o this term" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.network.html#Bond=3D">=C2=B6</a></dt><dd><p>The name of the bond to add =
+the link to. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            </p></dd><dt id=3D"VRF=3D"><span class=3D"term"><code class=3D"=
+varname">VRF=3D</code></span><a class=3D"headerlink" title=3D"Permalink to =
+this term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd=
+.network.html#VRF=3D">=C2=B6</a></dt><dd><p>The name of the VRF to add the =
+link to. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            </p></dd><dt id=3D"VLAN=3D"><span class=3D"term"><code class=3D=
+"varname">VLAN=3D</code></span><a class=3D"headerlink" title=3D"Permalink t=
+o this term" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.network.html#VLAN=3D">=C2=B6</a></dt><dd><p>The name of a VLAN to create=
+ on the link. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            This option may be specified more than once.</p></dd><dt id=3D"=
+MACVLAN=3D"><span class=3D"term"><code class=3D"varname">MACVLAN=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.network.html#MACVLAN=
+=3D">=C2=B6</a></dt><dd><p>The name of a MACVLAN to create on the link. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            This option may be specified more than once.</p></dd><dt id=3D"=
+VXLAN=3D"><span class=3D"term"><code class=3D"varname">VXLAN=3D</code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.network.html#VXLAN=3D">=C2=
+=B6</a></dt><dd><p>The name of a VXLAN to create on the link. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            This option may be specified more than once.</p></dd><dt id=3D"=
+Tunnel=3D"><span class=3D"term"><code class=3D"varname">Tunnel=3D</code></s=
+pan><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https:=
+//www.freedesktop.org/software/systemd/man/systemd.network.html#Tunnel=3D">=
+=C2=B6</a></dt><dd><p>The name of a Tunnel to create on the link. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitl=
+e">systemd.netdev</span>(5)</span></a>.
+            This option may be specified more than once.</p></dd><dt id=3D"=
+ActiveSlave=3D"><span class=3D"term"><code class=3D"varname">ActiveSlave=3D=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#A=
+ctiveSlave=3D">=C2=B6</a></dt><dd><p>A boolean. Specifies the new active sl=
+ave. The "<code class=3D"literal">ActiveSlave=3D</code>"
+          option is only valid for following modes:
+          "<code class=3D"literal">active-backup</code>",
+          "<code class=3D"literal">balance-alb</code>" and
+          "<code class=3D"literal">balance-tlb</code>". Defaults to false.
+          </p></dd><dt id=3D"PrimarySlave=3D"><span class=3D"term"><code cl=
+ass=3D"varname">PrimarySlave=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#PrimarySlave=3D">=C2=B6</a></dt><dd><p>A boo=
+lean. Specifies which slave is the primary device. The specified
+          device will always be the active slave while it is available. Onl=
+y when the
+          primary is off-line will alternate devices be used.  This is usef=
+ul when
+          one slave is preferred over another, e.g. when one slave has high=
+er throughput
+          than another. The "<code class=3D"literal">PrimarySlave=3D</code>=
+" option is only valid for
+          following modes:
+          "<code class=3D"literal">active-backup</code>",
+          "<code class=3D"literal">balance-alb</code>" and
+          "<code class=3D"literal">balance-tlb</code>". Defaults to false.
+          </p></dd><dt id=3D"ConfigureWithoutCarrier=3D"><span class=3D"ter=
+m"><code class=3D"varname">ConfigureWithoutCarrier=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.network.html#ConfigureWithoutCarrier=
+=3D">=C2=B6</a></dt><dd><p>A boolean. Allows networkd to configure a specif=
+ic link even if it has no carrier.
+          Defaults to false.
+          </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1=
+.9"></a><h2 id=3D"[Address] Section Options">[Address] Section Options<a cl=
+ass=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www=
+.freedesktop.org/software/systemd/man/systemd.network.html#%5BAddress%5D%20=
+Section%20Options">=C2=B6</a></h2><p>An "<code class=3D"literal">[Address]<=
+/code>" section accepts the
+      following keys. Specify several "<code class=3D"literal">[Address]</c=
+ode>"
+      sections to configure several addresses.</p><div class=3D"variablelis=
+t"><dl class=3D"variablelist"><dt id=3D"Address=3D1"><span class=3D"term"><=
+code class=3D"varname">Address=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.network.html#Address=3D1">=C2=B6</a></dt><dd><p>As in th=
+e "<code class=3D"literal">[Network]</code>" section. This
+            key is mandatory.</p></dd><dt id=3D"Peer=3D"><span class=3D"ter=
+m"><code class=3D"varname">Peer=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.network.html#Peer=3D">=C2=B6</a></dt><dd><p>The peer ad=
+dress in a point-to-point connection.
+            Accepts the same format as the "<code class=3D"literal">Address=
+</code>"
+            key.</p></dd><dt id=3D"Broadcast=3D"><span class=3D"term"><code=
+ class=3D"varname">Broadcast=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#Broadcast=3D">=C2=B6</a></dt><dd><p>The broa=
+dcast address, which must be in the format
+            described in
+            <a href=3D"http://man7.org/linux/man-pages/man3/inet_pton.3.htm=
+l"><span class=3D"citerefentry"><span class=3D"refentrytitle">inet_pton</sp=
+an>(3)</span></a>.
+            This key only applies to IPv4 addresses. If it is not
+            given, it is derived from the "<code class=3D"literal">Address<=
+/code>"
+            key.</p></dd><dt id=3D"Label=3D"><span class=3D"term"><code cla=
+ss=3D"varname">Label=3D</code></span><a class=3D"headerlink" title=3D"Perma=
+link to this term" href=3D"https://www.freedesktop.org/software/systemd/man=
+/systemd.network.html#Label=3D">=C2=B6</a></dt><dd><p>An address label.</p>=
+</dd><dt id=3D"PreferredLifetime=3D"><span class=3D"term"><code class=3D"va=
+rname">PreferredLifetime=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.network.html#PreferredLifetime=3D">=C2=B6</a></dt><dd><p>Allow=
+s the default "preferred lifetime" of the address to be overridden.
+            Only three settings are accepted: "<code class=3D"literal">fore=
+ver</code>" or "<code class=3D"literal">infinity</code>"
+            which is the default and means that the address never expires, =
+and "<code class=3D"literal">0</code>" which means
+            that the address is considered immediately "expired" and will n=
+ot be used,
+            unless explicitly requested. A setting of PreferredLifetime=3D0=
+ is useful for
+            addresses which are added to be used only by a specific applica=
+tion,
+            which is then configured to use them explicitly.</p></dd><dt id=
+=3D"Scope=3D"><span class=3D"term"><code class=3D"varname">Scope=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.network.html#Scope=3D"=
+>=C2=B6</a></dt><dd><p>The scope of the address, which can be "<code class=
+=3D"literal">global</code>",
+            "<code class=3D"literal">link</code>" or "<code class=3D"litera=
+l">host</code>" or an unsigned integer ranges 0 to 255.
+            Defaults to "<code class=3D"literal">global</code>".</p></dd><d=
+t id=3D"HomeAddress=3D"><span class=3D"term"><code class=3D"varname">HomeAd=
+dress=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this te=
+rm" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.networ=
+k.html#HomeAddress=3D">=C2=B6</a></dt><dd><p>Takes a boolean argument. Desi=
+gnates this address the "home address" as defined in
+            <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc6275"=
+ target=3D"_top">RFC 6275</a>.
+            Supported only on IPv6. Defaults to false.</p></dd><dt id=3D"Du=
+plicateAddressDetection=3D"><span class=3D"term"><code class=3D"varname">Du=
+plicateAddressDetection=3D</code></span><a class=3D"headerlink" title=3D"Pe=
+rmalink to this term" href=3D"https://www.freedesktop.org/software/systemd/=
+man/systemd.network.html#DuplicateAddressDetection=3D">=C2=B6</a></dt><dd><=
+p>Takes a boolean argument. Do not perform Duplicate Address Detection
+            <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc4862"=
+ target=3D"_top">RFC 4862</a> when adding this address.
+            Supported only on IPv6. Defaults to false.</p></dd><dt id=3D"Ma=
+nageTemporaryAddress=3D"><span class=3D"term"><code class=3D"varname">Manag=
+eTemporaryAddress=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.network.html#ManageTemporaryAddress=3D">=C2=B6</a></dt><dd><p>Takes a=
+ boolean argument. If true the kernel manage temporary addresses created
+            from this one as template on behalf of Privacy Extensions
+            <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc3041"=
+ target=3D"_top">RFC 3041</a>.  For this to become
+            active, the use_tempaddr sysctl setting has to be set to a valu=
+e greater than zero.
+            The given address needs to have a prefix length of 64. This fla=
+g allows to use privacy
+            extensions in a manually configured network, just like if state=
+less auto-configuration
+            was active. Defaults to false. </p></dd><dt id=3D"PrefixRoute=
+=3D"><span class=3D"term"><code class=3D"varname">PrefixRoute=3D</code></sp=
+an><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https:/=
+/www.freedesktop.org/software/systemd/man/systemd.network.html#PrefixRoute=
+=3D">=C2=B6</a></dt><dd><p>Takes a boolean argument. When adding or modifyi=
+ng an IPv6 address, the userspace
+            application needs a way to suppress adding a prefix route. This=
+ is for example relevant
+            together with IFA_F_MANAGERTEMPADDR, where userspace creates au=
+toconf generated addresses,
+            but depending on on-link, no route for the prefix should be add=
+ed. Defaults to false.</p></dd><dt id=3D"AutoJoin=3D"><span class=3D"term">=
+<code class=3D"varname">AutoJoin=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.network.html#AutoJoin=3D">=C2=B6</a></dt><dd><p>Takes =
+a boolean argument. Joining multicast group on ethernet level via
+            <span class=3D"command"><strong>ip maddr</strong></span> comman=
+d would not work if we have an Ethernet switch that does
+            IGMP snooping since the switch would not replicate multicast pa=
+ckets on  ports that did not
+            have IGMP reports for the multicast addresses. Linux vxlan inte=
+rfaces created via
+            <span class=3D"command"><strong>ip link add vxlan</strong></spa=
+n> or networkd's netdev kind vxlan have the group option
+            that enables then to do the required join. By extending ip addr=
+ess command with option
+            "<code class=3D"literal">autojoin</code>" we can get similar fu=
+nctionality for openvswitch (OVS) vxlan
+            interfaces as well as other tunneling mechanisms that need to r=
+eceive multicast traffic.
+            Defaults to "<code class=3D"literal">no</code>".</p></dd></dl><=
+/div></div><div class=3D"refsect1"><a name=3D"id-1.10"></a><h2 id=3D"[IPv6A=
+ddressLabel] Section Options">[IPv6AddressLabel] Section Options<a class=3D=
+"headerlink" title=3D"Permalink to this headline" href=3D"https://www.freed=
+esktop.org/software/systemd/man/systemd.network.html#%5BIPv6AddressLabel%5D=
+%20Section%20Options">=C2=B6</a></h2><p>An "<code class=3D"literal">[IPv6Ad=
+dressLabel]</code>" section accepts the
+      following keys. Specify several "<code class=3D"literal">[IPv6Address=
+Label]</code>"
+      sections to configure several address labels. IPv6 address labels are
+      used for address selection. See <a class=3D"ulink" href=3D"https://to=
+ols.ietf.org/html/rfc3484" target=3D"_top">RFC 3484</a>.
+      Precedence is managed by userspace, and only the label itself is stor=
+ed in the kernel</p><div class=3D"variablelist"><dl class=3D"variablelist">=
+<dt id=3D"Label=3D1"><span class=3D"term"><code class=3D"varname">Label=3D<=
+/code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#L=
+abel=3D1">=C2=B6</a></dt><dd><p> The label for the prefix (an unsigned inte=
+ger) ranges 0 to 4294967294.
+            0xffffffff is reserved. This key is mandatory.</p></dd><dt id=
+=3D"Prefix=3D"><span class=3D"term"><code class=3D"varname">Prefix=3D</code=
+></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.network.html#Prefix=
+=3D">=C2=B6</a></dt><dd><p>IPv6 prefix is an address with a prefix length, =
+separated by a slash "<code class=3D"literal">/</code>" character.
+            This key is mandatory. </p></dd></dl></div></div><div class=3D"=
+refsect1"><a name=3D"id-1.11"></a><h2 id=3D"[RoutingPolicyRule] Section Opt=
+ions">[RoutingPolicyRule] Section Options<a class=3D"headerlink" title=3D"P=
+ermalink to this headline" href=3D"https://www.freedesktop.org/software/sys=
+temd/man/systemd.network.html#%5BRoutingPolicyRule%5D%20Section%20Options">=
+=C2=B6</a></h2><p>An "<code class=3D"literal">[RoutingPolicyRule]</code>" s=
+ection accepts the
+      following keys. Specify several "<code class=3D"literal">[RoutingPoli=
+cyRule]</code>"
+      sections to configure several rules.</p><div class=3D"variablelist"><=
+dl class=3D"variablelist"><dt id=3D"TypeOfService=3D"><span class=3D"term">=
+<code class=3D"varname">TypeOfService=3D</code></span><a class=3D"headerlin=
+k" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/sof=
+tware/systemd/man/systemd.network.html#TypeOfService=3D">=C2=B6</a></dt><dd=
+><p>Specifies the type of service to match a number between 0 to 255.</p></=
+dd><dt id=3D"From=3D"><span class=3D"term"><code class=3D"varname">From=3D<=
+/code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#F=
+rom=3D">=C2=B6</a></dt><dd><p>Specifies the source address prefix to match.=
+ Possibly followed by a slash and the prefix length.</p></dd><dt id=3D"To=
+=3D"><span class=3D"term"><code class=3D"varname">To=3D</code></span><a cla=
+ss=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.free=
+desktop.org/software/systemd/man/systemd.network.html#To=3D">=C2=B6</a></dt=
+><dd><p>Specifies the destination address prefix to match. Possibly followe=
+d by a slash and the prefix length.</p></dd><dt id=3D"FirewallMark=3D"><spa=
+n class=3D"term"><code class=3D"varname">FirewallMark=3D</code></span><a cl=
+ass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fre=
+edesktop.org/software/systemd/man/systemd.network.html#FirewallMark=3D">=C2=
+=B6</a></dt><dd><p>Specifies the iptables firewall mark value to match (a n=
+umber between 1 and 4294967295).</p></dd><dt id=3D"Table=3D"><span class=3D=
+"term"><code class=3D"varname">Table=3D</code></span><a class=3D"headerlink=
+" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/soft=
+ware/systemd/man/systemd.network.html#Table=3D">=C2=B6</a></dt><dd><p>Speci=
+fies the routing table identifier to lookup if the rule
+            selector matches. The table identifier for a route (a number be=
+tween 1 and 4294967295).</p></dd><dt id=3D"Priority=3D"><span class=3D"term=
+"><code class=3D"varname">Priority=3D</code></span><a class=3D"headerlink" =
+title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwa=
+re/systemd/man/systemd.network.html#Priority=3D">=C2=B6</a></dt><dd><p>Spec=
+ifies the priority of this rule. <code class=3D"varname">Priority=3D</code>=
+ is an unsigned
+            integer. Higher number means lower priority, and rules get proc=
+essed in order of increasing number.</p></dd><dt id=3D"IncomingInterface=3D=
+"><span class=3D"term"><code class=3D"varname">IncomingInterface=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.network.html#IncomingI=
+nterface=3D">=C2=B6</a></dt><dd><p>Specifies incoming device to match. If t=
+he interface is loopback, the rule only matches packets originating from th=
+is host.</p></dd><dt id=3D"OutgoingInterface=3D"><span class=3D"term"><code=
+ class=3D"varname">OutgoingInterface=3D</code></span><a class=3D"headerlink=
+" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/soft=
+ware/systemd/man/systemd.network.html#OutgoingInterface=3D">=C2=B6</a></dt>=
+<dd><p>Specifies the outgoing device to match. The outgoing interface is on=
+ly available for packets originating from local sockets that are bound to a=
+ device.</p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1.1=
+2"></a><h2 id=3D"[Route] Section Options">[Route] Section Options<a class=
+=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.network.html#%5BRoute%5D%20Secti=
+on%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[Route]</code>=
+" section accepts the
+      following keys. Specify several "<code class=3D"literal">[Route]</cod=
+e>"
+      sections to configure several routes.</p><div class=3D"variablelist">=
+<dl class=3D"variablelist"><dt id=3D"Gateway=3D1"><span class=3D"term"><cod=
+e class=3D"varname">Gateway=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#Gateway=3D1">=C2=B6</a></dt><dd><p>As in the=
+ "<code class=3D"literal">[Network]</code>" section.</p></dd><dt id=3D"Gate=
+wayOnlink=3D"><span class=3D"term"><code class=3D"varname">GatewayOnlink=3D=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#G=
+atewayOnlink=3D">=C2=B6</a></dt><dd><p>The "<code class=3D"literal">Gateway=
+Onlink</code>" option tells the kernel that it does not have
+             to check if the gateway is reachable directly by the current m=
+achine (i.e., the kernel does
+             not need to check if the gateway is attached to the local netw=
+ork), so that we can insert the
+             route in the kernel table without it being complained about. A=
+ boolean, defaults to "<code class=3D"literal">no</code>".
+             </p></dd><dt id=3D"Destination=3D"><span class=3D"term"><code =
+class=3D"varname">Destination=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#Destination=3D">=C2=B6</a></dt><dd><p>The de=
+stination prefix of the route. Possibly
+            followed by a slash and the prefix length. If omitted, a
+            full-length host route is assumed.</p></dd><dt id=3D"Source=3D"=
+><span class=3D"term"><code class=3D"varname">Source=3D</code></span><a cla=
+ss=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.free=
+desktop.org/software/systemd/man/systemd.network.html#Source=3D">=C2=B6</a>=
+</dt><dd><p>The source prefix of the route. Possibly followed by
+            a slash and the prefix length. If omitted, a full-length
+            host route is assumed.</p></dd><dt id=3D"Metric=3D"><span class=
+=3D"term"><code class=3D"varname">Metric=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.network.html#Metric=3D">=C2=B6</a></dt><dd><p>=
+The metric of the route (an unsigned integer).</p></dd><dt id=3D"IPv6Prefer=
+ence=3D"><span class=3D"term"><code class=3D"varname">IPv6Preference=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.network.html#IPv6P=
+reference=3D">=C2=B6</a></dt><dd><p>Specifies the route preference as defin=
+ed in <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc4191" targe=
+t=3D"_top">RFC4191</a> for Router Discovery messages.
+            Which can be one of "<code class=3D"literal">low</code>" the ro=
+ute has a lowest priority,
+            "<code class=3D"literal">medium</code>" the route has a default=
+ priority or
+            "<code class=3D"literal">high</code>" the route has a highest p=
+riority.</p></dd><dt id=3D"Scope=3D1"><span class=3D"term"><code class=3D"v=
+arname">Scope=3D</code></span><a class=3D"headerlink" title=3D"Permalink to=
+ this term" href=3D"https://www.freedesktop.org/software/systemd/man/system=
+d.network.html#Scope=3D1">=C2=B6</a></dt><dd><p>The scope of the route, whi=
+ch can be "<code class=3D"literal">global</code>",
+            "<code class=3D"literal">link</code>" or "<code class=3D"litera=
+l">host</code>". Defaults to
+            "<code class=3D"literal">global</code>".</p></dd><dt id=3D"Pref=
+erredSource=3D"><span class=3D"term"><code class=3D"varname">PreferredSourc=
+e=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" =
+href=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.ht=
+ml#PreferredSource=3D">=C2=B6</a></dt><dd><p>The preferred source address o=
+f the route. The address
+            must be in the format described in
+            <a href=3D"http://man7.org/linux/man-pages/man3/inet_pton.3.htm=
+l"><span class=3D"citerefentry"><span class=3D"refentrytitle">inet_pton</sp=
+an>(3)</span></a>.</p></dd><dt id=3D"Table=3Dnum"><span class=3D"term"><cod=
+e class=3D"varname">Table=3D<em class=3D"replaceable"><code>num</code></em>=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#T=
+able=3Dnum">=C2=B6</a></dt><dd><p>The table identifier for the route (a num=
+ber between 1 and 4294967295, or 0 to unset).
+          The table can be retrieved using <span class=3D"command"><strong>=
+ip route show table <em class=3D"replaceable"><code>num</code></em></strong=
+></span>.
+          </p></dd><dt id=3D"Protocol=3D"><span class=3D"term"><code class=
+=3D"varname">Protocol=3D</code></span><a class=3D"headerlink" title=3D"Perm=
+alink to this term" href=3D"https://www.freedesktop.org/software/systemd/ma=
+n/systemd.network.html#Protocol=3D">=C2=B6</a></dt><dd><p>The Protocol iden=
+tifier for the route. Takes a number between 0 and 255 or the special value=
+s
+            "<code class=3D"literal">kernel</code>", "<code class=3D"litera=
+l">boot</code>" and "<code class=3D"literal">static</code>". Defaults to
+            "<code class=3D"literal">static</code>".
+            </p></dd><dt id=3D"Type=3D1"><span class=3D"term"><code class=
+=3D"varname">Type=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.network.html#Type=3D1">=C2=B6</a></dt><dd><p>The Type identifier for =
+special route types, which can be
+            "<code class=3D"literal">unicast</code>" route to a destination=
+ network address which describes the path to the destination,
+            "<code class=3D"literal">blackhole</code>" packets are discarde=
+d silently,
+            "<code class=3D"literal">unreachable</code>" packets are discar=
+ded and the ICMP message host unreachable is generated,
+            "<code class=3D"literal">prohibit</code>" packets are discarded=
+ and the ICMP message communication administratively
+            prohibited is generated. Defaults to "<code class=3D"literal">u=
+nicast</code>".
+            </p></dd><dt id=3D"InitialCongestionWindow=3D"><span class=3D"t=
+erm"><code class=3D"varname">InitialCongestionWindow=3D</code></span><a cla=
+ss=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.free=
+desktop.org/software/systemd/man/systemd.network.html#InitialCongestionWind=
+ow=3D">=C2=B6</a></dt><dd><p>The TCP initial congestion window is used duri=
+ng the start of a TCP connection. During the start of a TCP
+            session, when a client requests a resource, the server's initia=
+l congestion window determines how many data bytes
+            will be sent during the initial burst of data. Takes a size in =
+bytes between 1 and 4294967295 (2^32 - 1). The usual
+            suffixes K, M, G are supported and are understood to the base o=
+f 1024. Defaults to unset.
+            </p></dd><dt id=3D"InitialAdvertisedReceiveWindow=3D"><span cla=
+ss=3D"term"><code class=3D"varname">InitialAdvertisedReceiveWindow=3D</code=
+></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.network.html#Initial=
+AdvertisedReceiveWindow=3D">=C2=B6</a></dt><dd><p>The TCP initial advertise=
+d receive window is the amount of receive data (in bytes) that can initally=
+ be buffered at one time
+            on a connection. The sending host can send only that amount of =
+data before waiting for an acknowledgment and window update
+            from the receiving host. Takes a size in bytes between 1 and 42=
+94967295 (2^32 - 1). The usual suffixes K, M, G are supported
+            and are understood to the base of 1024. Defaults to unset.
+            </p></dd><dt id=3D"QuickAck=3D"><span class=3D"term"><code clas=
+s=3D"varname">QuickAck=3D</code></span><a class=3D"headerlink" title=3D"Per=
+malink to this term" href=3D"https://www.freedesktop.org/software/systemd/m=
+an/systemd.network.html#QuickAck=3D">=C2=B6</a></dt><dd><p>Takes a boolean =
+argument. When true enables TCP quick ack mode for the route. Defaults to u=
+nset.
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.13"></a><h2 id=3D"[DHCP] Section Options">[DHCP] Section Options<a class=
+=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.network.html#%5BDHCP%5D%20Sectio=
+n%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[DHCP]</code>" =
+section configures the
+      DHCPv4 and DHCP6 client, if it is enabled with the
+      <code class=3D"varname">DHCP=3D</code> setting described above:</p><d=
+iv class=3D"variablelist"><dl class=3D"variablelist"><dt id=3D"UseDNS=3D"><=
+span class=3D"term"><code class=3D"varname">UseDNS=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.network.html#UseDNS=3D">=C2=B6</a></=
+dt><dd><p>When true (the default), the DNS servers received
+            from the DHCP server will be used and take precedence over
+            any statically configured ones.</p><p>This corresponds to the <=
+code class=3D"option">nameserver</code>
+            option in <a href=3D"http://man7.org/linux/man-pages/man5/resol=
+v.conf.5.html"><span class=3D"citerefentry"><span class=3D"refentrytitle">r=
+esolv.conf</span>(5)</span></a>.</p></dd><dt id=3D"UseNTP=3D"><span class=
+=3D"term"><code class=3D"varname">UseNTP=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.network.html#UseNTP=3D">=C2=B6</a></dt><dd><p>=
+When true (the default), the NTP servers received
+            from the DHCP server will be used by systemd-timesyncd
+            and take precedence over any statically configured ones.</p></d=
+d><dt id=3D"UseMTU=3D"><span class=3D"term"><code class=3D"varname">UseMTU=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.htm=
+l#UseMTU=3D">=C2=B6</a></dt><dd><p>When true, the interface maximum transmi=
+ssion unit
+            from the DHCP server will be used on the current link.
+            Defaults to false.</p></dd><dt id=3D"Anonymize=3D"><span class=
+=3D"term"><code class=3D"varname">Anonymize=3D</code></span><a class=3D"hea=
+derlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.o=
+rg/software/systemd/man/systemd.network.html#Anonymize=3D">=C2=B6</a></dt><=
+dd><p>Takes a boolean argument. When true, the options sent to the DHCP ser=
+ver will
+            follow the <a class=3D"ulink" href=3D"https://tools.ietf.org/ht=
+ml/rfc7844" target=3D"_top">RFC 7844</a>
+            (Anonymity Profiles for DHCP Clients) to minimize disclosure of=
+ identifying information.
+            Defaults to false.</p><p>This option should only be set to true=
+ when
+            <code class=3D"varname">MACAddressPolicy=3D</code> is set to "<=
+code class=3D"literal">random</code>"
+            (see <a href=3D"http://man7.org/linux/man-pages/man5/systemd.li=
+nk.5.html"><span class=3D"citerefentry"><span class=3D"refentrytitle">syste=
+md.link</span>(5)</span></a>).</p><p>Note that this configuration will over=
+write others.
+            In concrete, the following variables will be ignored:
+            <code class=3D"varname">SendHostname=3D</code>, <code class=3D"=
+varname">ClientIdentifier=3D</code>,
+            <code class=3D"varname">UseRoutes=3D</code>, <code class=3D"var=
+name">SendHostname=3D</code>,
+            <code class=3D"varname">UseMTU=3D</code>, <code class=3D"varnam=
+e">VendorClassIdentifier=3D</code>,
+            <code class=3D"varname">UseTimezone=3D</code>.</p></dd><dt id=
+=3D"SendHostname=3D"><span class=3D"term"><code class=3D"varname">SendHostn=
+ame=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.=
+html#SendHostname=3D">=C2=B6</a></dt><dd><p>When true (the default), the ma=
+chine's hostname will
+            be sent to the DHCP server.</p></dd><dt id=3D"UseHostname=3D"><=
+span class=3D"term"><code class=3D"varname">UseHostname=3D</code></span><a =
+class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.f=
+reedesktop.org/software/systemd/man/systemd.network.html#UseHostname=3D">=
+=C2=B6</a></dt><dd><p>When true (the default), the hostname received from
+            the DHCP server will be set as the transient hostname of the sy=
+stem
+            </p></dd><dt id=3D"Hostname=3D"><span class=3D"term"><code clas=
+s=3D"varname">Hostname=3D</code></span><a class=3D"headerlink" title=3D"Per=
+malink to this term" href=3D"https://www.freedesktop.org/software/systemd/m=
+an/systemd.network.html#Hostname=3D">=C2=B6</a></dt><dd><p>Use this value f=
+or the hostname which is sent to the
+          DHCP server, instead of machine's hostname.</p></dd><dt id=3D"Use=
+Domains=3D"><span class=3D"term"><code class=3D"varname">UseDomains=3D</cod=
+e></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"h=
+ttps://www.freedesktop.org/software/systemd/man/systemd.network.html#UseDom=
+ains=3D">=C2=B6</a></dt><dd><p>Takes a boolean argument, or the special val=
+ue "<code class=3D"literal">route</code>". When true, the domain name
+            received from the DHCP server will be used as DNS search domain=
+ over this link, similar to the effect of
+            the <code class=3D"option">Domains=3D</code> setting. If set to=
+ "<code class=3D"literal">route</code>", the domain name received from
+            the DHCP server will be used for routing DNS queries only, but =
+not for searching, similar to the effect of
+            the <code class=3D"option">Domains=3D</code> setting when the a=
+rgument is prefixed with "<code class=3D"literal">~</code>". Defaults to
+            false.</p><p>It is recommended to enable this option only on tr=
+usted networks, as setting this affects resolution
+            of all host names, in particular of single-label names. It is g=
+enerally safer to use the supplied domain
+            only as routing domain, rather than as search domain, in order =
+to not have it affect local resolution of
+            single-label names.</p><p>When set to true, this setting corres=
+ponds to the <code class=3D"option">domain</code> option in <a href=3D"http=
+://man7.org/linux/man-pages/man5/resolv.conf.5.html"><span class=3D"citeref=
+entry"><span class=3D"refentrytitle">resolv.conf</span>(5)</span></a>.</p><=
+/dd><dt id=3D"UseRoutes=3D"><span class=3D"term"><code class=3D"varname">Us=
+eRoutes=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this =
+term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netw=
+ork.html#UseRoutes=3D">=C2=B6</a></dt><dd><p>When true (the default), the s=
+tatic routes will be requested from the DHCP server and added to the
+              routing table with a metric of 1024, and a scope of "global",=
+ "link" or "host", depending on the route's
+              destination and gateway. If the destination is on the local h=
+ost, e.g., 127.x.x.x, or the same as the
+              link's own address, the scope will be set to "host". Otherwis=
+e if the gateway is null (a direct route), a
+              "link" scope will be used. For anything else, scope defaults =
+to "global".</p></dd><dt id=3D"UseTimezone=3D"><span class=3D"term"><code c=
+lass=3D"varname">UseTimezone=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#UseTimezone=3D">=C2=B6</a></dt><dd><p>When t=
+rue, the timezone received from the
+          DHCP server will be set as timezone of the local
+          system. Defaults to "<code class=3D"literal">no</code>".</p></dd>=
+<dt id=3D"CriticalConnection=3D"><span class=3D"term"><code class=3D"varnam=
+e">CriticalConnection=3D</code></span><a class=3D"headerlink" title=3D"Perm=
+alink to this term" href=3D"https://www.freedesktop.org/software/systemd/ma=
+n/systemd.network.html#CriticalConnection=3D">=C2=B6</a></dt><dd><p>When tr=
+ue, the connection will never be torn down
+            even if the DHCP lease expires. This is contrary to the
+            DHCP specification, but may be the best choice if, say,
+            the root filesystem relies on this connection. Defaults to
+            false.</p></dd><dt id=3D"ClientIdentifier=3D"><span class=3D"te=
+rm"><code class=3D"varname">ClientIdentifier=3D</code></span><a class=3D"he=
+aderlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.=
+org/software/systemd/man/systemd.network.html#ClientIdentifier=3D">=C2=B6</=
+a></dt><dd><p>The DHCPv4 client identifier to use. Takes one of "<code clas=
+s=3D"literal">mac</code>", "<code class=3D"literal">duid</code>" or "<code =
+class=3D"literal">duid-only</code>".
+            If set to "<code class=3D"literal">mac</code>", the MAC address=
+ of the link is used.
+            If set to "<code class=3D"literal">duid</code>", an RFC4361-com=
+pliant Client ID, which is the combination of IAID and DUID (see below), is=
+ used.
+            If set to "<code class=3D"literal">duid-only</code>", only DUID=
+ is used, this may not be RFC compliant, but some setups may require to use=
+ this.
+            Defaults to "<code class=3D"literal">duid</code>".</p></dd><dt =
+id=3D"VendorClassIdentifier=3D"><span class=3D"term"><code class=3D"varname=
+">VendorClassIdentifier=3D</code></span><a class=3D"headerlink" title=3D"Pe=
+rmalink to this term" href=3D"https://www.freedesktop.org/software/systemd/=
+man/systemd.network.html#VendorClassIdentifier=3D">=C2=B6</a></dt><dd><p>Th=
+e vendor class identifier used to identify vendor
+            type and configuration.</p></dd><dt id=3D"DUIDType=3D"><span cl=
+ass=3D"term"><code class=3D"varname">DUIDType=3D</code></span><a class=3D"h=
+eaderlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop=
+.org/software/systemd/man/systemd.network.html#DUIDType=3D">=C2=B6</a></dt>=
+<dd><p>Override the global <code class=3D"varname">DUIDType</code> setting =
+for this network. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/net=
+workd.conf.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle=
+">networkd.conf</span>(5)</span></a>
+            for a description of possible values.</p></dd><dt id=3D"DUIDRaw=
+Data=3D"><span class=3D"term"><code class=3D"varname">DUIDRawData=3D</code>=
+</span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"htt=
+ps://www.freedesktop.org/software/systemd/man/systemd.network.html#DUIDRawD=
+ata=3D">=C2=B6</a></dt><dd><p>Override the global <code class=3D"varname">D=
+UIDRawData</code> setting for this network. See
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/net=
+workd.conf.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle=
+">networkd.conf</span>(5)</span></a>
+            for a description of possible values.</p></dd><dt id=3D"IAID=3D=
+"><span class=3D"term"><code class=3D"varname">IAID=3D</code></span><a clas=
+s=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freed=
+esktop.org/software/systemd/man/systemd.network.html#IAID=3D">=C2=B6</a></d=
+t><dd><p>The DHCP Identity Association Identifier (IAID) for the interface,=
+ a 32-bit unsigned integer.</p></dd><dt id=3D"RequestBroadcast=3D"><span cl=
+ass=3D"term"><code class=3D"varname">RequestBroadcast=3D</code></span><a cl=
+ass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fre=
+edesktop.org/software/systemd/man/systemd.network.html#RequestBroadcast=3D"=
+>=C2=B6</a></dt><dd><p>Request the server to use broadcast messages before
+            the IP address has been configured. This is necessary for
+            devices that cannot receive RAW packets, or that cannot
+            receive packets at all before an IP address has been
+            configured. On the other hand, this must not be enabled on
+            networks where broadcasts are filtered out.</p></dd><dt id=3D"R=
+outeMetric=3D"><span class=3D"term"><code class=3D"varname">RouteMetric=3D<=
+/code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#R=
+outeMetric=3D">=C2=B6</a></dt><dd><p>Set the routing metric for routes spec=
+ified by the
+            DHCP server.</p></dd><dt id=3D"RouteTable=3Dnum"><span class=3D=
+"term"><code class=3D"varname">RouteTable=3D<em class=3D"replaceable"><code=
+>num</code></em></code></span><a class=3D"headerlink" title=3D"Permalink to=
+ this term" href=3D"https://www.freedesktop.org/software/systemd/man/system=
+d.network.html#RouteTable=3Dnum">=C2=B6</a></dt><dd><p>The table identifier=
+ for DHCP routes (a number between 1 and 4294967295, or 0 to unset).
+            The table can be retrieved using <span class=3D"command"><stron=
+g>ip route show table <em class=3D"replaceable"><code>num</code></em></stro=
+ng></span>.
+            </p><p>When used in combination with <code class=3D"varname">VR=
+F=3D</code> the
+            VRF's routing table is used unless this parameter is specified.
+            </p></dd><dt id=3D"ListenPort=3D"><span class=3D"term"><code cl=
+ass=3D"varname">ListenPort=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.network.html#ListenPort=3D">=C2=B6</a></dt><dd><p>Allow sett=
+ing custom port for the DHCP client to listen on.</p></dd><dt id=3D"RapidCo=
+mmit=3D"><span class=3D"term"><code class=3D"varname">RapidCommit=3D</code>=
+</span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"htt=
+ps://www.freedesktop.org/software/systemd/man/systemd.network.html#RapidCom=
+mit=3D">=C2=B6</a></dt><dd><p>A boolean. The DHCPv6 client can obtain confi=
+guration parameters from a DHCPv6 server through
+            a rapid two-message exchange (solicit and reply). When the rapi=
+d commit option is enabled by both
+            the DHCPv6 client and the DHCPv6 server, the two-message exchan=
+ge is used, rather than the default
+            four-method exchange (solicit, advertise, request, and reply). =
+The two-message exchange provides
+            faster client configuration and is beneficial in environments i=
+n which networks are under a heavy load.
+            See <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc3=
+315#section-17.2.1" target=3D"_top">RFC 3315</a> for details.
+            Defaults to true.</p></dd></dl></div></div><div class=3D"refsec=
+t1"><a name=3D"id-1.14"></a><h2 id=3D"[IPv6AcceptRA] Section Options">[IPv6=
+AcceptRA] Section Options<a class=3D"headerlink" title=3D"Permalink to this=
+ headline" href=3D"https://www.freedesktop.org/software/systemd/man/systemd=
+.network.html#%5BIPv6AcceptRA%5D%20Section%20Options">=C2=B6</a></h2><p>The=
+ "<code class=3D"literal">[IPv6AcceptRA]</code>" section configures the IPv=
+6 Router Advertisement
+      (RA) client, if it is enabled with the <code class=3D"varname">IPv6Ac=
+ceptRA=3D</code> setting described
+      above:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt =
+id=3D"UseDNS=3D1"><span class=3D"term"><code class=3D"varname">UseDNS=3D</c=
+ode></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D=
+"https://www.freedesktop.org/software/systemd/man/systemd.network.html#UseD=
+NS=3D1">=C2=B6</a></dt><dd><p>When true (the default), the DNS servers rece=
+ived in the Router Advertisement will be used and take
+            precedence over any statically configured ones.</p><p>This corr=
+esponds to the <code class=3D"option">nameserver</code> option in <a href=
+=3D"http://man7.org/linux/man-pages/man5/resolv.conf.5.html"><span class=3D=
+"citerefentry"><span class=3D"refentrytitle">resolv.conf</span>(5)</span></=
+a>.</p></dd><dt id=3D"UseDomains=3D1"><span class=3D"term"><code class=3D"v=
+arname">UseDomains=3D</code></span><a class=3D"headerlink" title=3D"Permali=
+nk to this term" href=3D"https://www.freedesktop.org/software/systemd/man/s=
+ystemd.network.html#UseDomains=3D1">=C2=B6</a></dt><dd><p>Takes a boolean a=
+rgument, or the special value "<code class=3D"literal">route</code>". When =
+true, the domain name
+            received via IPv6 Router Advertisement (RA) will be used as DNS=
+ search domain over this link, similar to
+            the effect of the <code class=3D"option">Domains=3D</code> sett=
+ing. If set to "<code class=3D"literal">route</code>", the domain name
+            received via IPv6 RA will be used for routing DNS queries only,=
+ but not for searching, similar to the
+            effect of the <code class=3D"option">Domains=3D</code> setting =
+when the argument is prefixed with
+            "<code class=3D"literal">~</code>". Defaults to false.</p><p>It=
+ is recommended to enable this option only on trusted networks, as setting =
+this affects resolution
+            of all host names, in particular of single-label names. It is g=
+enerally safer to use the supplied domain
+            only as routing domain, rather than as search domain, in order =
+to not have it affect local resolution of
+            single-label names.</p><p>When set to true, this setting corres=
+ponds to the <code class=3D"option">domain</code> option in <a href=3D"http=
+://man7.org/linux/man-pages/man5/resolv.conf.5.html"><span class=3D"citeref=
+entry"><span class=3D"refentrytitle">resolv.conf</span>(5)</span></a>.</p><=
+/dd><dt id=3D"RouteTable=3Dnum1"><span class=3D"term"><code class=3D"varnam=
+e">RouteTable=3D<em class=3D"replaceable"><code>num</code></em></code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.network.html#RouteTable=3D=
+num1">=C2=B6</a></dt><dd><p>The table identifier for the routes received in=
+ the Router Advertisement
+            (a number between 1 and 4294967295, or 0 to unset).
+            The table can be retrieved using <span class=3D"command"><stron=
+g>ip route show table <em class=3D"replaceable"><code>num</code></em></stro=
+ng></span>.
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.15"></a><h2 id=3D"[DHCPServer] Section Options">[DHCPServer] Section Opt=
+ions<a class=3D"headerlink" title=3D"Permalink to this headline" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.network.html#%5BDHCP=
+Server%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code class=3D"litera=
+l">[DHCPServer]</code>" section contains
+    settings for the DHCP server, if enabled via the
+    <code class=3D"varname">DHCPServer=3D</code> option described above:</p=
+><div class=3D"variablelist"><dl class=3D"variablelist"><dt id=3D"PoolOffse=
+t=3D"><span class=3D"term"><code class=3D"varname">PoolOffset=3D</code>, </=
+span><span class=3D"term"><code class=3D"varname">PoolSize=3D</code></span>=
+<a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://ww=
+w.freedesktop.org/software/systemd/man/systemd.network.html#PoolOffset=3D">=
+=C2=B6</a></dt><dd><p>Configures the pool of addresses to hand out. The poo=
+l
+        is a contiguous sequence of IP addresses in the subnet configured f=
+or
+        the server address, which does not include the subnet nor the broad=
+cast
+        address. <code class=3D"varname">PoolOffset=3D</code> takes the off=
+set of the pool
+        from the start of subnet, or zero to use the default value.
+        <code class=3D"varname">PoolSize=3D</code> takes the number of IP a=
+ddresses in the
+        pool or zero to use the default value. By default, the pool starts =
+at
+        the first address after the subnet address and takes up the rest of
+        the subnet, excluding the broadcast address. If the pool includes
+        the server address (the default), this is reserved and not handed
+        out to clients.</p></dd><dt id=3D"DefaultLeaseTimeSec=3D"><span cla=
+ss=3D"term"><code class=3D"varname">DefaultLeaseTimeSec=3D</code>, </span><=
+span class=3D"term"><code class=3D"varname">MaxLeaseTimeSec=3D</code></span=
+><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://w=
+ww.freedesktop.org/software/systemd/man/systemd.network.html#DefaultLeaseTi=
+meSec=3D">=C2=B6</a></dt><dd><p>Control the default and maximum DHCP lease
+        time to pass to clients. These settings take time values in seconds=
+ or
+        another common time unit, depending on the suffix. The default
+        lease time is used for clients that did not ask for a specific
+        lease time. If a client asks for a lease time longer than the
+        maximum lease time, it is automatically shortened to the
+        specified time. The default lease time defaults to 1h, the
+        maximum lease time to 12h. Shorter lease times are beneficial
+        if the configuration data in DHCP leases changes frequently
+        and clients shall learn the new settings with shorter
+        latencies. Longer lease times reduce the generated DHCP
+        network traffic.</p></dd><dt id=3D"EmitDNS=3D"><span class=3D"term"=
+><code class=3D"varname">EmitDNS=3D</code>, </span><span class=3D"term"><co=
+de class=3D"varname">DNS=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.network.html#EmitDNS=3D">=C2=B6</a></dt><dd><p>Configures whet=
+her the DHCP leases handed out
+        to clients shall contain DNS server information. The
+        <code class=3D"varname">EmitDNS=3D</code> setting takes a boolean a=
+rgument
+        and defaults to "<code class=3D"literal">yes</code>". The DNS serve=
+rs to
+        pass to clients may be configured with the
+        <code class=3D"varname">DNS=3D</code> option, which takes a list of=
+ IPv4
+        addresses. If the <code class=3D"varname">EmitDNS=3D</code> option =
+is
+        enabled but no servers configured, the servers are
+        automatically propagated from an "uplink" interface that has
+        appropriate servers set. The "uplink" interface is determined
+        by the default route of the system with the highest
+        priority. Note that this information is acquired at the time
+        the lease is handed out, and does not take uplink interfaces
+        into account that acquire DNS or NTP server information at a
+        later point. DNS server propagation does not take
+        <code class=3D"filename">/etc/resolv.conf</code> into account. Also=
+, note
+        that the leases are not refreshed if the uplink network
+        configuration changes. To ensure clients regularly acquire the
+        most current uplink DNS server information, it is thus
+        advisable to shorten the DHCP lease time via
+        <code class=3D"varname">MaxLeaseTimeSec=3D</code> described
+        above.</p></dd><dt id=3D"EmitNTP=3D"><span class=3D"term"><code cla=
+ss=3D"varname">EmitNTP=3D</code>, </span><span class=3D"term"><code class=
+=3D"varname">NTP=3D</code></span><a class=3D"headerlink" title=3D"Permalink=
+ to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.network.html#EmitNTP=3D">=C2=B6</a></dt><dd><p>Similar to the <code cl=
+ass=3D"varname">EmitDNS=3D</code> and
+        <code class=3D"varname">DNS=3D</code> settings described above, the=
+se
+        settings configure whether and what NTP server information
+        shall be emitted as part of the DHCP lease. The same syntax,
+        propagation semantics and defaults apply as for
+        <code class=3D"varname">EmitDNS=3D</code> and
+        <code class=3D"varname">DNS=3D</code>.</p></dd><dt id=3D"EmitRouter=
+=3D"><span class=3D"term"><code class=3D"varname">EmitRouter=3D</code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.network.html#EmitRouter=3D=
+">=C2=B6</a></dt><dd><p>Similar to the <code class=3D"varname">EmitDNS=3D</=
+code>
+        setting described above, this setting configures whether the
+        DHCP lease should contain the router option. The same syntax,
+        propagation semantics and defaults apply as for
+        <code class=3D"varname">EmitDNS=3D</code>.</p></dd><dt id=3D"EmitTi=
+mezone=3D"><span class=3D"term"><code class=3D"varname">EmitTimezone=3D</co=
+de>, </span><span class=3D"term"><code class=3D"varname">Timezone=3D</code>=
+</span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"htt=
+ps://www.freedesktop.org/software/systemd/man/systemd.network.html#EmitTime=
+zone=3D">=C2=B6</a></dt><dd><p>Configures whether the DHCP leases handed ou=
+t
+        to clients shall contain timezone information. The
+        <code class=3D"varname">EmitTimezone=3D</code> setting takes a bool=
+ean
+        argument and defaults to "<code class=3D"literal">yes</code>". The
+        <code class=3D"varname">Timezone=3D</code> setting takes a timezone=
+ string
+        (such as "<code class=3D"literal">Europe/Berlin</code>" or
+        "<code class=3D"literal">UTC</code>") to pass to clients. If no exp=
+licit
+        timezone is set, the system timezone of the local host is
+        propagated, as determined by the
+        <code class=3D"filename">/etc/localtime</code> symlink.</p></dd></d=
+l></div></div><div class=3D"refsect1"><a name=3D"id-1.16"></a><h2 id=3D"[IP=
+v6PrefixDelegation] Section Options">[IPv6PrefixDelegation] Section Options=
+<a class=3D"headerlink" title=3D"Permalink to this headline" href=3D"https:=
+//www.freedesktop.org/software/systemd/man/systemd.network.html#%5BIPv6Pref=
+ixDelegation%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code class=3D"=
+literal">[IPv6PrefixDelegation]</code>" section contains
+    settings for sending IPv6 Router Advertisements and whether to act as
+    a router, if enabled via the <code class=3D"varname">IPv6PrefixDelegati=
+on=3D</code>
+    option described above. IPv6 network prefixes are defined with one or
+    more "<code class=3D"literal">[IPv6Prefix]</code>" sections.</p><div cl=
+ass=3D"variablelist"><dl class=3D"variablelist"><dt id=3D"Managed=3D"><span=
+ class=3D"term"><code class=3D"varname">Managed=3D</code>, </span><span cla=
+ss=3D"term"><code class=3D"varname">OtherInformation=3D</code></span><a cla=
+ss=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.free=
+desktop.org/software/systemd/man/systemd.network.html#Managed=3D">=C2=B6</a=
+></dt><dd><p>Controls whether a DHCPv6 server is used to acquire IPv6
+        addresses on the network link when <code class=3D"varname">Managed=
+=3D</code> boolean
+        is set to "<code class=3D"literal">true</code>" or if only addition=
+al network
+        information can be obtained via DHCPv6 for the network link when
+        <code class=3D"varname">OtherInformation=3D</code> boolean is set t=
+o
+        "<code class=3D"literal">true</code>". Both settings default to
+        "<code class=3D"literal">false</code>", which means that a DHCPv6 s=
+erver is not being
+        used.</p></dd><dt id=3D"RouterLifetimeSec=3D"><span class=3D"term">=
+<code class=3D"varname">RouterLifetimeSec=3D</code></span><a class=3D"heade=
+rlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org=
+/software/systemd/man/systemd.network.html#RouterLifetimeSec=3D">=C2=B6</a>=
+</dt><dd><p>Configures the IPv6 router lifetime in seconds. If set,
+        this host also announces itself in Router Advertisements as an IPv6
+        router for the network link. Defaults to unset, which means the hos=
+t is
+        not acting as a router.</p></dd><dt id=3D"RouterPreference=3D"><spa=
+n class=3D"term"><code class=3D"varname">RouterPreference=3D</code></span><=
+a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www=
+.freedesktop.org/software/systemd/man/systemd.network.html#RouterPreference=
+=3D">=C2=B6</a></dt><dd><p>Configures IPv6 router preference if
+        <code class=3D"varname">RouterLifetimeSec=3D</code> is non-zero. Va=
+lid values are
+        "<code class=3D"literal">high</code>", "<code class=3D"literal">med=
+ium</code>" and
+        "<code class=3D"literal">low</code>", with "<code class=3D"literal"=
+>normal</code>" and
+        "<code class=3D"literal">default</code>" added as synonyms for
+        "<code class=3D"literal">medium</code>" just to make configuration =
+easier. See
+        <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc4191" tar=
+get=3D"_top">RFC 4191</a>
+        for details. Defaults to "<code class=3D"literal">medium</code>".</=
+p></dd><dt id=3D"EmitDNS=3D1"><span class=3D"term"><code class=3D"varname">=
+EmitDNS=3D</code>, </span><span class=3D"term"><code class=3D"varname">DNS=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.htm=
+l#EmitDNS=3D1">=C2=B6</a></dt><dd><p><code class=3D"varname">DNS=3D</code> =
+specifies a list of recursive
+        DNS server IPv6 addresses that distributed via Router Advertisement
+        messages when <code class=3D"varname">EmitDNS=3D</code> is true. If=
+ <code class=3D"varname">DNS=3D
+        </code> is empty, DNS servers are read from the
+        "<code class=3D"literal">[Network]</code>" section. If the
+        "<code class=3D"literal">[Network]</code>" section does not contain=
+ any DNS servers
+        either, DNS servers from the uplink with the highest priority defau=
+lt
+        route are used. When <code class=3D"varname">EmitDNS=3D</code> is f=
+alse, no DNS server
+        information is sent in Router Advertisement messages.
+        <code class=3D"varname">EmitDNS=3D</code> defaults to true.
+        </p></dd><dt id=3D"EmitDomains=3D"><span class=3D"term"><code class=
+=3D"varname">EmitDomains=3D</code>, </span><span class=3D"term"><code class=
+=3D"varname">Domains=3D</code></span><a class=3D"headerlink" title=3D"Perma=
+link to this term" href=3D"https://www.freedesktop.org/software/systemd/man=
+/systemd.network.html#EmitDomains=3D">=C2=B6</a></dt><dd><p>A list of DNS s=
+earch domains distributed via Router
+        Advertisement messages when <code class=3D"varname">EmitDomains=3D<=
+/code> is true. If
+        <code class=3D"varname">Domains=3D</code> is empty, DNS search doma=
+ins are read from the
+        "<code class=3D"literal">[Network]</code>" section. If the "<code c=
+lass=3D"literal">[Network]</code>"
+        section does not contain any DNS search domains either, DNS search
+        domains from the uplink with the highest priority default route are
+        used. When <code class=3D"varname">EmitDomains=3D</code> is false, =
+no DNS search domain
+        information is sent in Router Advertisement messages.
+        <code class=3D"varname">EmitDomains=3D</code> defaults to true.
+        </p></dd><dt id=3D"DNSLifetimeSec=3D"><span class=3D"term"><code cl=
+ass=3D"varname">DNSLifetimeSec=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.network.html#DNSLifetimeSec=3D">=C2=B6</a></dt><dd><p>Li=
+fetime in seconds for the DNS server addresses listed
+        in <code class=3D"varname">DNS=3D</code> and search domains listed =
+in
+        <code class=3D"varname">Domains=3D</code>.</p></dd></dl></div></div=
+><div class=3D"refsect1"><a name=3D"id-1.17"></a><h2 id=3D"[IPv6Prefix] Sec=
+tion Options">[IPv6Prefix] Section Options<a class=3D"headerlink" title=3D"=
+Permalink to this headline" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#%5BIPv6Prefix%5D%20Section%20Options">=C2=B6=
+</a></h2><p>One or more "<code class=3D"literal">[IPv6Prefix]</code>" secti=
+ons contain the IPv6
+    prefixes that are announced via Router Advertisements. See
+    <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc4861" target=
+=3D"_top">RFC 4861</a>
+    for further details.</p><div class=3D"variablelist"><dl class=3D"variab=
+lelist"><dt id=3D"AddressAutoconfiguration=3D"><span class=3D"term"><code c=
+lass=3D"varname">AddressAutoconfiguration=3D</code>, </span><span class=3D"=
+term"><code class=3D"varname">OnLink=3D</code></span><a class=3D"headerlink=
+" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/soft=
+ware/systemd/man/systemd.network.html#AddressAutoconfiguration=3D">=C2=B6</=
+a></dt><dd><p>Boolean values to specify whether IPv6 addresses can be
+        autoconfigured with this prefix and whether the prefix can be used =
+for
+        onlink determination. Both settings default to "<code class=3D"lite=
+ral">true</code>"
+        in order to ease configuration.
+        </p></dd><dt id=3D"Prefix=3D1"><span class=3D"term"><code class=3D"=
+varname">Prefix=3D</code></span><a class=3D"headerlink" title=3D"Permalink =
+to this term" href=3D"https://www.freedesktop.org/software/systemd/man/syst=
+emd.network.html#Prefix=3D1">=C2=B6</a></dt><dd><p>The IPv6 prefix that is =
+to be distributed to hosts.
+        Similarly to configuring static IPv6 addresses, the setting is
+        configured as an IPv6 prefix and its prefix length, separated by a
+        "<code class=3D"literal">/</code>" character. Use multiple
+        "<code class=3D"literal">[IPv6Prefix]</code>" sections to configure=
+ multiple IPv6
+        prefixes since prefix lifetimes, address autoconfiguration and onli=
+nk
+        status may differ from one prefix to another.</p></dd><dt id=3D"Pre=
+ferredLifetimeSec=3D"><span class=3D"term"><code class=3D"varname">Preferre=
+dLifetimeSec=3D</code>, </span><span class=3D"term"><code class=3D"varname"=
+>ValidLifetimeSec=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.network.html#PreferredLifetimeSec=3D">=C2=B6</a></dt><dd><p>Preferred=
+ and valid lifetimes for the prefix measured in
+        seconds. <code class=3D"varname">PreferredLifetimeSec=3D</code> def=
+aults to 604800
+        seconds (one week) and <code class=3D"varname">ValidLifetimeSec=3D<=
+/code> defaults
+        to 2592000 seconds (30 days).</p></dd></dl></div></div><div class=
+=3D"refsect1"><a name=3D"id-1.18"></a><h2 id=3D"[Bridge] Section Options">[=
+Bridge] Section Options<a class=3D"headerlink" title=3D"Permalink to this h=
+eadline" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.n=
+etwork.html#%5BBridge%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code =
+class=3D"literal">[Bridge]</code>" section accepts the
+      following keys.</p><div class=3D"variablelist"><dl class=3D"variablel=
+ist"><dt id=3D"UnicastFlood=3D"><span class=3D"term"><code class=3D"varname=
+">UnicastFlood=3D</code></span><a class=3D"headerlink" title=3D"Permalink t=
+o this term" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.network.html#UnicastFlood=3D">=C2=B6</a></dt><dd><p>A boolean. Controls =
+whether the bridge should flood
+            traffic for which an FDB entry is missing and the destination
+            is unknown through this port. Defaults to on.
+            </p></dd><dt id=3D"HairPin=3D"><span class=3D"term"><code class=
+=3D"varname">HairPin=3D</code></span><a class=3D"headerlink" title=3D"Perma=
+link to this term" href=3D"https://www.freedesktop.org/software/systemd/man=
+/systemd.network.html#HairPin=3D">=C2=B6</a></dt><dd><p>A boolean. Configur=
+es whether traffic may be sent back
+            out of the port on which it was received. By default, this
+            flag is false, and the bridge will not forward traffic back
+            out of the receiving port.</p></dd><dt id=3D"UseBPDU=3D"><span =
+class=3D"term"><code class=3D"varname">UseBPDU=3D</code></span><a class=3D"=
+headerlink" title=3D"Permalink to this term" href=3D"https://www.freedeskto=
+p.org/software/systemd/man/systemd.network.html#UseBPDU=3D">=C2=B6</a></dt>=
+<dd><p>A boolean. Configures whether STP Bridge Protocol Data Units will be
+            processed by the bridge port. Defaults to yes.</p></dd><dt id=
+=3D"FastLeave=3D"><span class=3D"term"><code class=3D"varname">FastLeave=3D=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.html#F=
+astLeave=3D">=C2=B6</a></dt><dd><p>A boolean. This flag allows the bridge t=
+o immediately stop multicast
+            traffic on a port that receives an IGMP Leave message. It is on=
+ly used with
+            IGMP snooping if enabled on the bridge. Defaults to off.</p></d=
+d><dt id=3D"AllowPortToBeRoot=3D"><span class=3D"term"><code class=3D"varna=
+me">AllowPortToBeRoot=3D</code></span><a class=3D"headerlink" title=3D"Perm=
+alink to this term" href=3D"https://www.freedesktop.org/software/systemd/ma=
+n/systemd.network.html#AllowPortToBeRoot=3D">=C2=B6</a></dt><dd><p>A boolea=
+n. Configures whether a given port is allowed to
+            become a root port. Only used when STP is enabled on the bridge=
+.
+            Defaults to on.</p></dd><dt id=3D"Cost=3D"><span class=3D"term"=
+><code class=3D"varname">Cost=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#Cost=3D">=C2=B6</a></dt><dd><p>Sets the "cos=
+t" of sending packets of this interface.
+            Each port in a bridge may have a different speed and the cost
+            is used to decide which link to use. Faster interfaces
+            should have lower costs. It is an integer value between 1 and
+            65535.</p></dd><dt id=3D"Priority=3D1"><span class=3D"term"><co=
+de class=3D"varname">Priority=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.network.html#Priority=3D1">=C2=B6</a></dt><dd><p>Sets the=
+ "priority" of sending packets on this interface.
+            Each port in a bridge may have a different priority which is us=
+ed
+            to decide which link to use. Lower value means higher priority.
+            It is an integer value between 0 to 63. Networkd does not set a=
+ny
+            default, meaning the kernel default value of 32 is used.</p></d=
+d></dl></div></div><div class=3D"refsect1"><a name=3D"id-1.19"></a><h2 id=
+=3D"[BridgeFDB] Section Options">[BridgeFDB] Section Options<a class=3D"hea=
+derlink" title=3D"Permalink to this headline" href=3D"https://www.freedeskt=
+op.org/software/systemd/man/systemd.network.html#%5BBridgeFDB%5D%20Section%=
+20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[BridgeFDB]</code=
+>" section manages the
+      forwarding database table of a port and accepts the following
+      keys. Specify several "<code class=3D"literal">[BridgeFDB]</code>" se=
+ctions to
+      configure several static MAC table entries.</p><div class=3D"variable=
+list"><dl class=3D"variablelist"><dt id=3D"MACAddress=3D2"><span class=3D"t=
+erm"><code class=3D"varname">MACAddress=3D</code></span><a class=3D"headerl=
+ink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/s=
+oftware/systemd/man/systemd.network.html#MACAddress=3D2">=C2=B6</a></dt><dd=
+><p>As in the "<code class=3D"literal">[Network]</code>" section. This
+            key is mandatory.</p></dd><dt id=3D"VLANId=3D"><span class=3D"t=
+erm"><code class=3D"varname">VLANId=3D</code></span><a class=3D"headerlink"=
+ title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softw=
+are/systemd/man/systemd.network.html#VLANId=3D">=C2=B6</a></dt><dd><p>The V=
+LAN ID for the new static MAC table entry. If
+            omitted, no VLAN ID information is appended to the new static M=
+AC
+            table entry.</p></dd></dl></div></div><div class=3D"refsect1"><=
+a name=3D"id-1.20"></a><h2 id=3D"[BridgeVLAN] Section Options">[BridgeVLAN]=
+ Section Options<a class=3D"headerlink" title=3D"Permalink to this headline=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.network.=
+html#%5BBridgeVLAN%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code cla=
+ss=3D"literal">[BridgeVLAN]</code>" section manages the VLAN ID configurati=
+on of a bridge port and accepts
+      the following keys. Specify several "<code class=3D"literal">[BridgeV=
+LAN]</code>" sections to configure several VLAN entries.
+      The <code class=3D"varname">VLANFiltering=3D</code> option has to be =
+enabled, see "<code class=3D"literal">[Bridge]</code>" section in
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.n=
+etdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">sys=
+temd.netdev</span>(5)</span></a>.</p><div class=3D"variablelist"><dl class=
+=3D"variablelist"><dt id=3D"VLAN=3D1"><span class=3D"term"><code class=3D"v=
+arname">VLAN=3D</code></span><a class=3D"headerlink" title=3D"Permalink to =
+this term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd=
+.network.html#VLAN=3D1">=C2=B6</a></dt><dd><p>The VLAN ID allowed on the po=
+rt. This can be either a single ID or a range M-N. VLAN IDs are valid
+            from 1 to 4094.</p></dd><dt id=3D"EgressUntagged=3D"><span clas=
+s=3D"term"><code class=3D"varname">EgressUntagged=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.network.html#EgressUntagged=3D">=C2=
+=B6</a></dt><dd><p>The VLAN ID specified here will be used to untag frames =
+on egress. Configuring
+            <code class=3D"varname">EgressUntagged=3D</code> implicates the=
+ use of <code class=3D"varname">VLAN=3D</code> above and will enable the
+            VLAN ID for ingress as well. This can be either a single ID or =
+a range M-N.</p></dd><dt id=3D"PVID=3D"><span class=3D"term"><code class=3D=
+"varname">PVID=3D</code></span><a class=3D"headerlink" title=3D"Permalink t=
+o this term" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.network.html#PVID=3D">=C2=B6</a></dt><dd><p>The Port VLAN ID specified h=
+ere is assigned to all untagged frames at ingress.
+            <code class=3D"varname">PVID=3D</code> can be used only once. C=
+onfiguring <code class=3D"varname">PVID=3D</code> implicates the use of
+            <code class=3D"varname">VLAN=3D</code> above and will enable th=
+e VLAN ID for ingress as well.</p></dd></dl></div></div><div class=3D"refse=
+ct1"><a name=3D"id-1.21"></a><h2 id=3D"Examples">Examples<a class=3D"header=
+link" title=3D"Permalink to this headline" href=3D"https://www.freedesktop.=
+org/software/systemd/man/systemd.network.html#Examples">=C2=B6</a></h2><div=
+ class=3D"example"><a name=3D"id-1.21.2"></a><p class=3D"title"><b>Example&=
+nbsp;1.&nbsp;Static network configuration</b></p><div class=3D"example-cont=
+ents"><pre class=3D"programlisting"># /etc/systemd/network/50-static.networ=
+k
+[Match]
+Name=3Denp2s0
+
+[Network]
+Address=3D192.168.0.15/24
+Gateway=3D192.168.0.1</pre><p>This brings interface "<code class=3D"literal=
+">enp2s0</code>" up with a static address. The
+      specified gateway will be used for a default route.</p></div></div><b=
+r class=3D"example-break"><div class=3D"example"><a name=3D"id-1.21.3"></a>=
+<p class=3D"title"><b>Example&nbsp;2.&nbsp;DHCP on ethernet links</b></p><d=
+iv class=3D"example-contents"><pre class=3D"programlisting"># /etc/systemd/=
+network/80-dhcp.network
+[Match]
+Name=3Den*
+
+[Network]
+DHCP=3Dyes</pre><p>This will enable DHCPv4 and DHCPv6 on all interfaces wit=
+h names starting with
+      "<code class=3D"literal">en</code>" (i.e. ethernet interfaces).</p></=
+div></div><br class=3D"example-break"><div class=3D"example"><a name=3D"id-=
+1.21.4"></a><p class=3D"title"><b>Example&nbsp;3.&nbsp;A bridge with two en=
+slaved links</b></p><div class=3D"example-contents"><pre class=3D"programli=
+sting"># /etc/systemd/network/25-bridge-static.network
+[Match]
+Name=3Dbridge0
+
+[Network]
+Address=3D192.168.0.15/24
+Gateway=3D192.168.0.1
+DNS=3D192.168.0.1</pre><pre class=3D"programlisting"># /etc/systemd/network=
+/25-bridge-slave-interface-1.network
+[Match]
+Name=3Denp2s0
+
+[Network]
+Bridge=3Dbridge0</pre><pre class=3D"programlisting"># /etc/systemd/network/=
+25-bridge-slave-interface-2.network
+[Match]
+Name=3Dwlp3s0
+
+[Network]
+Bridge=3Dbridge0</pre><p>This creates a bridge and attaches devices "<code =
+class=3D"literal">enp2s0</code>" and
+      "<code class=3D"literal">wlp3s0</code>" to it. The bridge will have t=
+he specified static address
+      and network assigned, and a default route via the specified gateway w=
+ill be
+      added. The specified DNS server will be added to the global list of D=
+NS resolvers.
+      </p></div></div><br class=3D"example-break"><div class=3D"example"><a=
+ name=3D"id-1.21.5"></a><p class=3D"title"><b>Example&nbsp;4.&nbsp;</b></p>=
+<div class=3D"example-contents"><pre class=3D"programlisting"># /etc/system=
+d/network/20-bridge-slave-interface-vlan.network
+[Match]
+Name=3Denp2s0
+
+[Network]
+Bridge=3Dbridge0
+
+[BridgeVLAN]
+VLAN=3D1-32
+PVID=3D42
+EgressUntagged=3D42
+
+[BridgeVLAN]
+VLAN=3D100-200
+
+[BridgeVLAN]
+EgressUntagged=3D300-400</pre><p>This overrides the configuration specified=
+ in the previous example for the
+    interface "<code class=3D"literal">enp2s0</code>", and enables VLAN on =
+that bridge port. VLAN IDs
+    1-32, 42, 100-400 will be allowed. Packets tagged with VLAN IDs 42, 300=
+-400 will be
+    untagged when they leave on this interface. Untagged packets which arri=
+ve on this
+    interface will be assigned VLAN ID 42.</p></div></div><br class=3D"exam=
+ple-break"><div class=3D"example"><a name=3D"id-1.21.6"></a><p class=3D"tit=
+le"><b>Example&nbsp;5.&nbsp;Various tunnels</b></p><div class=3D"example-co=
+ntents"><pre class=3D"programlisting">/etc/systemd/network/25-tunnels.netwo=
+rk
+[Match]
+Name=3Dens1
+
+[Network]
+Tunnel=3Dipip-tun
+Tunnel=3Dsit-tun
+Tunnel=3Dgre-tun
+Tunnel=3Dvti-tun
+      </pre><pre class=3D"programlisting">/etc/systemd/network/25-tunnel-ip=
+ip.netdev
+[NetDev]
+Name=3Dipip-tun
+Kind=3Dipip
+      </pre><pre class=3D"programlisting">/etc/systemd/network/25-tunnel-si=
+t.netdev
+[NetDev]
+Name=3Dsit-tun
+Kind=3Dsit
+      </pre><pre class=3D"programlisting">/etc/systemd/network/25-tunnel-gr=
+e.netdev
+[NetDev]
+Name=3Dgre-tun
+Kind=3Dgre
+      </pre><pre class=3D"programlisting">/etc/systemd/network/25-tunnel-vt=
+i.netdev
+[NetDev]
+Name=3Dvti-tun
+Kind=3Dvti
+      </pre><p>This will bring interface "<code class=3D"literal">ens1</cod=
+e>" up and create an IPIP tunnel,
+      a SIT tunnel, a GRE tunnel, and a VTI tunnel using it.</p></div></div=
+><br class=3D"example-break"><div class=3D"example"><a name=3D"id-1.21.7"><=
+/a><p class=3D"title"><b>Example&nbsp;6.&nbsp;A bond device</b></p><div cla=
+ss=3D"example-contents"><pre class=3D"programlisting"># /etc/systemd/networ=
+k/30-bond1.network
+[Match]
+Name=3Dbond1
+
+[Network]
+DHCP=3Dipv6
+</pre><pre class=3D"programlisting"># /etc/systemd/network/30-bond1.netdev
+[NetDev]
+Name=3Dbond1
+Kind=3Dbond
+</pre><pre class=3D"programlisting"># /etc/systemd/network/30-bond1-dev1.ne=
+twork
+[Match]
+MACAddress=3D52:54:00:e9:64:41
+
+[Network]
+Bond=3Dbond1
+</pre><pre class=3D"programlisting"># /etc/systemd/network/30-bond1-dev2.ne=
+twork
+[Match]
+MACAddress=3D52:54:00:e9:64:42
+
+[Network]
+Bond=3Dbond1
+</pre><p>This will create a bond device "<code class=3D"literal">bond1</cod=
+e>" and enslave the two
+    devices with MAC addresses 52:54:00:e9:64:41 and 52:54:00:e9:64:42 to i=
+t. IPv6 DHCP
+    will be used to acquire an address.</p></div></div><br class=3D"example=
+-break"><div class=3D"example"><a name=3D"id-1.21.8"></a><p class=3D"title"=
+><b>Example&nbsp;7.&nbsp;Virtual Routing and Forwarding (VRF)</b></p><div c=
+lass=3D"example-contents"><p>Add the "<code class=3D"literal">bond1</code>"=
+ interface to the VRF master interface
+      "<code class=3D"literal">vrf1</code>". This will redirect routes gene=
+rated on this interface to be
+      within the routing table defined during VRF creation. For kernels bef=
+ore 4.8 traffic
+      won't be redirected towards the VRFs routing table unless specific ip=
+-rules are added.
+      </p><pre class=3D"programlisting"># /etc/systemd/network/25-vrf.netwo=
+rk
+[Match]
+Name=3Dbond1
+
+[Network]
+VRF=3Dvrf1
+</pre></div></div><br class=3D"example-break"><div class=3D"example"><a nam=
+e=3D"id-1.21.9"></a><p class=3D"title"><b>Example&nbsp;8.&nbsp;MacVTap</b><=
+/p><div class=3D"example-contents"><p>This brings up a network interface "<=
+code class=3D"literal">macvtap-test</code>"
+      and attaches it to "<code class=3D"literal">enp0s25</code>".</p><pre =
+class=3D"programlisting"># /usr/lib/systemd/network/25-macvtap.network
+[Match]
+Name=3Denp0s25
+
+[Network]
+MACVTAP=3Dmacvtap-test
+</pre></div></div><br class=3D"example-break"></div><div class=3D"refsect1"=
+><a name=3D"id-1.22"></a><h2 id=3D"See Also">See Also<a class=3D"headerlink=
+" title=3D"Permalink to this headline" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.network.html#See%20Also">=C2=B6</a></h2><p>
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.h=
+tml#"><span class=3D"citerefentry"><span class=3D"refentrytitle">systemd</s=
+pan>(1)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd-n=
+etworkd.service.html#"><span class=3D"citerefentry"><span class=3D"refentry=
+title">systemd-networkd.service</span>(8)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.l=
+ink.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">syste=
+md.link</span>(5)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.n=
+etdev.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">sys=
+temd.netdev</span>(5)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd-r=
+esolved.service.html#"><span class=3D"citerefentry"><span class=3D"refentry=
+title">systemd-resolved.service</span>(8)</span></a>
+    </p></div></div>
+</body></html>
+------MultipartBoundary--q7WLZNcnG5zwic8ulWxZWyEkTJHe7sYYWpht28pCAr------
