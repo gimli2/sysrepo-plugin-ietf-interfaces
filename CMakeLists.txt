@@ -40,28 +40,29 @@ add_custom_target(YANG_files ${YANG_SRCS})
 
 set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 
-#add_library(sysrepo-plugin-ietf-interfaces SHARED ${CMAKE_CURRENT_SOURCE_DIR}/interfaces-plugin.c)
-#target_link_libraries(sysrepo-plugin-ietf-system ${SYSREPO_LIBRARIES})
-
 add_library(config STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/config.c)
 
-add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.cpp)
+add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/subscription-test.cpp)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
 target_link_libraries(stest ${CMAKE_BINARY_DIR}/libconfig.a)
+
+add_library(sysrepo-plugin-ietf-interfaces SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.cpp)
+target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
+
 
 # get sysrepo plugins directory
 if (NOT SR_PLUGINS_DIR)
     if (PKG_CONFIG_FOUND)
-        #execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} "--variable=SR_PLUGINS_DIR" "libsysrepo" OUTPUT_VARIABLE SR_PLUGINS_DIR)
-        #string(STRIP ${SR_PLUGINS_DIR} SR_PLUGINS_DIR)
+        execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} "--variable=SR_PLUGINS_DIR" "libsysrepo" OUTPUT_VARIABLE SR_PLUGINS_DIR)
+        string(STRIP ${SR_PLUGINS_DIR} SR_PLUGINS_DIR)
     endif()
 endif()
 if (NOT SR_PLUGINS_DIR)
-    #message(FATAL_ERROR "Cannot get sysrepo plugins directory due to missing pkg-config, set SR_PLUGINS_DIR manually.")
+    message(FATAL_ERROR "Cannot get sysrepo plugins directory due to missing pkg-config, set SR_PLUGINS_DIR manually.")
 endif()
 
 install(FILES ${YANG_SRCS} DESTINATION ${YANG_DIR})
-#install(TARGETS sysrepo-plugin-ietf-system DESTINATION ${SR_PLUGINS_DIR})
+install(TARGETS sysrepo-plugin-ietf-interfaces DESTINATION ${SR_PLUGINS_DIR})
 #install(CODE "MESSAGE(STATUS
 #\"To enable this plugin, run:
 #
