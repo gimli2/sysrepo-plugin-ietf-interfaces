@@ -19,28 +19,28 @@ include_directories(${SYSREPO_INCLUDE_DIRS})
 link_directories(${SYSREPO_LIBRARY_DIRS})
 
 set(YANG_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/iana-if-type@2017-01-19.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-inet-types@2015-09-30.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-interfaces@2017-12-16.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv4-unicast-routing@2018-03-21.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv6-unicast-routing@2018-03-21.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ipv6-router-advertisements@2018-03-13.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-ip@2018-04-17.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-routing@2018-03-22.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-system@2017-09-15.yang
-    ${CMAKE_CURRENT_SOURCE_DIR}/yang/ietf-yang-types@2015-09-30.yang
+    yang/iana-if-type@2017-01-19.yang
+    yang/ietf-inet-types@2015-09-30.yang
+    yang/ietf-interfaces@2017-12-16.yang
+    yang/ietf-ipv4-unicast-routing@2018-03-21.yang
+    yang/ietf-ipv6-unicast-routing@2018-03-21.yang
+    yang/ietf-ipv6-router-advertisements@2018-03-13.yang
+    yang/ietf-ip@2018-04-17.yang
+    yang/ietf-routing@2018-03-22.yang
+    yang/ietf-system@2017-09-15.yang
+    yang/ietf-yang-types@2015-09-30.yang
 )
 add_custom_target(YANG_files ${YANG_SRCS})
 
 set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 
-add_library(config STATIC ${CMAKE_CURRENT_SOURCE_DIR}/src/config.c)
+add_library(config STATIC src/config.c)
 
-add_executable(stest ${CMAKE_CURRENT_SOURCE_DIR}/src/subscription-test.cpp)
+add_executable(stest src/subscription-test.cpp)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
 target_link_libraries(stest ${CMAKE_BINARY_DIR}/libconfig.a)
 
-add_library(sysrepo-plugin-ietf-interfaces SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/interfaces-plugin.cpp)
+add_library(sysrepo-plugin-ietf-interfaces SHARED src/interfaces-plugin.cpp)
 target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
 
 
