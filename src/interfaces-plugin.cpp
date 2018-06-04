@@ -40,6 +40,8 @@ using namespace std;
 
 #include "interfaces.cpp"
 
+extern "C" {
+
 static int module_change_cb(sr_session_ctx_t *session, const char *module_name, sr_notif_event_t event, void *private_ctx) {
     syslog(LOG_DEBUG, "configuration has changed. Event=%s", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
     return SR_ERR_OK;
@@ -94,3 +96,4 @@ void sr_plugin_cleanup_cb(sr_session_ctx_t *session, void *private_ctx) {
     syslog(LOG_DEBUG, "plugin cleanup finished");
 }
 
+}
