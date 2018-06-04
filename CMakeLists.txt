@@ -34,14 +34,14 @@ add_custom_target(YANG_files ${YANG_SRCS})
 
 set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 
-add_library(iniconfig STATIC src/config.c)
+add_library(iniconfig SHARED src/config.c)
 
 add_executable(stest src/subscription-test.cpp)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
 target_link_libraries(stest iniconfig)
 
 add_library(sysrepo-plugin-ietf-interfaces SHARED src/interfaces-plugin.cpp)
-target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
+target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES} iniconfig)
 
 
 # get sysrepo plugins directory
@@ -57,6 +57,7 @@ endif()
 
 install(FILES ${YANG_SRCS} DESTINATION ${YANG_DIR})
 install(TARGETS sysrepo-plugin-ietf-interfaces DESTINATION ${SR_PLUGINS_DIR})
+install(TARGETS iniconfig DESTINATION ${CMAKE_INSTALL_LIBDIR})
 #install(CODE "MESSAGE(STATUS
 #\"To enable this plugin, run:
 #
