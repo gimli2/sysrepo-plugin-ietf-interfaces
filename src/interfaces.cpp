@@ -46,6 +46,49 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
     return data;
 }
 
+/*
+ * use ip utility to add entries to ARP cache defined in ipv4/neighbor*
+ * 
+ * call: ip neigh add <IP> lladdr <MAC> dev <DEV>
+*/
+static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
+    printf("create_arp_cache_entries called.\n");
+    sr_val_t *values = NULL;
+    size_t count = 0;
+    int rc = SR_ERR_OK;
+    // shortcut for xpath queries
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)devname+"']/ietf-ip:ipv4";
+    string xpath = ifipv4xpath + "/neighbor/ip";
+    rc = sr_get_items(session, &xpath[0u], &values, &count);
+    if (handle_sr_return(rc) == OK) {        
+        for (size_t i = 0; i < count; i++){
+            sr_val_t *ipv4lladdress = get_val(session, ifipv4xpath + "/neighbor[ip='"+(string)(&values[i])->data.string_val+"']/link-layer-address");
+
+            string addr = (string)(&values[i])->data.string_val;
+            string lladdr = ipv4lladdress->data.string_val;
+            string cmd = "neigh add "+addr+" lladdr "+lladdr+" dev "+devname;
+            
+            printf("%s\n", &cmd[0u]);
+            
+            int pid, status;
+            if ((pid = fork())) {
+               // pid != 0 parent
+               waitpid(pid, &status, 0); 
+               printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA status child = %d\n", status);
+            } else {
+               // pid == 0 child
+               printf("BBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n");
+               int ret = execl("/bin/ip", "-v", "neigh", "add", &addr[0u], "lladdr", &lladdr[0u], "dev", devname, NULL);
+               // nahrazeno, nic se uz zde nestane... (pokud to nefailne)
+               printf("CCCCCCCCCCCCCC ret = %d\n", ret);
+            }
+            
+            sr_free_val(ipv4lladdress);
+        }
+        sr_free_values(values, count);
+    }
+}
+
 static void create_interface(sr_session_ctx_t *session, char *name) {
     printf("Creating interface %s\n", name);
     char dst[PATH_MAX_LEN];
@@ -107,11 +150,20 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
                         //printf("IPv4 ip = %s\n", (&values[i])->data.string_val);
                        
                         sr_val_t *ipv4prefixlen = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/prefix-length");
-                        //printf("IPv4 prefixlen = %d\n", ipv4prefixlen->data.uint8_val);
                         
-                        // TODO: also netmask keyword is possible
+                        sr_val_t *ipv4netmask = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/netmask");
                         
-                        string addr = (string)(&values[i])->data.string_val + "/" + to_string(ipv4prefixlen->data.uint8_val);
+                        // prepare output of addr + prefix len / netmask
+                        string addr = (string)(&values[i])->data.string_val;
+                        if (ipv4prefixlen != NULL) {
+                            addr += "/" + to_string(ipv4prefixlen->data.uint8_val);
+                        }
+                        if (ipv4netmask != NULL) {
+                            addr += "/" + (string)ipv4netmask->data.string_val;
+                            printf("Netmask is prefferef over prefix-len.\n");
+                        }
+                        
+                        
                         // it is possible to have more addres, need to create entry allowing duplicate key
                         ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
                         
@@ -120,12 +172,15 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
                         // ini_table_create_entry(ifcfg, "Network", "DNS", "");
                         
                         sr_free_val(ipv4prefixlen);
+                        sr_free_val(ipv4netmask);
                     }
                     sr_free_values(values, count);
                 }
             }            
             
-            // TODO: get also neighbor* -> ip, link-layer-address
+            // create ARP cache entries defined by ipv4/neighbor*
+            create_arp_cache_entries(session, name);
+            
 
             sr_free_val(ipv4forward);
             sr_free_val(ipv4mtu);

@@ -31,6 +31,9 @@ extern "C"
 }
 #endif
 
+#include <unistd.h>
+#include <sys/wait.h>
+
 #include <syslog.h>
 #include <string.h>
 #include <string>

@@ -37,6 +37,7 @@ extern "C"
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include <string>
 #include <iostream>
