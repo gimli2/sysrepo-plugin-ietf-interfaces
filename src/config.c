@@ -1,3 +1,16 @@
+/**
+ * @author Teklad <https://github.com/Teklad>
+ * 
+ * https://github.com/Teklad/tconfig
+ * 
+ * @date 2017
+ * 
+ * Added support for duplicate entries by:
+ *   Martin Slapak <slapak@cesnet.cz>
+ *
+ * @license Unknown
+ */
+ 
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>

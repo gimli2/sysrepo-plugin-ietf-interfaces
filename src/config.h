@@ -1,3 +1,16 @@
+/**
+ * @author Teklad <https://github.com/Teklad>
+ * 
+ * https://github.com/Teklad/tconfig
+ * 
+ * @date 2017
+ * 
+ * Added support for duplicate entries by:
+ *   Martin Slapak <slapak@cesnet.cz>
+ *
+ * @license Unknown
+ */
+ 
 #ifndef _TCONFIG_H_
 #define _TCONFIG_H_
 #include <stdbool.h>

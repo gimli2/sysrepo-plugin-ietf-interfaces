@@ -1,8 +1,7 @@
 /**
  * @author Martin Slapak <slapak@cesnet.cz>
  *
- * @copyright
- * Copyright 2018 CESNET a.l.e.
+ * @copyright Copyright 2018 CESNET a.l.e.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
