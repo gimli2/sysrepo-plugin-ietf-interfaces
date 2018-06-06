@@ -1,0 +1,1364 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://www.freedesktop.org/software/systemd/man/systemd.netdev.html
+Subject: systemd.netdev
+Date: Thu, 6 Jun 2018 07:58:44 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--pipxXrL8QO8bmt9sJWX9MFOrSLIkujg4xWZkkTccZ5----"
+
+------MultipartBoundary--pipxXrL8QO8bmt9sJWX9MFOrSLIkujg4xWZkkTccZ5----
+Content-Type: text/html
+Content-ID: <frame-831-6c50dd99-c698-4e34-8a24-63f75e243901@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://www.freedesktop.org/software/systemd/man/systemd.netdev.html
+
+<html slick-uniqueid=3D"3"><head><meta http-equiv=3D"Content-Type" content=
+=3D"text/html; charset=3DUTF-8"><title>systemd.netdev</title><meta name=3D"=
+generator" content=3D"DocBook XSL Stylesheets Vsnapshot"><style></style></h=
+ead><body bgcolor=3D"white" text=3D"black" link=3D"#0000FF" vlink=3D"#84008=
+4" alink=3D"#0000FF"><style>
+    a.headerlink {
+      color: #c60f0f;
+      font-size: 0.8em;
+      padding: 0 4px 0 4px;
+      text-decoration: none;
+      visibility: hidden;
+    }
+
+    a.headerlink:hover {
+      background-color: #c60f0f;
+      color: white;
+    }
+
+    h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerli=
+nk, dt:hover > a.headerlink {
+      visibility: visible;
+    }
+  </style><a href=3D"https://www.freedesktop.org/software/systemd/man/index=
+.html">Index </a>=C2=B7
+  <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.direc=
+tives.html">Directives </a><span style=3D"float:right">systemd 238</span><h=
+r><div class=3D"refentry"><a name=3D"systemd.netdev"></a><div class=3D"titl=
+epage"></div><div class=3D"refnamediv"><h2>Name</h2><p>systemd.netdev =E2=
+=80=94 Virtual Network Device configuration</p></div><div class=3D"refsynop=
+sisdiv"><h2>Synopsis</h2><p><code class=3D"filename"><em class=3D"replaceab=
+le"><code>netdev</code></em>.netdev</code></p></div><div class=3D"refsect1"=
+><a name=3D"id-1.5"></a><h2 id=3D"Description">Description<a class=3D"heade=
+rlink" title=3D"Permalink to this headline" href=3D"https://www.freedesktop=
+.org/software/systemd/man/systemd.netdev.html#Description">=C2=B6</a></h2><=
+p>Network setup is performed by
+    <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd-net=
+workd.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">sys=
+temd-networkd</span>(8)</span></a>.
+    </p><p>The main Virtual Network Device file must have the extension <co=
+de class=3D"filename">.netdev</code>;
+    other extensions are ignored. Virtual network devices are created as so=
+on as networkd is
+    started. If a netdev with the specified name already exists, networkd w=
+ill use that as-is rather
+    than create its own. Note that the settings of the pre-existing netdev =
+will not be changed by
+    networkd.</p><p>The <code class=3D"filename">.netdev</code> files are r=
+ead from the files located in the system
+    network directory <code class=3D"filename">/usr/lib/systemd/network</co=
+de>, the volatile runtime network
+    directory <code class=3D"filename">/run/systemd/network</code> and the =
+local administration network
+    directory <code class=3D"filename">/etc/systemd/network</code>. All con=
+figuration files are collectively
+    sorted and processed in lexical order, regardless of the directories in=
+ which they live.
+    However, files with identical filenames replace each other. Files in <c=
+ode class=3D"filename">/etc</code>
+    have the highest priority, files in <code class=3D"filename">/run</code=
+> take precedence over files with
+    the same name in <code class=3D"filename">/usr/lib</code>. This can be =
+used to override a system-supplied
+    configuration file with a local file if needed. As a special case, an e=
+mpty file (file size 0)
+    or symlink with the same name pointing to <code class=3D"filename">/dev=
+/null</code> disables the
+    configuration file entirely (it is "masked").</p><p>Along with the netd=
+ev file <code class=3D"filename">foo.netdev</code>, a "drop-in" directory
+    <code class=3D"filename">foo.netdev.d/</code> may exist. All files with=
+ the suffix "<code class=3D"literal">.conf</code>"
+    from this directory will be parsed after the file itself is parsed. Thi=
+s is useful to alter or
+    add configuration settings, without having to modify the main configura=
+tion file. Each drop-in
+    file must have appropriate section headers.</p><p>In addition to <code =
+class=3D"filename">/etc/systemd/network</code>, drop-in "<code class=3D"lit=
+eral">.d</code>"
+    directories can be placed in <code class=3D"filename">/usr/lib/systemd/=
+network</code> or
+    <code class=3D"filename">/run/systemd/network</code> directories. Drop-=
+in files in
+    <code class=3D"filename">/etc</code> take precedence over those in <cod=
+e class=3D"filename">/run</code> which in turn
+    take precedence over those in <code class=3D"filename">/usr/lib</code>.=
+ Drop-in files under any of these
+    directories take precedence over the main netdev file wherever located.=
+ (Of course, since
+    <code class=3D"filename">/run</code> is temporary and <code class=3D"fi=
+lename">/usr/lib</code> is for vendors, it is
+    unlikely drop-ins should be used in either of those places.)</p></div><=
+div class=3D"refsect1"><a name=3D"id-1.6"></a><h2 id=3D"Supported netdev ki=
+nds">Supported netdev kinds<a class=3D"headerlink" title=3D"Permalink to th=
+is headline" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.netdev.html#Supported%20netdev%20kinds">=C2=B6</a></h2><p>The following =
+kinds of virtual network devices may be
+    configured in <code class=3D"filename">.netdev</code> files:</p><div cl=
+ass=3D"table"><a name=3D"id-1.6.3"></a><p class=3D"title"><b>Table&nbsp;1.&=
+nbsp;Supported kinds of virtual network devices</b></p><div class=3D"table-=
+contents"><table class=3D"table" summary=3D"Supported kinds of virtual netw=
+ork devices" border=3D"1"><colgroup><col class=3D"kind"><col class=3D"expla=
+nation"></colgroup><thead><tr><th>Kind</th><th>Description</th></tr></thead=
+><tbody><tr><td><code class=3D"varname">bond</code></td><td>A bond device i=
+s an aggregation of all its slave devices. See <a class=3D"ulink" href=3D"h=
+ttps://www.kernel.org/doc/Documentation/networking/bonding.txt" target=3D"_=
+top">Linux Ethernet Bonding Driver HOWTO</a> for details.Local configuratio=
+n</td></tr><tr><td><code class=3D"varname">bridge</code></td><td>A bridge d=
+evice is a software switch, and each of its slave devices and the bridge it=
+self are ports of the switch.</td></tr><tr><td><code class=3D"varname">dumm=
+y</code></td><td>A dummy device drops all packets sent to it.</td></tr><tr>=
+<td><code class=3D"varname">gre</code></td><td>A Level 3 GRE tunnel over IP=
+v4. See <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc2784" tar=
+get=3D"_top">RFC 2784</a> for details.</td></tr><tr><td><code class=3D"varn=
+ame">gretap</code></td><td>A Level 2 GRE tunnel over IPv4.</td></tr><tr><td=
+><code class=3D"varname">ip6gre</code></td><td>A Level 3 GRE tunnel over IP=
+v6.</td></tr><tr><td><code class=3D"varname">ip6tnl</code></td><td>An IPv4 =
+or IPv6 tunnel over IPv6</td></tr><tr><td><code class=3D"varname">ip6gretap=
+</code></td><td>A Level 2 GRE tunnel over IPv6.</td></tr><tr><td><code clas=
+s=3D"varname">ipip</code></td><td>An IPv4 over IPv4 tunnel.</td></tr><tr><t=
+d><code class=3D"varname">ipvlan</code></td><td>An ipvlan device is a stack=
+ed device which receives packets from its underlying device based on IP add=
+ress filtering.</td></tr><tr><td><code class=3D"varname">macvlan</code></td=
+><td>A macvlan device is a stacked device which receives packets from its u=
+nderlying device based on MAC address filtering.</td></tr><tr><td><code cla=
+ss=3D"varname">macvtap</code></td><td>A macvtap device is a stacked device =
+which receives packets from its underlying device based on MAC address filt=
+ering.</td></tr><tr><td><code class=3D"varname">sit</code></td><td>An IPv6 =
+over IPv4 tunnel.</td></tr><tr><td><code class=3D"varname">tap</code></td><=
+td>A persistent Level 2 tunnel between a network device and a device node.<=
+/td></tr><tr><td><code class=3D"varname">tun</code></td><td>A persistent Le=
+vel 3 tunnel between a network device and a device node.</td></tr><tr><td><=
+code class=3D"varname">veth</code></td><td>An Ethernet tunnel between a pai=
+r of network devices.</td></tr><tr><td><code class=3D"varname">vlan</code><=
+/td><td>A VLAN is a stacked device which receives packets from its underlyi=
+ng device based on VLAN tagging. See <a class=3D"ulink" href=3D"http://www.=
+ieee802.org/1/pages/802.1Q.html" target=3D"_top">IEEE 802.1Q</a> for detail=
+s.</td></tr><tr><td><code class=3D"varname">vti</code></td><td>An IPv4 over=
+ IPSec tunnel.</td></tr><tr><td><code class=3D"varname">vti6</code></td><td=
+>An IPv6 over IPSec tunnel.</td></tr><tr><td><code class=3D"varname">vxlan<=
+/code></td><td>A virtual extensible LAN (vxlan), for connecting Cloud compu=
+ting deployments.</td></tr><tr><td><code class=3D"varname">geneve</code></t=
+d><td>A GEneric NEtwork Virtualization Encapsulation (GENEVE) netdev driver=
+.</td></tr><tr><td><code class=3D"varname">vrf</code></td><td>A Virtual Rou=
+ting and Forwarding (<a class=3D"ulink" href=3D"https://www.kernel.org/doc/=
+Documentation/networking/vrf.txt" target=3D"_top">VRF</a>) interface to cre=
+ate separate routing and forwarding domains.</td></tr><tr><td><code class=
+=3D"varname">vcan</code></td><td>The virtual CAN driver (vcan). Similar to =
+the network loopback devices, vcan offers a virtual local CAN interface.</t=
+d></tr><tr><td><code class=3D"varname">vxcan</code></td><td>The virtual CAN=
+ tunnel driver (vxcan). Similar to the virtual ethernet driver veth, vxcan =
+implements a local CAN traffic tunnel between two virtual CAN network devic=
+es. When creating a vxcan, two vxcan devices are created as pair. When one =
+end receives the packet it appears on its pair and vice versa. The vxcan ca=
+n be used for cross namespace communication.
+          </td></tr><tr><td><code class=3D"varname">wireguard</code></td><t=
+d>WireGuard Secure Network Tunnel.</td></tr></tbody></table></div></div><br=
+ class=3D"table-break"></div><div class=3D"refsect1"><a name=3D"id-1.7"></a=
+><h2 id=3D"[Match] Section Options">[Match] Section Options<a class=3D"head=
+erlink" title=3D"Permalink to this headline" href=3D"https://www.freedeskto=
+p.org/software/systemd/man/systemd.netdev.html#%5BMatch%5D%20Section%20Opti=
+ons">=C2=B6</a></h2><p>A virtual network device is only created if the
+    "<code class=3D"literal">[Match]</code>" section matches the current
+    environment, or if the section is empty. The following keys are
+    accepted:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt=
+ id=3D"Host=3D"><span class=3D"term"><code class=3D"varname">Host=3D</code>=
+</span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"htt=
+ps://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Host=3D">=
+=C2=B6</a></dt><dd><p>Matches against the hostname or machine ID of the
+          host. See "<code class=3D"literal">ConditionHost=3D</code>" in
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd.unit</span>(5)</span></a>
+          for details.
+          </p></dd><dt id=3D"Virtualization=3D"><span class=3D"term"><code =
+class=3D"varname">Virtualization=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.netdev.html#Virtualization=3D">=C2=B6</a></dt><dd><p>C=
+hecks whether the system is executed in a virtualized
+          environment and optionally test whether it is a specific
+          implementation. See
+          "<code class=3D"literal">ConditionVirtualization=3D</code>" in
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd.unit</span>(5)</span></a>
+          for details.
+          </p></dd><dt id=3D"KernelCommandLine=3D"><span class=3D"term"><co=
+de class=3D"varname">KernelCommandLine=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.netdev.html#KernelCommandLine=3D">=C2=B6</a></dt=
+><dd><p>Checks whether a specific kernel command line option
+          is set (or if prefixed with the exclamation mark unset). See
+          "<code class=3D"literal">ConditionKernelCommandLine=3D</code>" in
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd.unit</span>(5)</span></a>
+          for details.
+          </p></dd><dt id=3D"KernelVersion=3D"><span class=3D"term"><code c=
+lass=3D"varname">KernelVersion=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#KernelVersion=3D">=C2=B6</a></dt><dd><p>Chec=
+ks whether the kernel version (as reported by <span class=3D"command"><stro=
+ng>uname -r</strong></span>) matches a certain
+          expression (or if prefixed with the exclamation mark does not mat=
+ch it). See
+          "<code class=3D"literal">ConditionKernelVersion=3D</code>" in
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd.unit</span>(5)</span></a> for details.
+          </p></dd><dt id=3D"Architecture=3D"><span class=3D"term"><code cl=
+ass=3D"varname">Architecture=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#Architecture=3D">=C2=B6</a></dt><dd><p>Checks=
+ whether the system is running on a specific
+          architecture. See "<code class=3D"literal">ConditionArchitecture=
+=3D</code>" in
+          <a href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.unit.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd.unit</span>(5)</span></a>
+          for details.
+          </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1=
+.8"></a><h2 id=3D"[NetDev] Section Options">[NetDev] Section Options<a clas=
+s=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.f=
+reedesktop.org/software/systemd/man/systemd.netdev.html#%5BNetDev%5D%20Sect=
+ion%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[NetDev]</cod=
+e>" section accepts the
+      following keys:</p><div class=3D"variablelist"><dl class=3D"variablel=
+ist"><dt id=3D"Description=3D"><span class=3D"term"><code class=3D"varname"=
+>Description=3D</code></span><a class=3D"headerlink" title=3D"Permalink to =
+this term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd=
+.netdev.html#Description=3D">=C2=B6</a></dt><dd><p>A free-form description =
+of the netdev.</p></dd><dt id=3D"Name=3D"><span class=3D"term"><code class=
+=3D"varname">Name=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.netdev.html#Name=3D">=C2=B6</a></dt><dd><p>The interface name used wh=
+en creating the netdev.
+            This option is compulsory.</p></dd><dt id=3D"Kind=3D"><span cla=
+ss=3D"term"><code class=3D"varname">Kind=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.netdev.html#Kind=3D">=C2=B6</a></dt><dd><p>The=
+ netdev kind. This option is compulsory. See the
+            "<code class=3D"literal">Supported netdev kinds</code>" section=
+ for the
+            valid keys.</p></dd><dt id=3D"MTUBytes=3D"><span class=3D"term"=
+><code class=3D"varname">MTUBytes=3D</code></span><a class=3D"headerlink" t=
+itle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.netdev.html#MTUBytes=3D">=C2=B6</a></dt><dd><p>The ma=
+ximum transmission unit in bytes to set for
+            the device. The usual suffixes K, M, G, are supported and
+            are understood to the base of 1024. This key is not
+            currently supported for "<code class=3D"literal">tun</code>" or
+            "<code class=3D"literal">tap</code>" devices.
+            </p></dd><dt id=3D"MACAddress=3D"><span class=3D"term"><code cl=
+ass=3D"varname">MACAddress=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.netdev.html#MACAddress=3D">=C2=B6</a></dt><dd><p>The MAC add=
+ress to use for the device. If none is
+            given, one is generated based on the interface name and
+            the
+            <a href=3D"https://www.freedesktop.org/software/systemd/man/mac=
+hine-id.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">m=
+achine-id</span>(5)</span></a>.
+            This key is not currently supported for
+            "<code class=3D"literal">tun</code>" or "<code class=3D"literal=
+">tap</code>" devices.
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.9"></a><h2 id=3D"[Bridge] Section Options">[Bridge] Section Options<a cl=
+ass=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www=
+.freedesktop.org/software/systemd/man/systemd.netdev.html#%5BBridge%5D%20Se=
+ction%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[Bridge]</c=
+ode>" section only applies for
+      netdevs of kind "<code class=3D"literal">bridge</code>", and accepts =
+the
+      following keys:</p><div class=3D"variablelist"><dl class=3D"variablel=
+ist"><dt id=3D"HelloTimeSec=3D"><span class=3D"term"><code class=3D"varname=
+">HelloTimeSec=3D</code></span><a class=3D"headerlink" title=3D"Permalink t=
+o this term" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.netdev.html#HelloTimeSec=3D">=C2=B6</a></dt><dd><p>HelloTimeSec specifie=
+s the number of seconds between two hello packets
+            sent out by the root bridge and the designated bridges. Hello p=
+ackets are
+            used to communicate information about the topology throughout t=
+he entire
+            bridged local area network.</p></dd><dt id=3D"MaxAgeSec=3D"><sp=
+an class=3D"term"><code class=3D"varname">MaxAgeSec=3D</code></span><a clas=
+s=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freed=
+esktop.org/software/systemd/man/systemd.netdev.html#MaxAgeSec=3D">=C2=B6</a=
+></dt><dd><p>MaxAgeSec specifies the number of seconds of maximum message a=
+ge.
+            If the last seen (received) hello packet is more than this numb=
+er of
+            seconds old, the bridge in question will start the takeover pro=
+cedure
+            in attempt to become the Root Bridge itself.</p></dd><dt id=3D"=
+ForwardDelaySec=3D"><span class=3D"term"><code class=3D"varname">ForwardDel=
+aySec=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this te=
+rm" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev=
+.html#ForwardDelaySec=3D">=C2=B6</a></dt><dd><p>ForwardDelaySec specifies t=
+he number of seconds spent in each
+            of the Listening and Learning states before the Forwarding stat=
+e is entered.</p></dd><dt id=3D"AgeingTimeSec=3D"><span class=3D"term"><cod=
+e class=3D"varname">AgeingTimeSec=3D</code></span><a class=3D"headerlink" t=
+itle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.netdev.html#AgeingTimeSec=3D">=C2=B6</a></dt><dd><p>T=
+his specifies the number of seconds a MAC Address will be kept in
+            the forwarding database after having a packet received from thi=
+s MAC Address.</p></dd><dt id=3D"Priority=3D"><span class=3D"term"><code cl=
+ass=3D"varname">Priority=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.netdev.html#Priority=3D">=C2=B6</a></dt><dd><p>The priority of=
+ the bridge. An integer between 0 and 65535. A lower value
+            means higher priority. The bridge having the lowest priority wi=
+ll be elected as root bridge.</p></dd><dt id=3D"GroupForwardMask=3D"><span =
+class=3D"term"><code class=3D"varname">GroupForwardMask=3D</code></span><a =
+class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.f=
+reedesktop.org/software/systemd/man/systemd.netdev.html#GroupForwardMask=3D=
+">=C2=B6</a></dt><dd><p>A 16-bit bitmask represented as an integer which al=
+lows forwarding of link
+            local frames with 802.1D reserved addresses (01:80:C2:00:00:0X)=
+. A logical AND
+            is performed between the specified bitmask and the exponentiati=
+on of 2^X, the
+            lower nibble of the last octet of the MAC address. For example,=
+ a value of 8
+            would allow forwarding of frames addressed to 01:80:C2:00:00:03=
+ (802.1X PAE).</p></dd><dt id=3D"DefaultPVID=3D"><span class=3D"term"><code=
+ class=3D"varname">DefaultPVID=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#DefaultPVID=3D">=C2=B6</a></dt><dd><p>This s=
+pecifies the default port VLAN ID of a newly attached bridge port.
+            Set this to an integer in the range 1=E2=80=934094 or "<code cl=
+ass=3D"literal">none</code>" to disable the PVID.</p></dd><dt id=3D"Multica=
+stQuerier=3D"><span class=3D"term"><code class=3D"varname">MulticastQuerier=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html=
+#MulticastQuerier=3D">=C2=B6</a></dt><dd><p>A boolean. This setting control=
+s the IFLA_BR_MCAST_QUERIER option in the kernel.
+            If enabled, the kernel will send general ICMP queries from a ze=
+ro source address.
+            This feature should allow faster convergence on startup, but it=
+ causes some
+            multicast-aware switches to misbehave and disrupt forwarding of=
+ multicast packets.
+            When unset, the kernel's default setting applies.
+            </p></dd><dt id=3D"MulticastSnooping=3D"><span class=3D"term"><=
+code class=3D"varname">MulticastSnooping=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.netdev.html#MulticastSnooping=3D">=C2=B6</a></=
+dt><dd><p>A boolean. This setting controls the IFLA_BR_MCAST_SNOOPING optio=
+n in the kernel.
+            If enabled, IGMP snooping monitors the Internet Group Managemen=
+t Protocol (IGMP) traffic
+            between hosts and multicast routers. When unset, the kernel's d=
+efault setting applies.
+            </p></dd><dt id=3D"VLANFiltering=3D"><span class=3D"term"><code=
+ class=3D"varname">VLANFiltering=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.netdev.html#VLANFiltering=3D">=C2=B6</a></dt><dd><p>A =
+boolean. This setting controls the IFLA_BR_VLAN_FILTERING option in the ker=
+nel.
+            If enabled, the bridge will be started in VLAN-filtering mode. =
+When unset, the kernel's
+            default setting applies.
+            </p></dd><dt id=3D"STP=3D"><span class=3D"term"><code class=3D"=
+varname">STP=3D</code></span><a class=3D"headerlink" title=3D"Permalink to =
+this term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd=
+.netdev.html#STP=3D">=C2=B6</a></dt><dd><p>A boolean. This enables the brid=
+ge's Spanning Tree Protocol (STP). When unset,
+            the kernel's default setting applies.
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.10"></a><h2 id=3D"[VLAN] Section Options">[VLAN] Section Options<a class=
+=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.netdev.html#%5BVLAN%5D%20Section=
+%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[VLAN]</code>" s=
+ection only applies for
+      netdevs of kind "<code class=3D"literal">vlan</code>", and accepts th=
+e
+      following key:</p><div class=3D"variablelist"><dl class=3D"variableli=
+st"><dt id=3D"Id=3D"><span class=3D"term"><code class=3D"varname">Id=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Id=3D"=
+>=C2=B6</a></dt><dd><p>The VLAN ID to use. An integer in the range 0=E2=80=
+=934094.
+            This option is compulsory.</p></dd><dt id=3D"GVRP=3D"><span cla=
+ss=3D"term"><code class=3D"varname">GVRP=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.netdev.html#GVRP=3D">=C2=B6</a></dt><dd><p>The=
+ Generic VLAN Registration Protocol (GVRP) is a protocol that
+            allows automatic learning of VLANs on a network. A boolean. Whe=
+n unset,
+            the kernel's default setting applies.</p></dd><dt id=3D"MVRP=3D=
+"><span class=3D"term"><code class=3D"varname">MVRP=3D</code></span><a clas=
+s=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freed=
+esktop.org/software/systemd/man/systemd.netdev.html#MVRP=3D">=C2=B6</a></dt=
+><dd><p>Multiple VLAN Registration Protocol (MVRP) formerly known as GARP V=
+LAN
+            Registration Protocol (GVRP) is a standards-based Layer 2 netwo=
+rk protocol,
+            for automatic configuration of VLAN information on switches. It=
+ was defined
+            in the 802.1ak amendment to 802.1Q-2005. A boolean. When unset,=
+ the kernel's
+            default setting applies.</p></dd><dt id=3D"LooseBinding=3D"><sp=
+an class=3D"term"><code class=3D"varname">LooseBinding=3D</code></span><a c=
+lass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.netdev.html#LooseBinding=3D">=C2=
+=B6</a></dt><dd><p>The VLAN loose binding mode, in which only the operation=
+al state is passed
+            from the parent to the associated VLANs, but the VLAN device st=
+ate is not changed.
+            A boolean. When unset, the kernel's default setting applies.</p=
+></dd><dt id=3D"ReorderHeader=3D"><span class=3D"term"><code class=3D"varna=
+me">ReorderHeader=3D</code></span><a class=3D"headerlink" title=3D"Permalin=
+k to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sy=
+stemd.netdev.html#ReorderHeader=3D">=C2=B6</a></dt><dd><p>The VLAN reorder =
+header is set VLAN interfaces behave like physical interfaces.
+            A boolean. When unset, the kernel's default setting applies.</p=
+></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1.11"></a><h2 =
+id=3D"[MACVLAN] Section Options">[MACVLAN] Section Options<a class=3D"heade=
+rlink" title=3D"Permalink to this headline" href=3D"https://www.freedesktop=
+.org/software/systemd/man/systemd.netdev.html#%5BMACVLAN%5D%20Section%20Opt=
+ions">=C2=B6</a></h2><p>The "<code class=3D"literal">[MACVLAN]</code>" sect=
+ion only applies for
+    netdevs of kind "<code class=3D"literal">macvlan</code>", and accepts t=
+he
+    following key:</p><div class=3D"variablelist"><dl class=3D"variablelist=
+"><dt id=3D"Mode=3D"><span class=3D"term"><code class=3D"varname">Mode=3D</=
+code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Mo=
+de=3D">=C2=B6</a></dt><dd><p>The MACVLAN mode to use. The supported options=
+ are
+          "<code class=3D"literal">private</code>",
+          "<code class=3D"literal">vepa</code>",
+          "<code class=3D"literal">bridge</code>", and
+          "<code class=3D"literal">passthru</code>".
+          </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1=
+.12"></a><h2 id=3D"[MACVTAP] Section Options">[MACVTAP] Section Options<a c=
+lass=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://ww=
+w.freedesktop.org/software/systemd/man/systemd.netdev.html#%5BMACVTAP%5D%20=
+Section%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[MACVTAP]=
+</code>" section applies for
+    netdevs of kind "<code class=3D"literal">macvtap</code>" and accepts th=
+e
+    same key as "<code class=3D"literal">[MACVLAN]</code>".</p></div><div c=
+lass=3D"refsect1"><a name=3D"id-1.13"></a><h2 id=3D"[IPVLAN] Section Option=
+s">[IPVLAN] Section Options<a class=3D"headerlink" title=3D"Permalink to th=
+is headline" href=3D"https://www.freedesktop.org/software/systemd/man/syste=
+md.netdev.html#%5BIPVLAN%5D%20Section%20Options">=C2=B6</a></h2><p>The "<co=
+de class=3D"literal">[IPVLAN]</code>" section only applies for
+    netdevs of kind "<code class=3D"literal">ipvlan</code>", and accepts th=
+e
+    following key:</p><div class=3D"variablelist"><dl class=3D"variablelist=
+"><dt id=3D"Mode=3D1"><span class=3D"term"><code class=3D"varname">Mode=3D<=
+/code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Mo=
+de=3D1">=C2=B6</a></dt><dd><p>The IPVLAN mode to use. The supported options=
+ are
+            "<code class=3D"literal">L2</code>","<code class=3D"literal">L3=
+</code>" and "<code class=3D"literal">L3S</code>".
+            </p></dd><dt id=3D"Flags=3D"><span class=3D"term"><code class=
+=3D"varname">Flags=3D</code></span><a class=3D"headerlink" title=3D"Permali=
+nk to this term" href=3D"https://www.freedesktop.org/software/systemd/man/s=
+ystemd.netdev.html#Flags=3D">=C2=B6</a></dt><dd><p>The IPVLAN flags to use.=
+ The supported options are
+            "<code class=3D"literal">bridge</code>","<code class=3D"literal=
+">private</code>" and "<code class=3D"literal">vepa</code>".
+            </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id=
+-1.14"></a><h2 id=3D"[VXLAN] Section Options">[VXLAN] Section Options<a cla=
+ss=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.=
+freedesktop.org/software/systemd/man/systemd.netdev.html#%5BVXLAN%5D%20Sect=
+ion%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[VXLAN]</code=
+>" section only applies for
+    netdevs of kind "<code class=3D"literal">vxlan</code>", and accepts the
+    following keys:</p><div class=3D"variablelist"><dl class=3D"variablelis=
+t"><dt id=3D"Id=3D1"><span class=3D"term"><code class=3D"varname">Id=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Id=3D1=
+">=C2=B6</a></dt><dd><p>The VXLAN ID to use.</p></dd><dt id=3D"Remote=3D"><=
+span class=3D"term"><code class=3D"varname">Remote=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.netdev.html#Remote=3D">=C2=B6</a></d=
+t><dd><p>Configures destination IP address.</p></dd><dt id=3D"Local=3D"><sp=
+an class=3D"term"><code class=3D"varname">Local=3D</code></span><a class=3D=
+"headerlink" title=3D"Permalink to this term" href=3D"https://www.freedeskt=
+op.org/software/systemd/man/systemd.netdev.html#Local=3D">=C2=B6</a></dt><d=
+d><p>Configures local IP address.</p></dd><dt id=3D"TOS=3D"><span class=3D"=
+term"><code class=3D"varname">TOS=3D</code></span><a class=3D"headerlink" t=
+itle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwar=
+e/systemd/man/systemd.netdev.html#TOS=3D">=C2=B6</a></dt><dd><p>The Type Of=
+ Service byte value for a vxlan interface.</p></dd><dt id=3D"TTL=3D"><span =
+class=3D"term"><code class=3D"varname">TTL=3D</code></span><a class=3D"head=
+erlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.or=
+g/software/systemd/man/systemd.netdev.html#TTL=3D">=C2=B6</a></dt><dd><p>A =
+fixed Time To Live N on Virtual eXtensible Local
+          Area Network packets. N is a number in the range 1=E2=80=93255. 0
+          is a special value meaning that packets inherit the TTL
+          value.</p></dd><dt id=3D"MacLearning=3D"><span class=3D"term"><co=
+de class=3D"varname">MacLearning=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.netdev.html#MacLearning=3D">=C2=B6</a></dt><dd><p>A bo=
+olean. When true, enables dynamic MAC learning
+          to discover remote MAC addresses.</p></dd><dt id=3D"FDBAgeingSec=
+=3D"><span class=3D"term"><code class=3D"varname">FDBAgeingSec=3D</code></s=
+pan><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https:=
+//www.freedesktop.org/software/systemd/man/systemd.netdev.html#FDBAgeingSec=
+=3D">=C2=B6</a></dt><dd><p>The lifetime of Forwarding Database entry learnt=
+ by
+          the kernel, in seconds.</p></dd><dt id=3D"MaximumFDBEntries=3D"><=
+span class=3D"term"><code class=3D"varname">MaximumFDBEntries=3D</code></sp=
+an><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https:/=
+/www.freedesktop.org/software/systemd/man/systemd.netdev.html#MaximumFDBEnt=
+ries=3D">=C2=B6</a></dt><dd><p>Configures maximum number of FDB entries.</p=
+></dd><dt id=3D"ReduceARPProxy=3D"><span class=3D"term"><code class=3D"varn=
+ame">ReduceARPProxy=3D</code></span><a class=3D"headerlink" title=3D"Permal=
+ink to this term" href=3D"https://www.freedesktop.org/software/systemd/man/=
+systemd.netdev.html#ReduceARPProxy=3D">=C2=B6</a></dt><dd><p>A boolean. Whe=
+n true, bridge-connected VXLAN tunnel
+          endpoint answers ARP requests from the local bridge on behalf
+          of remote Distributed Overlay Virtual Ethernet
+          <a class=3D"ulink" href=3D"https://en.wikipedia.org/wiki/Distribu=
+ted_Overlay_Virtual_Ethernet" target=3D"_top">
+          (DVOE)</a> clients. Defaults to false.</p></dd><dt id=3D"L2MissNo=
+tification=3D"><span class=3D"term"><code class=3D"varname">L2MissNotificat=
+ion=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.h=
+tml#L2MissNotification=3D">=C2=B6</a></dt><dd><p>A boolean. When true, enab=
+les netlink LLADDR miss
+          notifications.</p></dd><dt id=3D"L3MissNotification=3D"><span cla=
+ss=3D"term"><code class=3D"varname">L3MissNotification=3D</code></span><a c=
+lass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.netdev.html#L3MissNotification=
+=3D">=C2=B6</a></dt><dd><p>A boolean. When true, enables netlink IP address=
+ miss
+          notifications.</p></dd><dt id=3D"RouteShortCircuit=3D"><span clas=
+s=3D"term"><code class=3D"varname">RouteShortCircuit=3D</code></span><a cla=
+ss=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.free=
+desktop.org/software/systemd/man/systemd.netdev.html#RouteShortCircuit=3D">=
+=C2=B6</a></dt><dd><p>A boolean. When true, route short circuiting is turne=
+d
+          on.</p></dd><dt id=3D"UDPChecksum=3D"><span class=3D"term"><code =
+class=3D"varname">UDPChecksum=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#UDPChecksum=3D">=C2=B6</a></dt><dd><p>A boole=
+an. When true, transmitting UDP checksums when doing VXLAN/IPv4 is turned o=
+n.</p></dd><dt id=3D"UDP6ZeroChecksumTx=3D"><span class=3D"term"><code clas=
+s=3D"varname">UDP6ZeroChecksumTx=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.netdev.html#UDP6ZeroChecksumTx=3D">=C2=B6</a></dt><dd>=
+<p>A boolean. When true, sending zero checksums in VXLAN/IPv6 is turned on.=
+</p></dd><dt id=3D"UDP6ZeroChecksumRx=3D"><span class=3D"term"><code class=
+=3D"varname">UDP6ZeroChecksumRx=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.netdev.html#UDP6ZeroChecksumRx=3D">=C2=B6</a></dt><dd><=
+p>A boolean. When true, receiving zero checksums in VXLAN/IPv6 is turned on=
+.</p></dd><dt id=3D"RemoteChecksumTx=3D"><span class=3D"term"><code class=
+=3D"varname">RemoteChecksumTx=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#RemoteChecksumTx=3D">=C2=B6</a></dt><dd><p>A =
+boolean. When true, remote transmit checksum offload of VXLAN is turned on.=
+</p></dd><dt id=3D"RemoteChecksumRx=3D"><span class=3D"term"><code class=3D=
+"varname">RemoteChecksumRx=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.netdev.html#RemoteChecksumRx=3D">=C2=B6</a></dt><dd><p>A boo=
+lean. When true, remote receive checksum offload in VXLAN is turned on.</p>=
+</dd><dt id=3D"GroupPolicyExtension=3D"><span class=3D"term"><code class=3D=
+"varname">GroupPolicyExtension=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#GroupPolicyExtension=3D">=C2=B6</a></dt><dd>=
+<p>A boolean. When true, it enables Group Policy VXLAN extension security l=
+abel mechanism
+        across network peers based on VXLAN. For details about the Group Po=
+licy VXLAN, see the
+        <a class=3D"ulink" href=3D"https://tools.ietf.org/html/draft-smith-=
+vxlan-group-policy" target=3D"_top">
+        VXLAN Group Policy </a> document. Defaults to false.</p></dd><dt id=
+=3D"DestinationPort=3D"><span class=3D"term"><code class=3D"varname">Destin=
+ationPort=3D</code></span><a class=3D"headerlink" title=3D"Permalink to thi=
+s term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.ne=
+tdev.html#DestinationPort=3D">=C2=B6</a></dt><dd><p>Configures the default =
+destination UDP port on a per-device basis.
+        If destination port is not specified then Linux kernel default will=
+ be used.
+        Set destination port 4789 to get the IANA assigned value. If not se=
+t or if the
+        destination port is assigned the empty string the default port of 4=
+789 is used.</p></dd><dt id=3D"PortRange=3D"><span class=3D"term"><code cla=
+ss=3D"varname">PortRange=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.netdev.html#PortRange=3D">=C2=B6</a></dt><dd><p>Configures VXL=
+AN port range. VXLAN bases source
+          UDP port based on flow to help the receiver to be able
+          to load balance based on outer header flow. It
+          restricts the port range to the normal UDP local
+          ports, and allows overriding via configuration.</p></dd><dt id=3D=
+"FlowLabel=3D"><span class=3D"term"><code class=3D"varname">FlowLabel=3D</c=
+ode></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D=
+"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#FlowL=
+abel=3D">=C2=B6</a></dt><dd><p>Specifies the flow label to use in outgoing =
+packets.
+          The valid range is 0-1048575.
+          </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1=
+.15"></a><h2 id=3D"[GENEVE] Section Options">[GENEVE] Section Options<a cla=
+ss=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.=
+freedesktop.org/software/systemd/man/systemd.netdev.html#%5BGENEVE%5D%20Sec=
+tion%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[GENEVE]</co=
+de>" section only applies for
+    netdevs of kind "<code class=3D"literal">geneve</code>", and accepts th=
+e
+    following keys:</p><div class=3D"variablelist"><dl class=3D"variablelis=
+t"><dt id=3D"Id=3D2"><span class=3D"term"><code class=3D"varname">Id=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Id=3D2=
+">=C2=B6</a></dt><dd><p>Specifies the Virtual Network Identifier (VNI) to u=
+se. Ranges [0-16777215].</p></dd><dt id=3D"Remote=3D1"><span class=3D"term"=
+><code class=3D"varname">Remote=3D</code></span><a class=3D"headerlink" tit=
+le=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/=
+systemd/man/systemd.netdev.html#Remote=3D1">=C2=B6</a></dt><dd><p>Specifies=
+ the unicast destination IP address to use in outgoing packets.</p></dd><dt=
+ id=3D"TOS=3D1"><span class=3D"term"><code class=3D"varname">TOS=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.netdev.html#TOS=3D1">=
+=C2=B6</a></dt><dd><p>Specifies the TOS value to use in outgoing packets. R=
+anges [1-255].</p></dd><dt id=3D"TTL=3D1"><span class=3D"term"><code class=
+=3D"varname">TTL=3D</code></span><a class=3D"headerlink" title=3D"Permalink=
+ to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#TTL=3D1">=C2=B6</a></dt><dd><p>Specifies the TTL value to =
+use in outgoing packets. Ranges [1-255].</p></dd><dt id=3D"UDPChecksum=3D1"=
+><span class=3D"term"><code class=3D"varname">UDPChecksum=3D</code></span><=
+a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www=
+.freedesktop.org/software/systemd/man/systemd.netdev.html#UDPChecksum=3D1">=
+=C2=B6</a></dt><dd><p>A boolean. When true, specifies if UDP checksum is ca=
+lculated for transmitted packets over IPv4.</p></dd><dt id=3D"UDP6ZeroCheck=
+sumTx=3D1"><span class=3D"term"><code class=3D"varname">UDP6ZeroChecksumTx=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html=
+#UDP6ZeroChecksumTx=3D1">=C2=B6</a></dt><dd><p>A boolean. When true, skip U=
+DP checksum calculation for transmitted packets over IPv6.</p></dd><dt id=
+=3D"UDP6ZeroChecksumRx=3D1"><span class=3D"term"><code class=3D"varname">UD=
+P6ZeroChecksumRx=3D</code></span><a class=3D"headerlink" title=3D"Permalink=
+ to this term" href=3D"https://www.freedesktop.org/software/systemd/man/sys=
+temd.netdev.html#UDP6ZeroChecksumRx=3D1">=C2=B6</a></dt><dd><p>A boolean. W=
+hen true, allows incoming UDP packets over IPv6 with zero checksum field.</=
+p></dd><dt id=3D"DestinationPort=3D1"><span class=3D"term"><code class=3D"v=
+arname">DestinationPort=3D</code></span><a class=3D"headerlink" title=3D"Pe=
+rmalink to this term" href=3D"https://www.freedesktop.org/software/systemd/=
+man/systemd.netdev.html#DestinationPort=3D1">=C2=B6</a></dt><dd><p>Specifie=
+s destination port. Defaults to 6081. If not set or assigned the empty stri=
+ng, the default
+        port of 6081 is used.</p></dd><dt id=3D"FlowLabel=3D1"><span class=
+=3D"term"><code class=3D"varname">FlowLabel=3D</code></span><a class=3D"hea=
+derlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.o=
+rg/software/systemd/man/systemd.netdev.html#FlowLabel=3D1">=C2=B6</a></dt><=
+dd><p>Specifies the flow label to use in outgoing packets.</p></dd></dl></d=
+iv></div><div class=3D"refsect1"><a name=3D"id-1.16"></a><h2 id=3D"[Tunnel]=
+ Section Options">[Tunnel] Section Options<a class=3D"headerlink" title=3D"=
+Permalink to this headline" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#%5BTunnel%5D%20Section%20Options">=C2=B6</a><=
+/h2><p>The "<code class=3D"literal">[Tunnel]</code>" section only applies f=
+or
+    netdevs of kind
+    "<code class=3D"literal">ipip</code>",
+    "<code class=3D"literal">sit</code>",
+    "<code class=3D"literal">gre</code>",
+    "<code class=3D"literal">gretap</code>",
+    "<code class=3D"literal">ip6gre</code>",
+    "<code class=3D"literal">ip6gretap</code>",
+    "<code class=3D"literal">vti</code>",
+    "<code class=3D"literal">vti6</code>", and
+    "<code class=3D"literal">ip6tnl</code>" and accepts
+    the following keys:</p><div class=3D"variablelist"><dl class=3D"variabl=
+elist"><dt id=3D"Local=3D1"><span class=3D"term"><code class=3D"varname">Lo=
+cal=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.h=
+tml#Local=3D1">=C2=B6</a></dt><dd><p>A static local address for tunneled pa=
+ckets. It must
+          be an address on another interface of this host.</p></dd><dt id=
+=3D"Remote=3D2"><span class=3D"term"><code class=3D"varname">Remote=3D</cod=
+e></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"h=
+ttps://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Remote=
+=3D2">=C2=B6</a></dt><dd><p>The remote endpoint of the tunnel.</p></dd><dt =
+id=3D"TOS=3D2"><span class=3D"term"><code class=3D"varname">TOS=3D</code></=
+span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https=
+://www.freedesktop.org/software/systemd/man/systemd.netdev.html#TOS=3D2">=
+=C2=B6</a></dt><dd><p>The Type Of Service byte value for a tunnel interface=
+.
+          For details about the TOS, see the
+          <a class=3D"ulink" href=3D"http://tools.ietf.org/html/rfc1349" ta=
+rget=3D"_top"> Type of
+          Service in the Internet Protocol Suite </a> document.
+          </p></dd><dt id=3D"TTL=3D2"><span class=3D"term"><code class=3D"v=
+arname">TTL=3D</code></span><a class=3D"headerlink" title=3D"Permalink to t=
+his term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.=
+netdev.html#TTL=3D2">=C2=B6</a></dt><dd><p>A fixed Time To Live N on tunnel=
+ed packets. N is a
+          number in the range 1=E2=80=93255. 0 is a special value meaning t=
+hat
+          packets inherit the TTL value. The default value for IPv4
+          tunnels is: inherit. The default value for IPv6 tunnels is
+          64.</p></dd><dt id=3D"DiscoverPathMTU=3D"><span class=3D"term"><c=
+ode class=3D"varname">DiscoverPathMTU=3D</code></span><a class=3D"headerlin=
+k" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/sof=
+tware/systemd/man/systemd.netdev.html#DiscoverPathMTU=3D">=C2=B6</a></dt><d=
+d><p>A boolean. When true, enables Path MTU Discovery on
+          the tunnel.</p></dd><dt id=3D"IPv6FlowLabel=3D"><span class=3D"te=
+rm"><code class=3D"varname">IPv6FlowLabel=3D</code></span><a class=3D"heade=
+rlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org=
+/software/systemd/man/systemd.netdev.html#IPv6FlowLabel=3D">=C2=B6</a></dt>=
+<dd><p>Configures the 20-bit flow label (see <a class=3D"ulink" href=3D"htt=
+ps://tools.ietf.org/html/rfc6437" target=3D"_top">
+          RFC 6437</a>) field in the IPv6 header (see <a class=3D"ulink" hr=
+ef=3D"https://tools.ietf.org/html/rfc2460" target=3D"_top">
+          RFC 2460</a>), which is used by a node to label packets of a flow=
+.
+          It is only used for IPv6 tunnels.
+          A flow label of zero is used to indicate packets that have
+          not been labeled.
+          It can be configured to a value in the range 0=E2=80=930xFFFFF, o=
+r be
+          set to "<code class=3D"literal">inherit</code>", in which case th=
+e original flowlabel is used.</p></dd><dt id=3D"CopyDSCP=3D"><span class=3D=
+"term"><code class=3D"varname">CopyDSCP=3D</code></span><a class=3D"headerl=
+ink" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/s=
+oftware/systemd/man/systemd.netdev.html#CopyDSCP=3D">=C2=B6</a></dt><dd><p>=
+A boolean. When true, the Differentiated Service Code
+          Point (DSCP) field will be copied to the inner header from
+          outer header during the decapsulation of an IPv6 tunnel
+          packet. DSCP is a field in an IP packet that enables different
+          levels of service to be assigned to network traffic.
+          Defaults to "<code class=3D"literal">no</code>".
+          </p></dd><dt id=3D"EncapsulationLimit=3D"><span class=3D"term"><c=
+ode class=3D"varname">EncapsulationLimit=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.netdev.html#EncapsulationLimit=3D">=C2=B6</a><=
+/dt><dd><p>The Tunnel Encapsulation Limit option specifies how many additio=
+nal
+          levels of encapsulation are permitted to be prepended to the pack=
+et.
+          For example, a Tunnel Encapsulation Limit option containing a lim=
+it
+          value of zero means that a packet carrying that option may not en=
+ter
+          another tunnel before exiting the current tunnel.
+          (see <a class=3D"ulink" href=3D"https://tools.ietf.org/html/rfc24=
+73#section-4.1.1" target=3D"_top"> RFC 2473</a>).
+          The valid range is 0=E2=80=93255 and "<code class=3D"literal">non=
+e</code>". Defaults to 4.
+        </p></dd><dt id=3D"Key=3D"><span class=3D"term"><code class=3D"varn=
+ame">Key=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this=
+ term" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.net=
+dev.html#Key=3D">=C2=B6</a></dt><dd><p>The <code class=3D"varname">Key=3D</=
+code> parameter specifies the same key to use in
+          both directions (<code class=3D"varname">InputKey=3D</code> and <=
+code class=3D"varname">OutputKey=3D</code>).
+          The <code class=3D"varname">Key=3D</code> is either a number or a=
+n IPv4 address-like dotted quad.
+          It is used as mark-configured SAD/SPD entry as part of the lookup=
+ key (both in data
+          and control path) in ip xfrm (framework used to implement IPsec p=
+rotocol).
+          See <a class=3D"ulink" href=3D"http://man7.org/linux/man-pages/ma=
+n8/ip-xfrm.8.html" target=3D"_top">
+          ip-xfrm =E2=80=94 transform configuration</a> for details. It is =
+only used for VTI/VTI6
+          tunnels.</p></dd><dt id=3D"InputKey=3D"><span class=3D"term"><cod=
+e class=3D"varname">InputKey=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#InputKey=3D">=C2=B6</a></dt><dd><p>The <code =
+class=3D"varname">InputKey=3D</code> parameter specifies the key to use for=
+ input.
+          The format is same as <code class=3D"varname">Key=3D</code>. It i=
+s only used for VTI/VTI6 tunnels.</p></dd><dt id=3D"OutputKey=3D"><span cla=
+ss=3D"term"><code class=3D"varname">OutputKey=3D</code></span><a class=3D"h=
+eaderlink" title=3D"Permalink to this term" href=3D"https://www.freedesktop=
+.org/software/systemd/man/systemd.netdev.html#OutputKey=3D">=C2=B6</a></dt>=
+<dd><p>The <code class=3D"varname">OutputKey=3D</code> parameter specifies =
+the key to use for output.
+          The format is same as <code class=3D"varname">Key=3D</code>. It i=
+s only used for VTI/VTI6 tunnels.</p></dd><dt id=3D"Mode=3D2"><span class=
+=3D"term"><code class=3D"varname">Mode=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.netdev.html#Mode=3D2">=C2=B6</a></dt><dd><p>An "=
+<code class=3D"literal">ip6tnl</code>" tunnel can be in one of three
+          modes
+          "<code class=3D"literal">ip6ip6</code>" for IPv6 over IPv6,
+          "<code class=3D"literal">ipip6</code>" for IPv4 over IPv6 or
+          "<code class=3D"literal">any</code>" for either.
+          </p></dd><dt id=3D"Independent=3D"><span class=3D"term"><code cla=
+ss=3D"varname">Independent=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.netdev.html#Independent=3D">=C2=B6</a></dt><dd><p>A boolean.=
+ When true tunnel does not require .network file. Created as "tunnel@NONE".
+          Defaults to "<code class=3D"literal">false</code>".
+          </p></dd><dt id=3D"AllowLocalRemote=3D"><span class=3D"term"><cod=
+e class=3D"varname">AllowLocalRemote=3D</code></span><a class=3D"headerlink=
+" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/soft=
+ware/systemd/man/systemd.netdev.html#AllowLocalRemote=3D">=C2=B6</a></dt><d=
+d><p>A boolean. When true allows tunnel traffic on <code class=3D"varname">=
+ip6tnl</code> devices where the remote endpoint is a local host address.
+          Defaults to unset.
+          </p></dd></dl></div></div><div class=3D"refsect1"><a name=3D"id-1=
+.17"></a><h2 id=3D"[Peer] Section Options">[Peer] Section Options<a class=
+=3D"headerlink" title=3D"Permalink to this headline" href=3D"https://www.fr=
+eedesktop.org/software/systemd/man/systemd.netdev.html#%5BPeer%5D%20Section=
+%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[Peer]</code>" s=
+ection only applies for
+      netdevs of kind "<code class=3D"literal">veth</code>" and accepts the
+      following keys:</p><div class=3D"variablelist"><dl class=3D"variablel=
+ist"><dt id=3D"Name=3D1"><span class=3D"term"><code class=3D"varname">Name=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html=
+#Name=3D1">=C2=B6</a></dt><dd><p>The interface name used when creating the =
+netdev.
+            This option is compulsory.</p></dd><dt id=3D"MACAddress=3D1"><s=
+pan class=3D"term"><code class=3D"varname">MACAddress=3D</code></span><a cl=
+ass=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.fre=
+edesktop.org/software/systemd/man/systemd.netdev.html#MACAddress=3D1">=C2=
+=B6</a></dt><dd><p>The peer MACAddress, if not set, it is generated in
+            the same way as the MAC address of the main
+            interface.</p></dd></dl></div></div><div class=3D"refsect1"><a =
+name=3D"id-1.18"></a><h2 id=3D"[VXCAN] Section Options">[VXCAN] Section Opt=
+ions<a class=3D"headerlink" title=3D"Permalink to this headline" href=3D"ht=
+tps://www.freedesktop.org/software/systemd/man/systemd.netdev.html#%5BVXCAN=
+%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code class=3D"literal">[VX=
+CAN]</code>" section only applies for
+      netdevs of kind "<code class=3D"literal">vxcan</code>" and accepts th=
+e
+      following key:</p><div class=3D"variablelist"><dl class=3D"variableli=
+st"><dt id=3D"Peer=3D"><span class=3D"term"><code class=3D"varname">Peer=3D=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Pe=
+er=3D">=C2=B6</a></dt><dd><p>The peer interface name used when creating the=
+ netdev.
+            This option is compulsory.</p></dd></dl></div></div><div class=
+=3D"refsect1"><a name=3D"id-1.19"></a><h2 id=3D"[Tun] Section Options">[Tun=
+] Section Options<a class=3D"headerlink" title=3D"Permalink to this headlin=
+e" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.=
+html#%5BTun%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code class=3D"l=
+iteral">[Tun]</code>" section only applies for
+    netdevs of kind "<code class=3D"literal">tun</code>", and accepts the f=
+ollowing
+    keys:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt id=
+=3D"OneQueue=3D"><span class=3D"term"><code class=3D"varname">OneQueue=3D</=
+code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#On=
+eQueue=3D">=C2=B6</a></dt><dd><p>Takes a boolean argument. Configures wheth=
+er
+        all packets are queued at the device (enabled), or a fixed
+        number of packets are queued at the device and the rest at the
+        "<code class=3D"literal">qdisc</code>". Defaults to
+        "<code class=3D"literal">no</code>".</p></dd><dt id=3D"MultiQueue=
+=3D"><span class=3D"term"><code class=3D"varname">MultiQueue=3D</code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.netdev.html#MultiQueue=3D"=
+>=C2=B6</a></dt><dd><p>Takes a boolean argument. Configures whether
+        to use multiple file descriptors (queues) to parallelize
+        packets sending and receiving. Defaults to
+        "<code class=3D"literal">no</code>".</p></dd><dt id=3D"PacketInfo=
+=3D"><span class=3D"term"><code class=3D"varname">PacketInfo=3D</code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.netdev.html#PacketInfo=3D"=
+>=C2=B6</a></dt><dd><p>Takes a boolean argument. Configures whether
+        packets should be prepended with four extra bytes (two flag
+        bytes and two protocol bytes). If disabled, it indicates that
+        the packets will be pure IP packets. Defaults to
+        "<code class=3D"literal">no</code>".</p></dd><dt id=3D"VNetHeader=
+=3D"><span class=3D"term"><code class=3D"varname">VNetHeader=3D</code></spa=
+n><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https://=
+www.freedesktop.org/software/systemd/man/systemd.netdev.html#VNetHeader=3D"=
+>=C2=B6</a></dt><dd><p>Takes a boolean argument. Configures
+        IFF_VNET_HDR flag for a tap device. It allows sending
+        and receiving larger Generic Segmentation Offload (GSO)
+        packets. This may increase throughput significantly.
+        Defaults to
+        "<code class=3D"literal">no</code>".</p></dd><dt id=3D"User=3D"><sp=
+an class=3D"term"><code class=3D"varname">User=3D</code></span><a class=3D"=
+headerlink" title=3D"Permalink to this term" href=3D"https://www.freedeskto=
+p.org/software/systemd/man/systemd.netdev.html#User=3D">=C2=B6</a></dt><dd>=
+<p>User to grant access to the
+        <code class=3D"filename">/dev/net/tun</code> device.</p></dd><dt id=
+=3D"Group=3D"><span class=3D"term"><code class=3D"varname">Group=3D</code><=
+/span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"http=
+s://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Group=3D">=
+=C2=B6</a></dt><dd><p>Group to grant access to the
+        <code class=3D"filename">/dev/net/tun</code> device.</p></dd></dl><=
+/div></div><div class=3D"refsect1"><a name=3D"id-1.20"></a><h2 id=3D"[Tap] =
+Section Options">[Tap] Section Options<a class=3D"headerlink" title=3D"Perm=
+alink to this headline" href=3D"https://www.freedesktop.org/software/system=
+d/man/systemd.netdev.html#%5BTap%5D%20Section%20Options">=C2=B6</a></h2><p>=
+The "<code class=3D"literal">[Tap]</code>" section only applies for
+    netdevs of kind "<code class=3D"literal">tap</code>", and accepts the s=
+ame keys
+    as the "<code class=3D"literal">[Tun]</code>" section.</p></div><div cl=
+ass=3D"refsect1"><a name=3D"id-1.21"></a><h2 id=3D"[WireGuard] Section Opti=
+ons">[WireGuard] Section Options<a class=3D"headerlink" title=3D"Permalink =
+to this headline" href=3D"https://www.freedesktop.org/software/systemd/man/=
+systemd.netdev.html#%5BWireGuard%5D%20Section%20Options">=C2=B6</a></h2><p>=
+The "<code class=3D"literal">[WireGuard]</code>" section accepts the follow=
+ing
+    keys:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt id=
+=3D"PrivateKey=3D"><span class=3D"term"><code class=3D"varname">PrivateKey=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html=
+#PrivateKey=3D">=C2=B6</a></dt><dd><p>The Base64 encoded private key for th=
+e interface. It can be
+            generated using the <span class=3D"command"><strong>wg genkey</=
+strong></span> command
+            (see <a href=3D"https://git.zx2c4.com/WireGuard/about/src/tools=
+/wg.8"><span class=3D"citerefentry"><span class=3D"refentrytitle">wg</span>=
+(8)</span></a>).
+            This option is mandatory to use WireGuard.
+            Note that because this information is secret, you may want to s=
+et
+            the permissions of the .netdev file to be owned by "<code class=
+=3D"literal">root:systemd-networkd</code>"
+            with a "<code class=3D"literal">0640</code>" file mode.</p></dd=
+><dt id=3D"ListenPort=3D"><span class=3D"term"><code class=3D"varname">List=
+enPort=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this t=
+erm" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netde=
+v.html#ListenPort=3D">=C2=B6</a></dt><dd><p>Sets UDP port for listening. Ta=
+kes either value between 1 and 65535
+            or "<code class=3D"literal">auto</code>". If "<code class=3D"li=
+teral">auto</code>" is specified,
+            the port is automatically generated based on interface name.
+            Defaults to "<code class=3D"literal">auto</code>".</p></dd><dt =
+id=3D"FwMark=3D"><span class=3D"term"><code class=3D"varname">FwMark=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#FwMark=
+=3D">=C2=B6</a></dt><dd><p>Sets a firewall mark on outgoing WireGuard packe=
+ts from this interface.</p></dd></dl></div></div><div class=3D"refsect1"><a=
+ name=3D"id-1.22"></a><h2 id=3D"[WireGuardPeer] Section Options">[WireGuard=
+Peer] Section Options<a class=3D"headerlink" title=3D"Permalink to this hea=
+dline" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.net=
+dev.html#%5BWireGuardPeer%5D%20Section%20Options">=C2=B6</a></h2><p>The "<c=
+ode class=3D"literal">[WireGuardPeer]</code>" section accepts the following
+    keys:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt id=
+=3D"PublicKey=3D"><span class=3D"term"><code class=3D"varname">PublicKey=3D=
+</code></span><a class=3D"headerlink" title=3D"Permalink to this term" href=
+=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Pu=
+blicKey=3D">=C2=B6</a></dt><dd><p>Sets a Base64 encoded public key calculat=
+ed by <span class=3D"command"><strong>wg pubkey</strong></span>
+            (see <a href=3D"https://git.zx2c4.com/WireGuard/about/src/tools=
+/wg.8"><span class=3D"citerefentry"><span class=3D"refentrytitle">wg</span>=
+(8)</span></a>)
+            from a private key, and usually transmitted out of band to the
+            author of the configuration file. This option is mandatory for =
+this
+            section.</p></dd><dt id=3D"PresharedKey=3D"><span class=3D"term=
+"><code class=3D"varname">PresharedKey=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.netdev.html#PresharedKey=3D">=C2=B6</a></dt><dd>=
+<p>Optional preshared key for the interface. It can be generated
+            by the <span class=3D"command"><strong>wg genpsk</strong></span=
+> command. This option adds an
+            additional layer of symmetric-key cryptography to be mixed into=
+ the
+            already existing public-key cryptography, for post-quantum
+            resistance.
+            Note that because this information is secret, you may want to s=
+et
+            the permissions of the .netdev file to be owned by "<code class=
+=3D"literal">root:systemd-networkd</code>"
+            with a "<code class=3D"literal">0640</code>" file mode.</p></dd=
+><dt id=3D"AllowedIPs=3D"><span class=3D"term"><code class=3D"varname">Allo=
+wedIPs=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this t=
+erm" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netde=
+v.html#AllowedIPs=3D">=C2=B6</a></dt><dd><p>Sets a comma-separated list of =
+IP (v4 or v6) addresses with CIDR masks
+            from which this peer is allowed to send incoming traffic and to
+            which outgoing traffic for this peer is directed. The catch-all
+            0.0.0.0/0 may be specified for matching all IPv4 addresses, and
+            ::/0 may be specified for matching all IPv6 addresses. </p></dd=
+><dt id=3D"Endpoint=3D"><span class=3D"term"><code class=3D"varname">Endpoi=
+nt=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term"=
+ href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.ht=
+ml#Endpoint=3D">=C2=B6</a></dt><dd><p>Sets an endpoint IP address or hostna=
+me, followed by a colon, and then
+            a port number. This endpoint will be updated automatically once=
+ to
+            the most recent source IP address and port of correctly
+            authenticated packets from the peer at configuration time.</p><=
+/dd><dt id=3D"PersistentKeepalive=3D"><span class=3D"term"><code class=3D"v=
+arname">PersistentKeepalive=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#PersistentKeepalive=3D">=C2=B6</a></dt><dd><p=
+>Sets a seconds interval, between 1 and 65535 inclusive, of how often
+            to send an authenticated empty packet to the peer for the purpo=
+se
+            of keeping a stateful firewall or NAT mapping valid persistentl=
+y.
+            For example, if the interface very rarely sends traffic, but it
+            might at anytime receive traffic from a peer, and it is behind =
+NAT,
+            the interface might benefit from having a persistent keepalive
+            interval of 25 seconds. If set to 0 or "off", this option is
+            disabled. By default or when unspecified, this option is off.
+            Most users will not need this.</p></dd></dl></div></div><div cl=
+ass=3D"refsect1"><a name=3D"id-1.23"></a><h2 id=3D"[Bond] Section Options">=
+[Bond] Section Options<a class=3D"headerlink" title=3D"Permalink to this he=
+adline" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.ne=
+tdev.html#%5BBond%5D%20Section%20Options">=C2=B6</a></h2><p>The "<code clas=
+s=3D"literal">[Bond]</code>" section accepts the following
+    key:</p><div class=3D"variablelist"><dl class=3D"variablelist"><dt id=
+=3D"Mode=3D3"><span class=3D"term"><code class=3D"varname">Mode=3D</code></=
+span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"https=
+://www.freedesktop.org/software/systemd/man/systemd.netdev.html#Mode=3D3">=
+=C2=B6</a></dt><dd><p>Specifies one of the bonding policies. The default is
+          "<code class=3D"literal">balance-rr</code>" (round robin). Possib=
+le values are
+          "<code class=3D"literal">balance-rr</code>",
+          "<code class=3D"literal">active-backup</code>",
+          "<code class=3D"literal">balance-xor</code>",
+          "<code class=3D"literal">broadcast</code>",
+          "<code class=3D"literal">802.3ad</code>",
+          "<code class=3D"literal">balance-tlb</code>", and
+          "<code class=3D"literal">balance-alb</code>".
+          </p></dd><dt id=3D"TransmitHashPolicy=3D"><span class=3D"term"><c=
+ode class=3D"varname">TransmitHashPolicy=3D</code></span><a class=3D"header=
+link" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/=
+software/systemd/man/systemd.netdev.html#TransmitHashPolicy=3D">=C2=B6</a><=
+/dt><dd><p>Selects the transmit hash policy to use for slave
+          selection in balance-xor, 802.3ad, and tlb modes. Possible
+          values are
+          "<code class=3D"literal">layer2</code>",
+          "<code class=3D"literal">layer3+4</code>",
+          "<code class=3D"literal">layer2+3</code>",
+          "<code class=3D"literal">encap2+3</code>", and
+          "<code class=3D"literal">encap3+4</code>".
+          </p></dd><dt id=3D"LACPTransmitRate=3D"><span class=3D"term"><cod=
+e class=3D"varname">LACPTransmitRate=3D</code></span><a class=3D"headerlink=
+" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/soft=
+ware/systemd/man/systemd.netdev.html#LACPTransmitRate=3D">=C2=B6</a></dt><d=
+d><p>Specifies the rate with which link partner transmits
+          Link Aggregation Control Protocol Data Unit packets in
+          802.3ad mode. Possible values are "<code class=3D"literal">slow</=
+code>",
+          which requests partner to transmit LACPDUs every 30 seconds,
+          and "<code class=3D"literal">fast</code>", which requests partner=
+ to
+          transmit LACPDUs every second. The default value is
+          "<code class=3D"literal">slow</code>".</p></dd><dt id=3D"MIIMonit=
+orSec=3D"><span class=3D"term"><code class=3D"varname">MIIMonitorSec=3D</co=
+de></span><a class=3D"headerlink" title=3D"Permalink to this term" href=3D"=
+https://www.freedesktop.org/software/systemd/man/systemd.netdev.html#MIIMon=
+itorSec=3D">=C2=B6</a></dt><dd><p>Specifies the frequency that Media Indepe=
+ndent
+          Interface link monitoring will occur. A value of zero
+          disables MII link monitoring. This value is rounded down to
+          the nearest millisecond. The default value is 0.</p></dd><dt id=
+=3D"UpDelaySec=3D"><span class=3D"term"><code class=3D"varname">UpDelaySec=
+=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this term" h=
+ref=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.html=
+#UpDelaySec=3D">=C2=B6</a></dt><dd><p>Specifies the delay before a link is =
+enabled after a
+          link up status has been detected. This value is rounded down
+          to a multiple of MIIMonitorSec. The default value is
+          0.</p></dd><dt id=3D"DownDelaySec=3D"><span class=3D"term"><code =
+class=3D"varname">DownDelaySec=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#DownDelaySec=3D">=C2=B6</a></dt><dd><p>Speci=
+fies the delay before a link is disabled after a
+          link down status has been detected. This value is rounded
+          down to a multiple of MIIMonitorSec. The default value is
+          0.</p></dd><dt id=3D"LearnPacketIntervalSec=3D"><span class=3D"te=
+rm"><code class=3D"varname">LearnPacketIntervalSec=3D</code></span><a class=
+=3D"headerlink" title=3D"Permalink to this term" href=3D"https://www.freede=
+sktop.org/software/systemd/man/systemd.netdev.html#LearnPacketIntervalSec=
+=3D">=C2=B6</a></dt><dd><p>Specifies the number of seconds between instance=
+s where the bonding
+          driver sends learning packets to each slave peer switch.
+          The valid range is 1=E2=80=930x7fffffff; the default value is 1. =
+This option
+          has an effect only for the balance-tlb and balance-alb modes.</p>=
+</dd><dt id=3D"AdSelect=3D"><span class=3D"term"><code class=3D"varname">Ad=
+Select=3D</code></span><a class=3D"headerlink" title=3D"Permalink to this t=
+erm" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netde=
+v.html#AdSelect=3D">=C2=B6</a></dt><dd><p>Specifies the 802.3ad aggregation=
+ selection logic to use. Possible values are
+          "<code class=3D"literal">stable</code>",
+          "<code class=3D"literal">bandwidth</code>" and
+          "<code class=3D"literal">count</code>".
+          </p></dd><dt id=3D"FailOverMACPolicy=3D"><span class=3D"term"><co=
+de class=3D"varname">FailOverMACPolicy=3D</code></span><a class=3D"headerli=
+nk" title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/so=
+ftware/systemd/man/systemd.netdev.html#FailOverMACPolicy=3D">=C2=B6</a></dt=
+><dd><p>Specifies whether the active-backup mode should set all slaves to
+          the same MAC address at the time of enslavement or, when enabled,=
+ to perform special handling of the
+          bond's MAC address in accordance with the selected policy. The de=
+fault policy is none.
+          Possible values are
+          "<code class=3D"literal">none</code>",
+          "<code class=3D"literal">active</code>" and
+          "<code class=3D"literal">follow</code>".
+          </p></dd><dt id=3D"ARPValidate=3D"><span class=3D"term"><code cla=
+ss=3D"varname">ARPValidate=3D</code></span><a class=3D"headerlink" title=3D=
+"Permalink to this term" href=3D"https://www.freedesktop.org/software/syste=
+md/man/systemd.netdev.html#ARPValidate=3D">=C2=B6</a></dt><dd><p>Specifies =
+whether or not ARP probes and replies should be
+          validated in any mode that supports ARP monitoring, or whether
+          non-ARP traffic should be filtered (disregarded) for link
+          monitoring purposes. Possible values are
+          "<code class=3D"literal">none</code>",
+          "<code class=3D"literal">active</code>",
+          "<code class=3D"literal">backup</code>" and
+          "<code class=3D"literal">all</code>".
+          </p></dd><dt id=3D"ARPIntervalSec=3D"><span class=3D"term"><code =
+class=3D"varname">ARPIntervalSec=3D</code></span><a class=3D"headerlink" ti=
+tle=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software=
+/systemd/man/systemd.netdev.html#ARPIntervalSec=3D">=C2=B6</a></dt><dd><p>S=
+pecifies the ARP link monitoring frequency in milliseconds.
+          A value of 0 disables ARP monitoring. The default value is 0.
+          </p></dd><dt id=3D"ARPIPTargets=3D"><span class=3D"term"><code cl=
+ass=3D"varname">ARPIPTargets=3D</code></span><a class=3D"headerlink" title=
+=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/sy=
+stemd/man/systemd.netdev.html#ARPIPTargets=3D">=C2=B6</a></dt><dd><p>Specif=
+ies the IP addresses to use as ARP monitoring peers when
+          ARPIntervalSec is greater than 0. These are the targets of the AR=
+P request
+          sent to determine the health of the link to the targets.
+          Specify these values in IPv4 dotted decimal format. At least one =
+IP
+          address must be given for ARP monitoring to function. The
+          maximum number of targets that can be specified is 16. The
+          default value is no IP addresses.
+          </p></dd><dt id=3D"ARPAllTargets=3D"><span class=3D"term"><code c=
+lass=3D"varname">ARPAllTargets=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#ARPAllTargets=3D">=C2=B6</a></dt><dd><p>Spec=
+ifies the quantity of ARPIPTargets that must be reachable
+          in order for the ARP monitor to consider a slave as being up.
+          This option affects only active-backup mode for slaves with
+          ARPValidate enabled. Possible values are
+          "<code class=3D"literal">any</code>" and
+          "<code class=3D"literal">all</code>".
+          </p></dd><dt id=3D"PrimaryReselectPolicy=3D"><span class=3D"term"=
+><code class=3D"varname">PrimaryReselectPolicy=3D</code></span><a class=3D"=
+headerlink" title=3D"Permalink to this term" href=3D"https://www.freedeskto=
+p.org/software/systemd/man/systemd.netdev.html#PrimaryReselectPolicy=3D">=
+=C2=B6</a></dt><dd><p>Specifies the reselection policy for the primary slav=
+e.  This
+          affects how the primary slave is chosen to become the active slav=
+e
+          when failure of the active slave or recovery of the primary slave
+          occurs. This option is designed to prevent flip-flopping between
+          the primary slave and other slaves.  Possible values are
+          "<code class=3D"literal">always</code>",
+          "<code class=3D"literal">better</code>" and
+          "<code class=3D"literal">failure</code>".
+          </p></dd><dt id=3D"ResendIGMP=3D"><span class=3D"term"><code clas=
+s=3D"varname">ResendIGMP=3D</code></span><a class=3D"headerlink" title=3D"P=
+ermalink to this term" href=3D"https://www.freedesktop.org/software/systemd=
+/man/systemd.netdev.html#ResendIGMP=3D">=C2=B6</a></dt><dd><p>Specifies the=
+ number of IGMP membership reports to be issued after
+          a failover event. One membership report is issued immediately aft=
+er
+          the failover, subsequent packets are sent in each 200ms interval.
+          The valid range is 0=E2=80=93255. Defaults to 1. A value of 0
+          prevents the IGMP membership report from being issued in response
+          to the failover event.
+          </p></dd><dt id=3D"PacketsPerSlave=3D"><span class=3D"term"><code=
+ class=3D"varname">PacketsPerSlave=3D</code></span><a class=3D"headerlink" =
+title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwa=
+re/systemd/man/systemd.netdev.html#PacketsPerSlave=3D">=C2=B6</a></dt><dd><=
+p>Specify the number of packets to transmit through a slave before
+            moving to the next one. When set to 0, then a slave is chosen a=
+t
+            random. The valid range is 0=E2=80=9365535. Defaults to 1. This=
+ option
+            only has effect when in balance-rr mode.
+          </p></dd><dt id=3D"GratuitousARP=3D"><span class=3D"term"><code c=
+lass=3D"varname">GratuitousARP=3D</code></span><a class=3D"headerlink" titl=
+e=3D"Permalink to this term" href=3D"https://www.freedesktop.org/software/s=
+ystemd/man/systemd.netdev.html#GratuitousARP=3D">=C2=B6</a></dt><dd><p>Spec=
+ify the number of peer notifications (gratuitous ARPs and
+            unsolicited IPv6 Neighbor Advertisements) to be issued after a
+            failover event.  As soon as the link is up on the new slave,
+            a peer notification is sent on the  bonding device and each
+            VLAN sub-device.  This is repeated at each link monitor interva=
+l
+            (ARPIntervalSec or MIIMonitorSec, whichever is active) if the n=
+umber is
+            greater than 1. The valid range is 0=E2=80=93255. The default v=
+alue is 1.
+            These options affect only the active-backup mode.
+          </p></dd><dt id=3D"AllSlavesActive=3D"><span class=3D"term"><code=
+ class=3D"varname">AllSlavesActive=3D</code></span><a class=3D"headerlink" =
+title=3D"Permalink to this term" href=3D"https://www.freedesktop.org/softwa=
+re/systemd/man/systemd.netdev.html#AllSlavesActive=3D">=C2=B6</a></dt><dd><=
+p>A boolean. Specifies that duplicate frames (received on inactive ports)
+          should be dropped when false, or delivered when true. Normally, b=
+onding will drop
+          duplicate frames (received on inactive ports), which is desirable=
+ for
+          most users. But there are some times it is nice to allow duplicat=
+e
+          frames to be delivered. The default value is false (drop duplicat=
+e frames
+          received on inactive ports).
+          </p></dd><dt id=3D"MinLinks=3D"><span class=3D"term"><code class=
+=3D"varname">MinLinks=3D</code></span><a class=3D"headerlink" title=3D"Perm=
+alink to this term" href=3D"https://www.freedesktop.org/software/systemd/ma=
+n/systemd.netdev.html#MinLinks=3D">=C2=B6</a></dt><dd><p>Specifies the mini=
+mum number of links that must be active before
+          asserting carrier. The default value is 0.
+          </p></dd></dl></div><p>For more detail information see
+    <a class=3D"ulink" href=3D"https://www.kernel.org/doc/Documentation/net=
+working/bonding.txt" target=3D"_top">
+    Linux Ethernet Bonding Driver HOWTO</a></p></div><div class=3D"refsect1=
+"><a name=3D"id-1.24"></a><h2 id=3D"Example">Example<a class=3D"headerlink"=
+ title=3D"Permalink to this headline" href=3D"https://www.freedesktop.org/s=
+oftware/systemd/man/systemd.netdev.html#Example">=C2=B6</a></h2><div class=
+=3D"example"><a name=3D"id-1.24.2"></a><p class=3D"title"><b>Example&nbsp;1=
+.&nbsp;/etc/systemd/network/25-bridge.netdev</b></p><div class=3D"example-c=
+ontents"><pre class=3D"programlisting">[NetDev]
+Name=3Dbridge0
+Kind=3Dbridge</pre></div></div><br class=3D"example-break"><div class=3D"ex=
+ample"><a name=3D"id-1.24.3"></a><p class=3D"title"><b>Example&nbsp;2.&nbsp=
+;/etc/systemd/network/25-vlan1.netdev</b></p><div class=3D"example-contents=
+"><pre class=3D"programlisting">[Match]
+Virtualization=3Dno
+
+[NetDev]
+Name=3Dvlan1
+Kind=3Dvlan
+
+[VLAN]
+Id=3D1</pre></div></div><br class=3D"example-break"><div class=3D"example">=
+<a name=3D"id-1.24.4"></a><p class=3D"title"><b>Example&nbsp;3.&nbsp;/etc/s=
+ystemd/network/25-ipip.netdev</b></p><div class=3D"example-contents"><pre c=
+lass=3D"programlisting">[NetDev]
+Name=3Dipip-tun
+Kind=3Dipip
+MTUBytes=3D1480
+
+[Tunnel]
+Local=3D192.168.223.238
+Remote=3D192.169.224.239
+TTL=3D64</pre></div></div><br class=3D"example-break"><div class=3D"example=
+"><a name=3D"id-1.24.5"></a><p class=3D"title"><b>Example&nbsp;4.&nbsp;/etc=
+/systemd/network/25-tap.netdev</b></p><div class=3D"example-contents"><pre =
+class=3D"programlisting">[NetDev]
+Name=3Dtap-test
+Kind=3Dtap
+
+[Tap]
+MultiQueue=3Dtrue
+PacketInfo=3Dtrue</pre></div></div><br class=3D"example-break"><div class=
+=3D"example"><a name=3D"id-1.24.6"></a><p class=3D"title"><b>Example&nbsp;5=
+.&nbsp;/etc/systemd/network/25-sit.netdev</b></p><div class=3D"example-cont=
+ents"><pre class=3D"programlisting">[NetDev]
+Name=3Dsit-tun
+Kind=3Dsit
+MTUBytes=3D1480
+
+[Tunnel]
+Local=3D10.65.223.238
+Remote=3D10.65.223.239</pre></div></div><br class=3D"example-break"><div cl=
+ass=3D"example"><a name=3D"id-1.24.7"></a><p class=3D"title"><b>Example&nbs=
+p;6.&nbsp;/etc/systemd/network/25-gre.netdev</b></p><div class=3D"example-c=
+ontents"><pre class=3D"programlisting">[NetDev]
+Name=3Dgre-tun
+Kind=3Dgre
+MTUBytes=3D1480
+
+[Tunnel]
+Local=3D10.65.223.238
+Remote=3D10.65.223.239</pre></div></div><br class=3D"example-break"><div cl=
+ass=3D"example"><a name=3D"id-1.24.8"></a><p class=3D"title"><b>Example&nbs=
+p;7.&nbsp;/etc/systemd/network/25-vti.netdev</b></p><div class=3D"example-c=
+ontents"><pre class=3D"programlisting">[NetDev]
+Name=3Dvti-tun
+Kind=3Dvti
+MTUBytes=3D1480
+
+[Tunnel]
+Local=3D10.65.223.238
+Remote=3D10.65.223.239</pre></div></div><br class=3D"example-break"><div cl=
+ass=3D"example"><a name=3D"id-1.24.9"></a><p class=3D"title"><b>Example&nbs=
+p;8.&nbsp;/etc/systemd/network/25-veth.netdev</b></p><div class=3D"example-=
+contents"><pre class=3D"programlisting">[NetDev]
+Name=3Dveth-test
+Kind=3Dveth
+
+[Peer]
+Name=3Dveth-peer</pre></div></div><br class=3D"example-break"><div class=3D=
+"example"><a name=3D"id-1.24.10"></a><p class=3D"title"><b>Example&nbsp;9.&=
+nbsp;/etc/systemd/network/25-bond.netdev</b></p><div class=3D"example-conte=
+nts"><pre class=3D"programlisting">[NetDev]
+Name=3Dbond1
+Kind=3Dbond
+
+[Bond]
+Mode=3D802.3ad
+TransmitHashPolicy=3Dlayer3+4
+MIIMonitorSec=3D1s
+LACPTransmitRate=3Dfast
+</pre></div></div><br class=3D"example-break"><div class=3D"example"><a nam=
+e=3D"id-1.24.11"></a><p class=3D"title"><b>Example&nbsp;10.&nbsp;/etc/syste=
+md/network/25-dummy.netdev</b></p><div class=3D"example-contents"><pre clas=
+s=3D"programlisting">[NetDev]
+Name=3Ddummy-test
+Kind=3Ddummy
+MACAddress=3D12:34:56:78:9a:bc</pre></div></div><br class=3D"example-break"=
+><div class=3D"example"><a name=3D"id-1.24.12"></a><p class=3D"title"><b>Ex=
+ample&nbsp;11.&nbsp;/etc/systemd/network/25-vrf.netdev</b></p><div class=3D=
+"example-contents"><p>Create a VRF interface with table 42.</p><pre class=
+=3D"programlisting">[NetDev]
+Name=3Dvrf-test
+Kind=3Dvrf
+
+[VRF]
+Table=3D42</pre></div></div><br class=3D"example-break"><div class=3D"examp=
+le"><a name=3D"id-1.24.13"></a><p class=3D"title"><b>Example&nbsp;12.&nbsp;=
+/etc/systemd/network/25-macvtap.netdev</b></p><div class=3D"example-content=
+s"><p>Create a MacVTap device.</p><pre class=3D"programlisting">[NetDev]
+Name=3Dmacvtap-test
+Kind=3Dmacvtap
+      </pre></div></div><br class=3D"example-break"><div class=3D"example">=
+<a name=3D"id-1.24.14"></a><p class=3D"title"><b>Example&nbsp;13.&nbsp;/etc=
+/systemd/network/25-wireguard.netdev</b></p><div class=3D"example-contents"=
+><pre class=3D"programlisting">[NetDev]
+Name=3Dwg0
+Kind=3Dwireguard
+
+[WireGuard]
+PrivateKey=3DEEGlnEPYJV//kbvvIqxKkQwOiS+UENyPncC4bF46ong=3D
+ListenPort=3D51820
+
+[WireGuardPeer]
+PublicKey=3DRDf+LSpeEre7YEIKaxg+wbpsNV7du+ktR99uBEtIiCA=3D
+AllowedIPs=3Dfd31:bf08:57cb::/48,192.168.26.0/24
+Endpoint=3Dwireguard.example.com:51820</pre></div></div><br class=3D"exampl=
+e-break"></div><div class=3D"refsect1"><a name=3D"id-1.25"></a><h2 id=3D"Se=
+e Also">See Also<a class=3D"headerlink" title=3D"Permalink to this headline=
+" href=3D"https://www.freedesktop.org/software/systemd/man/systemd.netdev.h=
+tml#See%20Also">=C2=B6</a></h2><p>
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.h=
+tml#"><span class=3D"citerefentry"><span class=3D"refentrytitle">systemd</s=
+pan>(1)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd-n=
+etworkd.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">s=
+ystemd-networkd</span>(8)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.l=
+ink.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">syste=
+md.link</span>(5)</span></a>,
+      <a href=3D"https://www.freedesktop.org/software/systemd/man/systemd.n=
+etwork.html#"><span class=3D"citerefentry"><span class=3D"refentrytitle">sy=
+stemd.network</span>(5)</span></a>
+    </p></div></div>
+</body></html>
+------MultipartBoundary--pipxXrL8QO8bmt9sJWX9MFOrSLIkujg4xWZkkTccZ5------

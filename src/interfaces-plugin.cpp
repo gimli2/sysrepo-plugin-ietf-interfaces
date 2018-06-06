@@ -22,22 +22,14 @@ extern "C"
 {
 #endif
 
-// your functions here for the header
 #include "sysrepo.h"
 #include "sysrepo/values.h"
-#include "config.h"
 
 #ifdef __cplusplus
 }
 #endif
 
-#include <unistd.h>
-#include <sys/wait.h>
-
 #include <syslog.h>
-#include <string.h>
-#include <string>
-#include <iostream>
 
 using namespace std;
 
