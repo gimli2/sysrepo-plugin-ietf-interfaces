@@ -21,15 +21,15 @@ link_directories(${SYSREPO_LIBRARY_DIRS})
 # models
 set(YANG_SRCS
     yang/iana-if-type@2017-01-19.yang
-    yang/ietf-inet-types@2015-09-30.yang
+    yang/ietf-inet-types@2013-07-15.yang
     yang/ietf-interfaces@2017-12-16.yang
-    yang/ietf-ipv4-unicast-routing@2018-03-21.yang
-    yang/ietf-ipv6-unicast-routing@2018-03-21.yang
+    yang/ietf-ipv4-unicast-routing@2018-03-13.yang
     yang/ietf-ipv6-router-advertisements@2018-03-13.yang
-    yang/ietf-ip@2018-04-17.yang
-    yang/ietf-routing@2018-03-22.yang
-    yang/ietf-system@2017-09-15.yang
-    yang/ietf-yang-types@2015-09-30.yang
+    yang/ietf-ipv6-unicast-routing@2018-03-13.yang
+    yang/ietf-ip@2018-02-22.yang
+    yang/ietf-routing@2018-03-13.yang
+    yang/ietf-system@2014-08-06.yang
+    yang/ietf-yang-types@2013-07-15.yang
 )
 add_custom_target(YANG_files ${YANG_SRCS})
 set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
