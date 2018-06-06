@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*******************************************************************************/
 
 // TODO: implement logging like in: http://kev009.com/wp/2010/12/no-nonsense-logging-in-c-and-cpp/
 
@@ -48,7 +49,88 @@ extern "C"
 #define PATH_MAX_LEN 256
 #define IPBINARY "/bin/ip"
 
-
+/*******************************************************************************/
+/* progress of YANG model implementation                                       */
+/*******************************************************************************/
+/*
++--rw interfaces          
+|  +--rw interface* [name]
+|     +--rw name                        string            OK
+|     +--rw description?                string            OK
+|     +--rw type                        identityref       OK - only iana-if-type:ethernetCsmacd
+|     +--rw enabled?                    boolean           OK - initial create when enabled
+|     +--rw link-up-down-trap-enable?   enumeration       IGNORED - linkUp/linkDown SNMP notifications
++--ro interfaces-state
+ +--ro interface* [name]                                  NOT IMPLEMENTED and all of following
+    +--ro name               string
+    +--ro type               identityref
+    +--ro admin-status       enumeration
+    +--ro oper-status        enumeration
+    +--ro last-change?       yang:date-and-time
+    +--ro if-index           int32
+    +--ro phys-address?      yang:phys-address
+    +--ro higher-layer-if*   interface-state-ref
+    +--ro lower-layer-if*    interface-state-ref
+    +--ro speed?             yang:gauge64
+    +--ro statistics
+       +--ro discontinuity-time    yang:date-and-time
+       +--ro in-octets?            yang:counter64
+       +--ro in-unicast-pkts?      yang:counter64
+       +--ro in-broadcast-pkts?    yang:counter64
+       +--ro in-multicast-pkts?    yang:counter64
+       +--ro in-discards?          yang:counter32
+       +--ro in-errors?            yang:counter32
+       +--ro in-unknown-protos?    yang:counter32
+       +--ro out-octets?           yang:counter64
+       +--ro out-unicast-pkts?     yang:counter64
+       +--ro out-broadcast-pkts?   yang:counter64
+       +--ro out-multicast-pkts?   yang:counter64
+       +--ro out-discards?         yang:counter32
+       +--ro out-errors?           yang:counter3
+ 
+ 
+/ietf-interfaces:interfaces/interface[name='XYZ']/ietf-ip:(ipv4|ipv6)
+module: ietf-ip
+ augment /if:interfaces/if:interface:
+   +--rw ipv4!
+   |  +--rw enabled?      boolean                                     OK
+   |  +--rw forwarding?   boolean                                     OK
+   |  +--rw mtu?          uint16                                      OK
+   |  +--rw address* [ip]
+   |  |  +--rw ip               inet:ipv4-address-no-zone             OK
+   |  |  +--rw (subnet)
+   |  |  |  +--:(prefix-length)                                       OK
+   |  |  |  |  +--rw prefix-length?   uint8
+   |  |  |  +--:(netmask)
+   |  |  |     +--rw netmask?         yang:dotted-quad                ERR - sysrepo bug?
+   |  |  |             {ipv4-non-contiguous-netmasks}?
+   |  |  +--ro origin?          ip-address-origin                     IGNORED
+   |  +--rw neighbor* [ip]
+   |     +--rw ip                    inet:ipv4-address-no-zone        OK
+   |     +--rw link-layer-address    yang:phys-address                OK
+   |     +--ro origin?               neighbor-origin                  IGNORED
+   +--rw ipv6!
+      +--rw enabled?                     boolean                      OK
+      +--rw forwarding?                  boolean                      PARTIALLY
+      +--rw mtu?                         uint32                       PARTIALLY
+      +--rw address* [ip]                                             NOT IMPLEMENTED and all of following
+      |  +--rw ip               inet:ipv6-address-no-zone
+      |  +--rw prefix-length    uint8
+      |  +--ro origin?          ip-address-origin
+      |  +--ro status?          enumeration
+      +--rw neighbor* [ip]
+      |  +--rw ip                    inet:ipv6-address-no-zone
+      |  +--rw link-layer-address    yang:phys-address
+      |  +--ro origin?               neighbor-origin
+      |  +--ro is-router?            empty
+      |  +--ro state?                enumeration
+      +--rw dup-addr-detect-transmits?   uint32 
+ 
+*/
+/*******************************************************************************/
+/*
+ * Handle sysrepo return codes and log optional error when needed.
+ */
 static int handle_sr_return(int rc, string xpath = "") {
     if (SR_ERR_NOT_FOUND == rc) {
         syslog(LOG_DEBUG, "NOT FOUND error %s : %s\n", &xpath[0u], sr_strerror(rc));
@@ -62,6 +144,10 @@ static int handle_sr_return(int rc, string xpath = "") {
     return OK; // no error
 }
 
+/*******************************************************************************/
+/*
+ * Retrieve a value from sysrepo based on xpath.
+ */
 static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
     int rc = SR_ERR_OK;
     sr_val_t *data = NULL;
@@ -70,10 +156,67 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
     return data;
 }
 
+/*******************************************************************************/
 /*
- * use ip utility to add entries to ARP cache defined in ipv4/neighbor*
+ * Use ip utility to add entry to ARP cache.
  *
- * call: ip neigh add <IP> lladdr <MAC> dev <DEV>
+ * calls: ip neigh add <IP> lladdr <MAC> dev <DEV>
+*/
+static int add_arp_cache_entry(char * devname, string addr, string lladdr) {
+    int pid, status;
+    
+    string cmd = "neigh add "+addr+" lladdr "+lladdr+" dev "+devname;    
+    cout << "Adding this entry: " << cmd << endl;
+    syslog(LOG_DEBUG, "Adding this entry: %s\n", &cmd[0u]);
+    
+    if ((pid = fork())) {
+       // pid != 0 parent
+       waitpid(pid, &status, 0);
+       printf("Binary %s returned status code = %d\n", IPBINARY, status);
+       if (status == 0)   syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s sucessfully added.\n", &addr[0u], &lladdr[0u]);
+       if (status == 512) syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s already exists.\n", &addr[0u], &lladdr[0u]);
+    } else {
+       // pid == 0 child
+       int ret = execl(IPBINARY, "-v", "neigh", "add", &addr[0u], "lladdr", &lladdr[0u], "dev", devname, NULL);
+       // reachable only when command failed
+       printf("Something wrong happened during call %s neigh add, returned code = %d\n", IPBINARY, ret);
+       syslog(LOG_DEBUG, "Something wrong happened during call %s neigh add, returned code = %d\n", IPBINARY, ret);
+    }
+    return status;
+}
+
+/*******************************************************************************/
+/*
+ * Use ip utility to del entry from ARP cache.
+ *
+ * calls: ip neigh del <IP> lladdr <MAC> dev <DEV>
+*/
+static int del_arp_cache_entry(char * devname, string addr, string lladdr) {
+    int pid, status;
+    
+    string cmd = "neigh del "+addr+" lladdr "+lladdr+" dev "+devname;    
+    cout << "Deleting this entry: " << cmd << endl;
+    syslog(LOG_DEBUG, "Deleting this entry: %s\n", &cmd[0u]);
+    
+    if ((pid = fork())) {
+       // pid != 0 parent
+       waitpid(pid, &status, 0);
+       printf("Binary %s returned status code = %d\n", IPBINARY, status);
+       if (status == 0)   syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s sucessfully deleted.\n", &addr[0u], &lladdr[0u]);
+       if (status == 512) syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s already exists.\n", &addr[0u], &lladdr[0u]);
+    } else {
+       // pid == 0 child
+       int ret = execl(IPBINARY, "-v", "neigh", "del", &addr[0u], "lladdr", &lladdr[0u], "dev", devname, NULL);
+       // reachable only when command failed
+       printf("Something wrong happened during call %s neigh del, returned code = %d\n", IPBINARY, ret);
+       syslog(LOG_DEBUG, "Something wrong happened during call %s neigh del, returned code = %d\n", IPBINARY, ret);
+    }
+    return status;
+}
+
+/*******************************************************************************/
+/*
+ * Map elements in ipv4/neighbor* to entries of ARP cache.
 */
 static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
     syslog(LOG_DEBUG, "create_arp_cache_entries called\n");
@@ -81,33 +224,17 @@ static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
     size_t count = 0;
     int rc = SR_ERR_OK;
     // shortcut for xpath queries
-    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)devname+"']/ietf-ip:ipv4";
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)devname+"']/ietf-ip:ipv4";    
     string xpath = ifipv4xpath + "/neighbor/ip";
     rc = sr_get_items(session, &xpath[0u], &values, &count);
-    if (handle_sr_return(rc) == OK) {
+    if (handle_sr_return(rc, xpath) == OK) {
         for (size_t i = 0; i < count; i++){
-            sr_val_t *ipv4lladdress = get_val(session, ifipv4xpath + "/neighbor[ip='"+(string)(&values[i])->data.string_val+"']/link-layer-address");
-
             string addr = (string)(&values[i])->data.string_val;
+            sr_val_t *ipv4lladdress = get_val(session, ifipv4xpath + "/neighbor[ip='"+addr+"']/link-layer-address");
+            
             string lladdr = (string)ipv4lladdress->data.string_val;
-            string cmd = "neigh add "+addr+" lladdr "+lladdr+" dev "+devname;
 
-            printf("%s\n", &cmd[0u]);
-            syslog(LOG_DEBUG, "Adding this entry: %s\n", &cmd[0u]);
-
-            int pid, status;
-            if ((pid = fork())) {
-               // pid != 0 parent
-               waitpid(pid, &status, 0);
-               printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA status child = %d\n", status);
-               if (status == 0)   syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s sucessfully added.\n", &addr[0u], &lladdr[0u]);
-               if (status == 512) syslog(LOG_DEBUG, "ARP CACHE entry %s -> %s already exists.\n", &addr[0u], &lladdr[0u]);
-            } else {
-               // pid == 0 child
-               int ret = execl(IPBINARY, "-v", "neigh", "add", &addr[0u], "lladdr", &lladdr[0u], "dev", devname, NULL);
-               // reachable only when command failed
-               printf("CCCCCCCCCCCCCC ret = %d\n", ret);
-            }
+            add_arp_cache_entry(devname, addr, lladdr);
 
             sr_free_val(ipv4lladdress);
         }
@@ -115,6 +242,106 @@ static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
     }
 }
 
+/*******************************************************************************/
+/* 
+ * Add interface stuff for IPv4
+ */
+static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
+    string xpath = "";
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
+    
+    sr_val_t *ipv4forward = get_val(session, ifipv4xpath + "/forwarding");
+    //printf("IPv4 forward = %s\n", ipv4forward->data.bool_val ? "true" : "false");
+    if (ipv4forward->data.bool_val) ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
+
+    sr_val_t *ipv4mtu = get_val(session, ifipv4xpath + "/mtu");
+    //printf("IPv4 mtu = %d\n", ipv4mtu->data.uint16_val);
+    string mtu = to_string(ipv4mtu->data.uint16_val);
+    if (ipv4mtu != NULL) ini_table_create_entry(ifcfg, "Link", "MTUBytes", &mtu[0u]);
+
+    if (is_dhcp) {
+        // DHCP
+        ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv4");
+    } else {
+        // STATIC adresses
+        sr_val_t *values = NULL;
+        size_t count = 0;
+        int rc = SR_ERR_OK;
+        xpath = ifipv4xpath + "/address/ip";
+        rc = sr_get_items(session, &xpath[0u], &values, &count);
+        if (handle_sr_return(rc) == OK) {
+            for (size_t i = 0; i < count; i++){
+                //printf("IPv4 ip = %s\n", (&values[i])->data.string_val);
+
+                sr_val_t *ipv4prefixlen = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/prefix-length");
+
+                sr_val_t *ipv4netmask = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/netmask");
+                
+                // prepare output of addr + prefix len / netmask
+                string addr = (string)(&values[i])->data.string_val;
+                if (ipv4prefixlen != NULL) {
+                    addr += "/" + to_string(ipv4prefixlen->data.uint8_val);
+                }
+                if (ipv4netmask != NULL) {
+                    addr += "/" + (string)ipv4netmask->data.string_val;
+                    cout << "Netmask is prefferef over prefix-len." << endl;
+                }
+
+                // it is possible to have more addres, need to create entry allowing duplicate key
+                ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
+
+                // TODO: Gateway + DNS
+                // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
+                // ini_table_create_entry(ifcfg, "Network", "DNS", "");
+
+                sr_free_val(ipv4prefixlen);
+                sr_free_val(ipv4netmask);
+            }
+            sr_free_values(values, count);
+        }
+    }
+
+    // create ARP cache entries defined by ipv4/neighbor*
+    create_arp_cache_entries(session, name);
+
+    sr_free_val(ipv4forward);
+    sr_free_val(ipv4mtu);
+}
+
+/*******************************************************************************/
+/* 
+ * Add interface stuff for IPv6
+ */
+static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
+    string xpath = "";
+    string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6";
+    
+    sr_val_t *ipv6forward = get_val(session, ifipv6xpath + "/forwarding");
+    if (ipv6forward->data.bool_val) ini_table_create_entry_duplicate(ifcfg, "Network", "IPForward", "ipv6");
+    // IPForward accepts boolean value or "ipv4" or "ipv6"
+    // systemd boolean true = (1, yes, on, true); false = (0, no off, false)
+    // TODO: check if multiple entry is accepted or must be replaced for both ipv4 and ipv6 to true
+    
+
+    sr_val_t *ipv6mtu = get_val(session, ifipv6xpath + "/mtu");
+    string mtu = to_string(ipv6mtu->data.uint16_val);
+    
+    // TODO: check if multiple entry is accepted optionally handle collision in MTU for ipv4 and ipv6 
+    // (min MTU 1280, values bellow automatically increased by systemd-networkd)
+    if (ipv6mtu != NULL) ini_table_create_entry_duplicate(ifcfg, "Link", "MTUBytes", &mtu[0u]);
+    
+    // TODO: implement
+    
+    
+    sr_free_val(ipv6forward);
+    sr_free_val(ipv6mtu);
+}
+    
+
+/*******************************************************************************/
+/* 
+ * Create interface
+ */
 static void create_interface(sr_session_ctx_t *session, char *name) {
     printf("Creating interface %s\n", name);
     char dst[PATH_MAX_LEN];
@@ -137,91 +364,23 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
 
     // proceed only to enabled and known interface type
     if (enabled->data.bool_val && strcmp("iana-if-type:ethernetCsmacd", type->data.identityref_val) == 0) {
-        // shortcut for xpath queries
-        string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
 
         // prepare dict for output config
         ini_table_s* ifcfg = ini_table_create();
         ini_table_create_entry(ifcfg, "Match", &sdesc[0u], "");
         ini_table_create_entry(ifcfg, "Match", "Name", name);
 
-        sr_val_t *ipv4enabled = get_val(session, ifipv4xpath + "/enabled");
-        //if (ipv4enabled != NULL) printf("IPv4 enabled = %s\n", ipv4enabled->data.bool_val ? "true" : "false");
-
-        // FIX: default je true
+        sr_val_t *ipv4enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4/enabled");
         // iface has ipv4 enabled
         if (ipv4enabled != NULL && ipv4enabled->data.bool_val) {
-
-            sr_val_t *ipv4forward = get_val(session, ifipv4xpath + "/forwarding");
-            //printf("IPv4 forward = %s\n", ipv4forward->data.bool_val ? "true" : "false");
-            if (ipv4forward->data.bool_val) ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
-
-            sr_val_t *ipv4mtu = get_val(session, ifipv4xpath + "/mtu");
-            //printf("IPv4 mtu = %d\n", ipv4mtu->data.uint16_val);
-            string mtu = to_string(ipv4mtu->data.uint16_val);
-            if (ipv4mtu != NULL) ini_table_create_entry(ifcfg, "Link", "MTUBytes", &mtu[0u]);
-
-            if (is_dhcp) {
-                // DHCP
-                ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv4");
-            } else {
-                // STATIC adresses
-                sr_val_t *values = NULL;
-                size_t count = 0;
-                int rc = SR_ERR_OK;
-                xpath = ifipv4xpath + "/address/ip";
-                rc = sr_get_items(session, &xpath[0u], &values, &count);
-                if (handle_sr_return(rc) == OK) {
-                    for (size_t i = 0; i < count; i++){
-                        //printf("IPv4 ip = %s\n", (&values[i])->data.string_val);
-
-                        sr_val_t *ipv4prefixlen = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/prefix-length");
-
-                        sr_val_t *ipv4netmask = get_val(session, ifipv4xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/netmask");
-
-                        // prepare output of addr + prefix len / netmask
-                        string addr = (string)(&values[i])->data.string_val;
-                        if (ipv4prefixlen != NULL) {
-                            addr += "/" + to_string(ipv4prefixlen->data.uint8_val);
-                        }
-                        if (ipv4netmask != NULL) {
-                            addr += "/" + (string)ipv4netmask->data.string_val;
-                            printf("Netmask is prefferef over prefix-len.\n");
-                        }
-
-
-                        // it is possible to have more addres, need to create entry allowing duplicate key
-                        ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
-
-                        // TODO: Gateway DNS
-                        // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
-                        // ini_table_create_entry(ifcfg, "Network", "DNS", "");
-
-                        sr_free_val(ipv4prefixlen);
-                        sr_free_val(ipv4netmask);
-                    }
-                    sr_free_values(values, count);
-                }
-            }
-
-            // create ARP cache entries defined by ipv4/neighbor*
-            create_arp_cache_entries(session, name);
-
-
-            sr_free_val(ipv4forward);
-            sr_free_val(ipv4mtu);
+            interface_ipv4(session, ifcfg, name, is_dhcp);
         }
         sr_free_val(ipv4enabled);
 
-
-        string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6";
-        sr_val_t *ipv6enabled = get_val(session, ifipv6xpath + "/enabled");
-        if (ipv6enabled != NULL) printf("IPv6 enabled = %s\n", ipv6enabled->data.bool_val ? "true" : "false");
-
-        // FIX: default je true
+        sr_val_t *ipv6enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6/enabled");
         // iface has ipv6 enabled
         if (ipv6enabled != NULL && ipv6enabled->data.bool_val) {
-            // TODO: ipv6
+            interface_ipv6(session, ifcfg, name, is_dhcp);
         }
         sr_free_val(ipv6enabled);
 
@@ -237,6 +396,7 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
     sr_free_val(description);
 }
 
+/*******************************************************************************/
 static void print_current_config(sr_session_ctx_t *session) {
     sr_val_t *values = NULL;
     size_t count = 0;
@@ -253,7 +413,7 @@ static void print_current_config(sr_session_ctx_t *session) {
     sr_free_values(values, count);
 }
 
-
+/*******************************************************************************/
 static void apply_current_config(sr_session_ctx_t *session) {
     sr_val_t *values = NULL;
     size_t count = 0;
@@ -269,3 +429,4 @@ static void apply_current_config(sr_session_ctx_t *session) {
     }
     sr_free_values(values, count);
 }
+/*******************************************************************************/
