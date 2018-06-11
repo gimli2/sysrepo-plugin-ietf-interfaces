@@ -335,6 +335,46 @@ static bool set_dhcp(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) 
     sr_free_val(description);
     return r;
 }
+
+/*******************************************************************************/
+/* 
+ * Set DNS
+ * requires proper entries in eitf-system module
+ */
+static void set_dns(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
+    sr_val_t *values = NULL;
+    size_t count = 0;
+    int rc = SR_ERR_OK;
+    string xpath = "/ietf-system:system/dns-resolver/server/name";
+    string dnsprefix = "/ietf-system:system/dns-resolver";
+    rc = sr_get_items(session, &xpath[0u], &values, &count);
+    if (handle_sr_return(rc) == OK) {
+        for (size_t i = 0; i < count; i++){
+            sr_val_t *dnsip = get_val(session, dnsprefix + "/server[name='"+(string)(&values[i])->data.string_val+"']/udp-and-tcp/address");
+            
+            // probably not supproted by systemd.networkd config
+            //sr_val_t *dnsport = get_val(session, dnsprefix + "/server[name='"+(string)(&values[i])->data.string_val+"']/udp-and-tcp/port");
+            
+            if (dnsip != NULL) {
+                string sdnsip = dnsip->data.string_val;
+                printf("DNS ip = %s\n", &sdnsip[0u]);
+                ini_table_create_entry_duplicate(ifcfg, "Network", "DNS", &sdnsip[0u]);
+            }
+            /*
+            if (dnsport != NULL) {
+                printf("DNS port = %s\n", dnsport->data.string_val);
+                ini_table_create_entry_duplicate(ifcfg, "Network", "DNS", &addr[0u]);
+            }
+            * sr_free_val(dnsport);
+            */
+
+            sr_free_val(dnsip);
+            
+
+        }
+        sr_free_values(values, count);
+    }
+}
     
 /*******************************************************************************/
 /* 
@@ -489,6 +529,11 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
             interface_ipv6(session, ifcfg, name);
         }
         sr_free_val(ipv6enabled);
+        
+        // if at least one routing is enabled
+        if ((ipv4enabled != NULL && ipv4enabled->data.bool_val) || (ipv6enabled != NULL && ipv6enabled->data.bool_val)) {
+            set_dns(session, ifcfg, name);
+        }
 
         // write cfg to file
         ini_table_write_to_file(ifcfg, dst);

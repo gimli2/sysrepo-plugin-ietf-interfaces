@@ -1,0 +1,35 @@
+{
+  "ietf-system:system": {
+    "authentication": {
+      "user": [
+        {
+          "name": "root",
+          "authorized-key": [
+            {
+              "name": "prvni klic",
+              "algorithm": "ssh-rsa",
+              "key-data": "AAAA1="
+            },
+            {
+              "name": "druhy klic",
+              "algorithm": "ssh-rsa",
+              "key-data": "AAAA2="
+            }
+          ]
+        }
+      ]
+    },
+    "hostname": "paraguay",
+    "dns-resolver": {
+      "server": [
+        {
+          "name": "dnsko",
+          "udp-and-tcp": {
+            "address": "8.8.8.8",
+            "port": 53
+          }
+        }
+      ]
+    }
+  }
+}
