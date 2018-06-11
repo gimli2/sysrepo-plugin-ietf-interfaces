@@ -1,0 +1,81 @@
+{
+  "ietf-interfaces:interfaces": {
+    "interface": [
+      {
+        "name": "eth0",
+        "description": "Ethernet 0",
+        "type": "iana-if-type:ethernetCsmacd",
+        "enabled": true,
+        "ietf-ip:ipv4": {
+          "enabled": true,
+          "mtu": 1500,
+          "address": [
+            {
+              "ip": "192.168.2.100",
+              "prefix-length": 24
+            }
+          ],
+          "neighbor": [
+            {
+              "ip": "192.168.42.42",
+              "link-layer-address": "FF:FF:FF:FF:FF:FF"
+            }
+          ]
+        },
+        "ietf-ip:ipv6": {
+          "enabled": true,
+          "mtu": 1666,
+          "address": [
+            {
+              "ip": "fe80::",
+              "prefix-length": 64
+            }
+          ],
+          "neighbor": [
+            {
+              "ip": "fe80::1000",
+              "link-layer-address": "FF:FF:FF:FF:DE:AD"
+            }
+          ],
+          "dup-addr-detect-transmits": 3
+        }
+      },
+      {
+        "name": "eth1",
+        "description": "Ethernet 1 jen tak dal a porad",
+        "type": "iana-if-type:ethernetCsmacd",
+        "enabled": true,
+        "ietf-ip:ipv4": {
+          "enabled": true,
+          "mtu": 1500,
+          "address": [
+            {
+              "ip": "10.10.1.5",
+              "prefix-length": 16
+            }
+          ]
+        }
+      },
+      {
+        "name": "enp0s8",
+        "description": "DHCPv4:sit-s-hostem",
+        "type": "iana-if-type:ethernetCsmacd",
+        "enabled": true,
+        "ietf-ip:ipv4": {
+          "enabled": true,
+          "mtu": 1500
+        }
+      },
+      {
+        "name": "enp0s3",
+        "description": "DHCPv4:internet",
+        "type": "iana-if-type:ethernetCsmacd",
+        "enabled": true,
+        "ietf-ip:ipv4": {
+          "enabled": true,
+          "mtu": 1500
+        }
+      }
+    ]
+  }
+}

@@ -126,7 +126,7 @@ module: ietf-ip
       |  +--ro origin?               neighbor-origin                  IGNORED
       |  +--ro is-router?            empty                            IGNORED
       |  +--ro state?                enumeration                      IGNORED
-      +--rw dup-addr-detect-transmits?   uint32 
+      +--rw dup-addr-detect-transmits?   uint32                       OK - W
  
 */
 /*******************************************************************************/
