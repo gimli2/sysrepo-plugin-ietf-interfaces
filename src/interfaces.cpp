@@ -111,7 +111,7 @@ module: ietf-ip
    |     +--ro origin?               neighbor-origin                  IGNORED
    +--rw ipv6!
       +--rw enabled?                     boolean                      OK
-      +--rw forwarding?                  boolean                      PARTIALLY
+      +--rw forwarding?                  boolean                      OK
       +--rw mtu?                         uint32                       PARTIALLY
       +--rw address* [ip]                                             NOT IMPLEMENTED and all of following
       |  +--rw ip               inet:ipv6-address-no-zone
@@ -244,15 +244,41 @@ static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
 
 /*******************************************************************************/
 /* 
+ * Handle IPv4/6 forwarding
+ * IPForward accepts boolean value or "ipv4" or "ipv6"
+ * systemd boolean true = (1, yes, on, true); false = (0, no off, false)
+ */
+static void set_forwarding(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
+    string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6/forwarding";
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4/forwarding";
+    
+    sr_val_t *ipv4forward = get_val(session, ifipv4xpath);
+    sr_val_t *ipv6forward = get_val(session, ifipv6xpath);
+    
+    // new entries will be overwriten
+    if (ipv6forward->data.bool_val && ipv4forward->data.bool_val) {        
+        ini_table_create_entry(ifcfg, "Network", "IPForward", "yes");
+    } else if (ipv4forward->data.bool_val) {
+        ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
+    } else if (ipv6forward->data.bool_val) {
+        ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv6");
+    } else {
+        // no is default, may be ommited
+        ini_table_create_entry(ifcfg, "Network", "IPForward", "no");
+    }
+    sr_free_val(ipv4forward);
+    sr_free_val(ipv6forward);
+}
+    
+/*******************************************************************************/
+/* 
  * Add interface stuff for IPv4
  */
 static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
     string xpath = "";
     string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
-    sr_val_t *ipv4forward = get_val(session, ifipv4xpath + "/forwarding");
-    //printf("IPv4 forward = %s\n", ipv4forward->data.bool_val ? "true" : "false");
-    if (ipv4forward->data.bool_val) ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
+    set_forwarding(session, ifcfg, name);
 
     sr_val_t *ipv4mtu = get_val(session, ifipv4xpath + "/mtu");
     //printf("IPv4 mtu = %d\n", ipv4mtu->data.uint16_val);
@@ -304,7 +330,6 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     // create ARP cache entries defined by ipv4/neighbor*
     create_arp_cache_entries(session, name);
 
-    sr_free_val(ipv4forward);
     sr_free_val(ipv4mtu);
 }
 
@@ -315,13 +340,9 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
 static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
     string xpath = "";
     string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6";
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
-    sr_val_t *ipv6forward = get_val(session, ifipv6xpath + "/forwarding");
-    if (ipv6forward->data.bool_val) ini_table_create_entry_duplicate(ifcfg, "Network", "IPForward", "ipv6");
-    // IPForward accepts boolean value or "ipv4" or "ipv6"
-    // systemd boolean true = (1, yes, on, true); false = (0, no off, false)
-    // TODO: check if multiple entry is accepted or must be replaced for both ipv4 and ipv6 to true
-    
+    set_forwarding(session, ifcfg, name);
 
     sr_val_t *ipv6mtu = get_val(session, ifipv6xpath + "/mtu");
     string mtu = to_string(ipv6mtu->data.uint16_val);
@@ -331,9 +352,7 @@ static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     if (ipv6mtu != NULL) ini_table_create_entry_duplicate(ifcfg, "Link", "MTUBytes", &mtu[0u]);
     
     // TODO: implement
-    
-    
-    sr_free_val(ipv6forward);
+
     sr_free_val(ipv6mtu);
 }
     
