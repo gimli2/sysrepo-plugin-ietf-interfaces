@@ -164,6 +164,8 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
  *
  * calls: ip neigh add <IP> lladdr <MAC> dev <DEV>
 */
+// TODO: forks should away to one central point :-/
+// void exec_process(const std::vector<std::string>& args) 
 static int add_arp_cache_entry(char * devname, string addr, string lladdr) {
     int pid, status;
     
@@ -375,6 +377,19 @@ static void set_dns(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
         sr_free_values(values, count);
     }
 }
+
+/*******************************************************************************/
+/* 
+ * Set DNS
+ * requires proper entries in eitf-system module
+ */
+static void set_gateway(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
+    // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
+    
+    string xpath = "/ietf-routing:routing/control-plane-protocols/control-plane-protocol[type='ietf-routing:static'][name='st0']/static-routes/ietf-ipv4-unicast-routing:ipv4/route[destination-prefix='0.0.0.0/0']/next-hop/next-hop-address";
+    
+    
+}
     
 /*******************************************************************************/
 /* 
@@ -415,10 +430,6 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
 
                 // it is possible to have more addres, need to create entry allowing duplicate key
                 ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
-
-                // TODO: Gateway + DNS
-                // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
-                // ini_table_create_entry(ifcfg, "Network", "DNS", "");
 
                 sr_free_val(ipv4prefixlen);
                 sr_free_val(ipv4netmask);
@@ -464,10 +475,6 @@ static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
 
                 // it is possible to have more addres, need to create entry allowing duplicate key
                 ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
-
-                // TODO: Gateway + DNS
-                // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
-                // ini_table_create_entry(ifcfg, "Network", "DNS", "");
 
                 sr_free_val(ipv6prefixlen);
             }
@@ -533,6 +540,7 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
         // if at least one routing is enabled
         if ((ipv4enabled != NULL && ipv4enabled->data.bool_val) || (ipv6enabled != NULL && ipv6enabled->data.bool_val)) {
             set_dns(session, ifcfg, name);
+            set_gateway(session, ifcfg, name);
         }
 
         // write cfg to file

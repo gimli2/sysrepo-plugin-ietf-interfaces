@@ -73,6 +73,7 @@ int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
 
 
     print_current_config(session);
+    apply_current_config(session);
 
     /* set subscription as our private context */
     *private_ctx = subscription;
