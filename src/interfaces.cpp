@@ -49,6 +49,8 @@ extern "C"
 #define PATH_MAX_LEN 256
 #define IPBINARY "/bin/ip"
 
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 /*******************************************************************************/
 /* progress of YANG model implementation                                       */
 /*******************************************************************************/
@@ -112,7 +114,7 @@ module: ietf-ip
    +--rw ipv6!
       +--rw enabled?                     boolean                      OK
       +--rw forwarding?                  boolean                      OK
-      +--rw mtu?                         uint32                       PARTIALLY
+      +--rw mtu?                         uint32                       OK
       +--rw address* [ip]                                             NOT IMPLEMENTED and all of following
       |  +--rw ip               inet:ipv6-address-no-zone
       |  +--rw prefix-length    uint8
@@ -269,6 +271,37 @@ static void set_forwarding(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     sr_free_val(ipv4forward);
     sr_free_val(ipv6forward);
 }
+
+/*******************************************************************************/
+/* 
+ * Handle MTU byte size
+ * notice: MTU sizes with suffixes (e.g. K, M, G) is not supported by sysrepo.
+ * notice: minimum MTU size for IPv6 is 1280, we handle it for networkd
+ */
+static void set_mtu(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
+    string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6/mtu";
+    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4/mtu";
+    
+    sr_val_t *ipv4mtu = get_val(session, ifipv4xpath);
+    sr_val_t *ipv6mtu = get_val(session, ifipv6xpath);
+    
+    // new entries will be overwriten
+    if (ipv4mtu != NULL && ipv6mtu != NULL) {
+        uint16_t mtu = MAX(ipv4mtu->data.uint16_val, ipv6mtu->data.uint16_val);
+        if (mtu < 1280) mtu = 1280;
+        string smtu = to_string(mtu);
+        ini_table_create_entry(ifcfg, "Link", "MTUBytes", &smtu[0u]);
+    } else if (ipv4mtu != NULL) {
+        string smtu = to_string(ipv4mtu->data.uint16_val);
+        ini_table_create_entry(ifcfg, "Link", "MTUBytes", &smtu[0u]);
+    } else if (ipv6mtu != NULL) {
+        string smtu = to_string(ipv6mtu->data.uint16_val);
+        ini_table_create_entry(ifcfg, "Link", "MTUBytes", &smtu[0u]);
+    }
+    
+    sr_free_val(ipv4mtu);
+    sr_free_val(ipv6mtu);
+}
     
 /*******************************************************************************/
 /* 
@@ -279,11 +312,7 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
     set_forwarding(session, ifcfg, name);
-
-    sr_val_t *ipv4mtu = get_val(session, ifipv4xpath + "/mtu");
-    //printf("IPv4 mtu = %d\n", ipv4mtu->data.uint16_val);
-    string mtu = to_string(ipv4mtu->data.uint16_val);
-    if (ipv4mtu != NULL) ini_table_create_entry(ifcfg, "Link", "MTUBytes", &mtu[0u]);
+    set_mtu(session, ifcfg, name);
 
     if (is_dhcp) {
         // DHCP
@@ -329,8 +358,6 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
 
     // create ARP cache entries defined by ipv4/neighbor*
     create_arp_cache_entries(session, name);
-
-    sr_free_val(ipv4mtu);
 }
 
 /*******************************************************************************/
@@ -343,17 +370,11 @@ static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
     set_forwarding(session, ifcfg, name);
-
-    sr_val_t *ipv6mtu = get_val(session, ifipv6xpath + "/mtu");
-    string mtu = to_string(ipv6mtu->data.uint16_val);
-    
-    // TODO: check if multiple entry is accepted optionally handle collision in MTU for ipv4 and ipv6 
-    // (min MTU 1280, values bellow automatically increased by systemd-networkd)
-    if (ipv6mtu != NULL) ini_table_create_entry_duplicate(ifcfg, "Link", "MTUBytes", &mtu[0u]);
+    set_mtu(session, ifcfg, name);
     
     // TODO: implement
 
-    sr_free_val(ipv6mtu);
+
 }
     
 
