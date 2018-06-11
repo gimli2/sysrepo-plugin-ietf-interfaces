@@ -57,9 +57,9 @@ extern "C"
 /*
 +--rw interfaces          
 |  +--rw interface* [name]
-|     +--rw name                        string            OK
-|     +--rw description?                string            OK
-|     +--rw type                        identityref       OK - only iana-if-type:ethernetCsmacd
+|     +--rw name                        string            OK - W
+|     +--rw description?                string            OK - W
+|     +--rw type                        identityref       OK - W - only iana-if-type:ethernetCsmacd
 |     +--rw enabled?                    boolean           OK - initial create when enabled
 |     +--rw link-up-down-trap-enable?   enumeration       IGNORED - linkUp/linkDown SNMP notifications
 +--ro interfaces-state
@@ -95,37 +95,37 @@ extern "C"
 module: ietf-ip
  augment /if:interfaces/if:interface:
    +--rw ipv4!
-   |  +--rw enabled?      boolean                                     OK
-   |  +--rw forwarding?   boolean                                     OK
-   |  +--rw mtu?          uint16                                      OK
+   |  +--rw enabled?      boolean                                     OK - W
+   |  +--rw forwarding?   boolean                                     OK - W
+   |  +--rw mtu?          uint16                                      OK - W
    |  +--rw address* [ip]
-   |  |  +--rw ip               inet:ipv4-address-no-zone             OK
+   |  |  +--rw ip               inet:ipv4-address-no-zone             OK - W
    |  |  +--rw (subnet)
-   |  |  |  +--:(prefix-length)                                       OK
+   |  |  |  +--:(prefix-length)                                       OK - W
    |  |  |  |  +--rw prefix-length?   uint8
    |  |  |  +--:(netmask)
    |  |  |     +--rw netmask?         yang:dotted-quad                ERR - sysrepo bug?
    |  |  |             {ipv4-non-contiguous-netmasks}?
    |  |  +--ro origin?          ip-address-origin                     IGNORED
    |  +--rw neighbor* [ip]
-   |     +--rw ip                    inet:ipv4-address-no-zone        OK
-   |     +--rw link-layer-address    yang:phys-address                OK
+   |     +--rw ip                    inet:ipv4-address-no-zone        OK - W
+   |     +--rw link-layer-address    yang:phys-address                OK - W
    |     +--ro origin?               neighbor-origin                  IGNORED
    +--rw ipv6!
-      +--rw enabled?                     boolean                      OK
-      +--rw forwarding?                  boolean                      OK
-      +--rw mtu?                         uint32                       OK
-      +--rw address* [ip]                                             NOT IMPLEMENTED and all of following
-      |  +--rw ip               inet:ipv6-address-no-zone
-      |  +--rw prefix-length    uint8
-      |  +--ro origin?          ip-address-origin
-      |  +--ro status?          enumeration
+      +--rw enabled?                     boolean                      OK - W
+      +--rw forwarding?                  boolean                      OK - W
+      +--rw mtu?                         uint32                       OK - W
+      +--rw address* [ip]
+      |  +--rw ip               inet:ipv6-address-no-zone             OK - W
+      |  +--rw prefix-length    uint8                                 OK - W
+      |  +--ro origin?          ip-address-origin                     IGNORED
+      |  +--ro status?          enumeration                           IGNORED
       +--rw neighbor* [ip]
-      |  +--rw ip                    inet:ipv6-address-no-zone
-      |  +--rw link-layer-address    yang:phys-address
-      |  +--ro origin?               neighbor-origin
-      |  +--ro is-router?            empty
-      |  +--ro state?                enumeration
+      |  +--rw ip                    inet:ipv6-address-no-zone        OK - W
+      |  +--rw link-layer-address    yang:phys-address                OK - W
+      |  +--ro origin?               neighbor-origin                  IGNORED
+      |  +--ro is-router?            empty                            IGNORED
+      |  +--ro state?                enumeration                      IGNORED
       +--rw dup-addr-detect-transmits?   uint32 
  
 */
@@ -220,25 +220,25 @@ static int del_arp_cache_entry(char * devname, string addr, string lladdr) {
 /*
  * Map elements in ipv4/neighbor* to entries of ARP cache.
 */
-static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname) {
+static void create_arp_cache_entries(sr_session_ctx_t *session, char *devname, int ipv) {
     syslog(LOG_DEBUG, "create_arp_cache_entries called\n");
     sr_val_t *values = NULL;
     size_t count = 0;
     int rc = SR_ERR_OK;
     // shortcut for xpath queries
-    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)devname+"']/ietf-ip:ipv4";    
-    string xpath = ifipv4xpath + "/neighbor/ip";
+    string ifipvXxpath = "/ietf-interfaces:interfaces/interface[name='"+(string)devname+"']/ietf-ip:ipv"+to_string(ipv);
+    string xpath = ifipvXxpath + "/neighbor/ip";
     rc = sr_get_items(session, &xpath[0u], &values, &count);
     if (handle_sr_return(rc, xpath) == OK) {
         for (size_t i = 0; i < count; i++){
             string addr = (string)(&values[i])->data.string_val;
-            sr_val_t *ipv4lladdress = get_val(session, ifipv4xpath + "/neighbor[ip='"+addr+"']/link-layer-address");
+            sr_val_t *ipvlladdress = get_val(session, ifipvXxpath + "/neighbor[ip='"+addr+"']/link-layer-address");
             
-            string lladdr = (string)ipv4lladdress->data.string_val;
+            string lladdr = (string)ipvlladdress->data.string_val;
 
             add_arp_cache_entry(devname, addr, lladdr);
 
-            sr_free_val(ipv4lladdress);
+            sr_free_val(ipvlladdress);
         }
         sr_free_values(values, count);
     }
@@ -258,11 +258,11 @@ static void set_forwarding(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     sr_val_t *ipv6forward = get_val(session, ifipv6xpath);
     
     // new entries will be overwriten
-    if (ipv6forward->data.bool_val && ipv4forward->data.bool_val) {        
+    if (ipv6forward != NULL && ipv4forward != NULL && ipv6forward->data.bool_val && ipv4forward->data.bool_val) {        
         ini_table_create_entry(ifcfg, "Network", "IPForward", "yes");
-    } else if (ipv4forward->data.bool_val) {
+    } else if (ipv4forward != NULL && ipv4forward->data.bool_val) {
         ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv4");
-    } else if (ipv6forward->data.bool_val) {
+    } else if (ipv6forward != NULL && ipv6forward->data.bool_val) {
         ini_table_create_entry(ifcfg, "Network", "IPForward", "ipv6");
     } else {
         // no is default, may be ommited
@@ -295,29 +295,60 @@ static void set_mtu(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
         string smtu = to_string(ipv4mtu->data.uint16_val);
         ini_table_create_entry(ifcfg, "Link", "MTUBytes", &smtu[0u]);
     } else if (ipv6mtu != NULL) {
-        string smtu = to_string(ipv6mtu->data.uint16_val);
+        uint16_t mtu = ipv6mtu->data.uint16_val;
+        if (mtu < 1280) mtu = 1280;
+        string smtu = to_string(mtu);
         ini_table_create_entry(ifcfg, "Link", "MTUBytes", &smtu[0u]);
     }
     
     sr_free_val(ipv4mtu);
     sr_free_val(ipv6mtu);
 }
+
+/*******************************************************************************/
+/* 
+ * Set DHCP
+ * Accepts "yes", "no", "ipv4", or "ipv6". Defaults to "no".
+ * 
+ * ugly temporary hack to determine DHCP - DHCP is used when description starts with "DHCPv4" od "DHCPv6"
+ */
+static bool set_dhcp(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
+    sr_val_t *description = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/description");
+    bool r = true;
+    if (description != NULL) {
+        string sdesc = (string) description->data.string_val;
+        //cout << "DHCPDHCPDHCP -> " << sdesc.substr(0,6) << endl;
+        
+        if ((sdesc.substr(0,6).compare("DHCPv4") == 0) && (sdesc.substr(0,6).compare("DHCPv6") == 0)) {
+            ini_table_create_entry(ifcfg, "Network", "DHCP", "yes");
+        } else if (sdesc.substr(0,6).compare("DHCPv4") == 0) {
+            ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv4");
+        } else if (sdesc.substr(0,6).compare("DHCPv6") == 0) {
+            ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv6");
+        } else {
+            r = false;
+            // no is default, may be ommited
+            ini_table_create_entry(ifcfg, "Network", "DHCP", "no");
+        }
+    }
+    
+    sr_free_val(description);
+    return r;
+}
     
 /*******************************************************************************/
 /* 
  * Add interface stuff for IPv4
  */
-static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
+static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
     string xpath = "";
     string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
     set_forwarding(session, ifcfg, name);
     set_mtu(session, ifcfg, name);
+    bool is_dhcp = set_dhcp(session, ifcfg, name);
 
-    if (is_dhcp) {
-        // DHCP
-        ini_table_create_entry(ifcfg, "Network", "DHCP", "ipv4");
-    } else {
+    if (!is_dhcp) {
         // STATIC adresses
         sr_val_t *values = NULL;
         size_t count = 0;
@@ -356,25 +387,63 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
         }
     }
 
-    // create ARP cache entries defined by ipv4/neighbor*
-    create_arp_cache_entries(session, name);
+    // create ARP cache entries defined by ipv{4|6}/neighbor*
+    create_arp_cache_entries(session, name, 4);
 }
 
 /*******************************************************************************/
 /* 
  * Add interface stuff for IPv6
  */
-static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name, bool is_dhcp) {
+static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
     string xpath = "";
     string ifipv6xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6";
-    string ifipv4xpath = "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4";
     
     set_forwarding(session, ifcfg, name);
     set_mtu(session, ifcfg, name);
+    bool is_dhcp = set_dhcp(session, ifcfg, name);
     
-    // TODO: implement
+    if (!is_dhcp) {
+        // STATIC adresses
+        sr_val_t *values = NULL;
+        size_t count = 0;
+        int rc = SR_ERR_OK;
+        xpath = ifipv6xpath + "/address/ip";
+        rc = sr_get_items(session, &xpath[0u], &values, &count);
+        if (handle_sr_return(rc) == OK) {
+            for (size_t i = 0; i < count; i++){
+                //printf("IPv6 ip = %s\n", (&values[i])->data.string_val);
 
+                sr_val_t *ipv6prefixlen = get_val(session, ifipv6xpath + "/address[ip='"+(string)(&values[i])->data.string_val+"']/prefix-length");
+                
+                // prepare output of addr + prefix len / netmask
+                string addr = (string)(&values[i])->data.string_val;
+                if (ipv6prefixlen != NULL) {
+                    addr += "/" + to_string(ipv6prefixlen->data.uint8_val);
+                }
 
+                // it is possible to have more addres, need to create entry allowing duplicate key
+                ini_table_create_entry_duplicate(ifcfg, "Network", "Address", &addr[0u]);
+
+                // TODO: Gateway + DNS
+                // ini_table_create_entry(ifcfg, "Network", "Gateway", "");
+                // ini_table_create_entry(ifcfg, "Network", "DNS", "");
+
+                sr_free_val(ipv6prefixlen);
+            }
+            sr_free_values(values, count);
+        }
+    }
+    
+    // create ARP cache entries defined by ipv{4|6}/neighbor*
+    create_arp_cache_entries(session, name, 6);
+    
+    // duplicite address detection
+    sr_val_t *ipv6detectdup = get_val(session, ifipv6xpath + "/dup-addr-detect-transmits");
+    if (ipv6detectdup != NULL) {
+        string detectdup = to_string(ipv6detectdup->data.uint32_val);
+        ini_table_create_entry(ifcfg, "Network", "IPv6DuplicateAddressDetection", &detectdup[0u]);
+    }
 }
     
 
@@ -399,9 +468,6 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
     sr_val_t *description = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/description");
     string sdesc = "; " + (string) description->data.string_val;
 
-    // ugly temporary hack to determine DHCP - DHCP is used when description starts with "DHCP"
-    bool is_dhcp = (sdesc.substr(2,4).compare("DHCP") == 0);
-
     // proceed only to enabled and known interface type
     if (enabled->data.bool_val && strcmp("iana-if-type:ethernetCsmacd", type->data.identityref_val) == 0) {
 
@@ -413,14 +479,14 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
         sr_val_t *ipv4enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv4/enabled");
         // iface has ipv4 enabled
         if (ipv4enabled != NULL && ipv4enabled->data.bool_val) {
-            interface_ipv4(session, ifcfg, name, is_dhcp);
+            interface_ipv4(session, ifcfg, name);
         }
         sr_free_val(ipv4enabled);
 
         sr_val_t *ipv6enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6/enabled");
         // iface has ipv6 enabled
         if (ipv6enabled != NULL && ipv6enabled->data.bool_val) {
-            interface_ipv6(session, ifcfg, name, is_dhcp);
+            interface_ipv6(session, ifcfg, name);
         }
         sr_free_val(ipv6enabled);
 
