@@ -39,14 +39,11 @@ extern "C" {
 
 static int module_change_cb(sr_session_ctx_t *session, const char *module_name, sr_notif_event_t event, void *private_ctx) {
     syslog(LOG_DEBUG, "configuration has changed. Event=%s", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
+    printf("configuration has changed. Event=%s\n", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
     return SR_ERR_OK;
 }
 
-static int platform_dp_cb(const char *xpath, sr_val_t **values, size_t *values_cnt, void *private_ctx) {
-    syslog(LOG_DEBUG, "platform_dp_cb called");
-    return 0;
-}
-
+/*
 int exec_rpc_cb(const char *xpath, const sr_val_t *input, const size_t input_cnt, sr_val_t **output, size_t *output_cnt, void *private_ctx) {
     syslog(LOG_DEBUG, "exec_rpc_cb called");
     
@@ -54,20 +51,23 @@ int exec_rpc_cb(const char *xpath, const sr_val_t *input, const size_t input_cnt
     //system(private_ctx);
     return SR_ERR_OK;
 }
+*/
 
 /* Registers for providing of operational data under given xpath. */  
 int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
     sr_subscription_ctx_t *subscription = NULL;
     int rc = SR_ERR_OK;
 
-    rc = sr_module_change_subscribe(session, "ietf-system", module_change_cb, NULL, 0, SR_SUBSCR_CTX_REUSE, &subscription);
+    rc = sr_module_change_subscribe(session, "ietf-interface", module_change_cb, NULL, 0, SR_SUBSCR_CTX_REUSE, &subscription);
     if (SR_ERR_OK != rc) goto error;
 
-    rc = sr_dp_get_items_subscribe(session, "/ietf-system:system-state/platform/os-name", platform_dp_cb, NULL, SR_SUBSCR_CTX_REUSE, &subscription);
+    rc = sr_dp_get_items_subscribe(session, "/ietf-interface:interfaces-state", ifstats_dataprovider_cb, NULL, SR_SUBSCR_CTX_REUSE, &subscription);
     if (SR_ERR_OK != rc) goto error;
 
+    /*
     rc = sr_rpc_subscribe(session, "/ietf-system:system-restart", exec_rpc_cb, (void *)"shutdown -r now", SR_SUBSCR_CTX_REUSE, &subscription);
     if (SR_ERR_OK != rc) goto error;
+    */
 
     syslog(LOG_DEBUG, "plugin initialized successfully");
 

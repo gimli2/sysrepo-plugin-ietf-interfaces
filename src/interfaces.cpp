@@ -25,6 +25,9 @@ extern "C"
 #endif
 
 #include "config.h"
+#include "sysrepo.h"
+#include "sysrepo/values.h"
+#include "sysrepo/xpath.h"
 
 #ifdef __cplusplus
 }
@@ -166,6 +169,8 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
 */
 // TODO: forks should away to one central point :-/
 // void exec_process(const std::vector<std::string>& args) 
+// alternatively: https://stackoverflow.com/questions/35910479/how-to-clear-arp-cache-in-linux-by-program-not-command
+// https://svn.nmap.org/nmap/libdnet-stripped/src/arp-ioctl.c
 static int add_arp_cache_entry(char * devname, string addr, string lladdr) {
     int pid, status;
     
@@ -380,7 +385,7 @@ static void set_dns(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
 
 /*******************************************************************************/
 /* 
- * Set DNS
+ * Set default gateway
  * requires proper entries in eitf-system module
  */
 static void set_gateway(sr_session_ctx_t *session, ini_table_s* ifcfg, char *name) {
@@ -587,5 +592,47 @@ static void apply_current_config(sr_session_ctx_t *session) {
         create_interface(session, (&values[i])->data.string_val);
     }
     sr_free_values(values, count);
+}
+/*******************************************************************************/
+static int ifstats_dataprovider_cb(const char *xpath, sr_val_t **values, size_t *values_cnt, void *private_ctx) {
+    syslog(LOG_DEBUG, "ifstats_dataprovider_cb");
+    printf("ifstats_dataprovider_cb called XP: %s\n", xpath);
+    
+    ///sys/class/net/
+    // inspirace zde https://github.com/CESNET/netopeer/blob/e27e01de053b296e2cacb406b76bef7b6b11f94c/transAPI/cfginterfaces/iface_nm(unused).c
+    
+    sr_val_t *v = NULL;
+    sr_xpath_ctx_t xp_ctx = {0};
+    int rc = SR_ERR_OK;
+    
+    if (sr_xpath_node_name_eq(xpath, "interface")) {
+        cout << "iface requested" << endl;
+        
+        rc = sr_new_values(4, &v);
+        if (SR_ERR_OK != rc) return rc;
+        
+    } else if (sr_xpath_node_name_eq(xpath, "statistics")) {
+        
+        cout << "stats requested" << endl;
+        
+        int fields = 1;
+        rc = sr_new_values(fields, &v);
+        if (SR_ERR_OK != rc) return rc;
+        
+        // this is probably unknow value
+        sr_val_build_xpath(&v[0], "%s/%s", xpath, "discontinuity-time");
+        sr_val_set_str_data(&v[0], SR_STRING_T, "1987-08-31T17:00:30.44Z");
+        
+        *values = v;
+        *values_cnt = 1;
+        
+    } else {
+        cout << "general request" << endl;
+        
+        *values = NULL;
+        values_cnt = 0;
+    }
+    
+    return SR_ERR_OK;
 }
 /*******************************************************************************/

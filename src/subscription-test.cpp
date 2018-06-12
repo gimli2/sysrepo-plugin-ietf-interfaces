@@ -174,6 +174,13 @@ int main(int argc, char **argv) {
             cleanup(connection, session, subscription);
             return rc;
         }
+        
+        rc = sr_dp_get_items_subscribe(session, "/ietf-interfaces:interfaces-state", ifstats_dataprovider_cb, NULL, SR_SUBSCR_CTX_REUSE, &subscription);
+        if (SR_ERR_OK != rc) {
+            fprintf(stderr, "Error by sr_dp_get_items_subscribe: %s\n", sr_strerror(rc));
+            cleanup(connection, session, subscription);
+            return rc;
+        }
 
         /* loop until ctrl-c is pressed / SIGINT is received */
         signal(SIGINT, sigint_handler);

@@ -38,6 +38,10 @@ set(YANG_DIR ${CMAKE_INSTALL_PREFIX}/share/sysrepo/yang)
 add_executable(stest src/subscription-test.cpp src/config.c)
 target_link_libraries(stest ${SYSREPO_LIBRARIES})
 
+# testing binary 2
+add_executable(srgetxpath src/srgetxpath.cpp src/config.c)
+target_link_libraries(srgetxpath ${SYSREPO_LIBRARIES})
+
 # plugin *.so
 add_library(sysrepo-plugin-ietf-interfaces SHARED src/interfaces-plugin.cpp src/config.c)
 target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
