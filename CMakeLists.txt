@@ -10,6 +10,9 @@ include(GNUInstallDirs)
 find_package(PkgConfig)
 pkg_check_modules(SYSREPO REQUIRED libsysrepo)
 
+#set(DSTPATH "/etc/systemd/network")
+add_definitions(-DDSTPATH="${DSTPATH}")
+
 set(CMAKE_CFLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
 set(CMAKE_C_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
 set(CMAKE_CXX_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")

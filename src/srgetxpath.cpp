@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
             size_t count = 0;
             rc = sr_get_items(session, argv[1], &values, &count);
             if (handle_sr_return(rc) == ERR) {
-                cout << "ERROR during retrieving XPATH = " << argv[1] << endl;
+                //cout << "ERROR during retrieving XPATH = " << argv[1] << endl;
             } else {
                 cout << "======================================================" << endl;
                 for (size_t i = 0; i < count; i++){
@@ -94,11 +94,13 @@ int main(int argc, char **argv) {
                 sr_free_values(values, count);
             }
             
+            /*
             sr_val_t *value = NULL;
             sr_val_iter_t *iter = NULL;
             rc = SR_ERR_OK;
  
             //"/ietf-interfaces:interfaces-state/interface//*"
+            
             rc = sr_get_items_iter(session, argv[1], &iter);
             if (SR_ERR_OK != rc) {
                 cout << "nenasli" << endl;
@@ -110,7 +112,7 @@ int main(int argc, char **argv) {
                 sr_free_val(value);
             }
             sr_free_val_iter(iter);
-            
+            */
         }    
     }
     

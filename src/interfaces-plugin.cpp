@@ -56,12 +56,15 @@ int exec_rpc_cb(const char *xpath, const sr_val_t *input, const size_t input_cnt
 /* Registers for providing of operational data under given xpath. */  
 int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
     sr_subscription_ctx_t *subscription = NULL;
+    sr_subscription_ctx_t *subscription_oper = NULL;
     int rc = SR_ERR_OK;
 
-    rc = sr_module_change_subscribe(session, "ietf-interface", module_change_cb, NULL, 0, SR_SUBSCR_CTX_REUSE, &subscription);
+    // changes
+    rc = sr_module_change_subscribe(session, "ietf-interfaces", module_change_cb, NULL, 0, SR_SUBSCR_CTX_REUSE, &subscription);
     if (SR_ERR_OK != rc) goto error;
 
-    rc = sr_dp_get_items_subscribe(session, "/ietf-interface:interfaces-state", ifstats_dataprovider_cb, NULL, SR_SUBSCR_CTX_REUSE, &subscription);
+    // operational data
+    rc = sr_dp_get_items_subscribe(session, "/ietf-interfaces:interfaces-state", ifstats_dataprovider_cb, NULL, SR_SUBSCR_DEFAULT, &subscription_oper);
     if (SR_ERR_OK != rc) goto error;
 
     /*
@@ -69,20 +72,24 @@ int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
     if (SR_ERR_OK != rc) goto error;
     */
 
-    syslog(LOG_DEBUG, "plugin initialized successfully");
-
+    syslog(LOG_DEBUG, "plugin initialized successfully with destination %s", DSTPATH);
+    if (mkpath(DSTPATH, 0755) == 0) {
+        syslog(LOG_DEBUG, "DSTDIR %s created successfuly.", DSTPATH);
+    }
 
     print_current_config(session);
     apply_current_config(session);
 
     /* set subscription as our private context */
+    // how to preserve both of them?
     *private_ctx = subscription;
 
     return SR_ERR_OK;
 
 error:
     syslog(LOG_ERR, "plugin initialization failed: %s", sr_strerror(rc));
-    sr_unsubscribe(session, subscription);
+    if (subscription != NULL) sr_unsubscribe(session, subscription);
+    if (subscription_oper != NULL) sr_unsubscribe(session, subscription_oper);
     return rc;
 }
 

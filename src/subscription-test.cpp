@@ -159,7 +159,13 @@ int main(int argc, char **argv) {
     sr_subscription_ctx_t   *subscription = NULL;
     int rc = SR_ERR_OK;
 
+    printf("Application using destination dir: %s\n", DSTPATH);
     printf("Application will watch for changes in ietf-interfaces\n");
+    
+    int mkdirretval = mkpath(DSTPATH, 0755);
+    if (mkdirretval == 0) {
+        cout << "DSTDIR " << DSTPATH<< " created successfuly.\n";
+    }
     
     if (init_session(&connection, &session)) {
        

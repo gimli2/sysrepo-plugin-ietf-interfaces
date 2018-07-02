@@ -36,18 +36,22 @@ extern "C"
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 #include <iostream>
 
+using namespace std;
+
+#ifndef DSTPATH
+    #define DSTPATH "/etc/systemd/network"
+#endif
 
 #define XPATH_MAX_LEN 256
 #define PRIORITY 0 // greater numbers mean later called callback
 #define OK 1
 #define ERR 0
-#define DSTPATH "/etc/systemd/network"
 #define IFEXT "network"
 #define PATH_MAX_LEN 256
 #define IPBINARY "/bin/ip"
@@ -67,8 +71,8 @@ extern "C"
 |     +--rw link-up-down-trap-enable?   enumeration       IGNORED - linkUp/linkDown SNMP notifications
 +--ro interfaces-state
  +--ro interface* [name]                                  NOT IMPLEMENTED and all of following
-    +--ro name               string
-    +--ro type               identityref
+    +--ro name               string                       PART
+    +--ro type               identityref                  PART
     +--ro admin-status       enumeration
     +--ro oper-status        enumeration
     +--ro last-change?       yang:date-and-time
@@ -77,7 +81,7 @@ extern "C"
     +--ro higher-layer-if*   interface-state-ref
     +--ro lower-layer-if*    interface-state-ref
     +--ro speed?             yang:gauge64
-    +--ro statistics
+    +--ro statistics                                      PART
        +--ro discontinuity-time    yang:date-and-time
        +--ro in-octets?            yang:counter64
        +--ro in-unicast-pkts?      yang:counter64
@@ -159,6 +163,32 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
     rc = sr_get_item(session, &xpath[0u], &data);
     handle_sr_return(rc, xpath);
     return data;
+}
+
+/*******************************************************************************/
+/*
+ * Create dir path sequentially
+ */
+// source & inspiration: https://stackoverflow.com/a/12904145
+static int mkpath(string s, mode_t mode) {
+    size_t pre=0, pos;
+    string dir;
+    int ret;
+
+    // force trailing / so we can handle everything in loop
+    if(s[s.size()-1]!='/'){
+        s+='/';
+    }
+
+    while((pos = s.find_first_of('/',pre)) != string::npos){
+        dir = s.substr(0, pos++);
+        pre = pos;
+        if(dir.size() == 0) continue; // if leading / first time is 0 length
+        if((ret = mkdir(dir.c_str(), mode)) && errno != EEXIST){
+            return ret;
+        }
+    }
+    return ret;
 }
 
 /*******************************************************************************/
@@ -595,39 +625,114 @@ static void apply_current_config(sr_session_ctx_t *session) {
 }
 /*******************************************************************************/
 static int ifstats_dataprovider_cb(const char *xpath, sr_val_t **values, size_t *values_cnt, void *private_ctx) {
-    syslog(LOG_DEBUG, "ifstats_dataprovider_cb");
-    printf("ifstats_dataprovider_cb called XP: %s\n", xpath);
+    //syslog(LOG_DEBUG, "ifstats_dataprovider_cb");
+    //printf("ifstats_dataprovider_cb called XP: %s\n", xpath);
     
     ///sys/class/net/
     // inspirace zde https://github.com/CESNET/netopeer/blob/e27e01de053b296e2cacb406b76bef7b6b11f94c/transAPI/cfginterfaces/iface_nm(unused).c
     
     sr_val_t *v = NULL;
-    sr_xpath_ctx_t xp_ctx = {0};
     int rc = SR_ERR_OK;
     
     if (sr_xpath_node_name_eq(xpath, "interface")) {
-        cout << "iface requested" << endl;
+        // funguje dotaz napr:  ./srgetxpath "/ietf-interfaces:interfaces-state/interface[name='eth0']//*"
+        cout << "IFACE XP: " << xpath << endl;
         
         rc = sr_new_values(4, &v);
         if (SR_ERR_OK != rc) return rc;
         
+        // TODO: reflect real state!!!
+        sr_val_set_xpath(&v[0], "/ietf-interfaces:interfaces-state/interface[name='eth0']/type");
+        sr_val_set_str_data(&v[0], SR_IDENTITYREF_T, "ethernetCsmacd");
+
+        sr_val_set_xpath(&v[1], "/ietf-interfaces:interfaces-state/interface[name='eth0']/oper-status");
+        sr_val_set_str_data(&v[1], SR_ENUM_T, "down");
+
+        sr_val_set_xpath(&v[2], "/ietf-interfaces:interfaces-state/interface[name='eth1']/type");
+        sr_val_set_str_data(&v[2], SR_IDENTITYREF_T, "iana-if-type:ethernetCsmacd");
+
+        sr_val_set_xpath(&v[3], "/ietf-interfaces:interfaces-state/interface[name='eth1']/oper-status");
+        sr_val_set_str_data(&v[3], SR_ENUM_T, "up");
+        
+        *values = v;
+        *values_cnt = 4;
+
+        
     } else if (sr_xpath_node_name_eq(xpath, "statistics")) {
+        // NE funguje dotaz napr:  ./srgetxpath "/ietf-interfaces:interfaces-state/interface[name='eth0']/statistics//*"
+        cout << "STATS XP: " << xpath << endl;
         
-        cout << "stats requested" << endl;
-        
-        int fields = 1;
+        int fields = 14;
         rc = sr_new_values(fields, &v);
         if (SR_ERR_OK != rc) return rc;
         
+        printf("%s/%s\n", xpath, "discontinuity-time");
+        
+        int i = 0;
         // this is probably unknow value
-        sr_val_build_xpath(&v[0], "%s/%s", xpath, "discontinuity-time");
-        sr_val_set_str_data(&v[0], SR_STRING_T, "1987-08-31T17:00:30.44Z");
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "discontinuity-time");
+        sr_val_set_str_data(&v[i], SR_STRING_T, "2018-07-01T00:00:00.42Z");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-octets");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-unicast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-broadcast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-multicast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-discards");
+        sr_val_set_str_data(&v[i], SR_UINT32_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-errors");
+        sr_val_set_str_data(&v[i], SR_UINT32_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "in-unknown-protos");
+        sr_val_set_str_data(&v[i], SR_UINT32_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-octets");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-unicast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-broadcast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-multicast-pkts");
+        sr_val_set_str_data(&v[i], SR_UINT64_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-discards");
+        sr_val_set_str_data(&v[i], SR_UINT32_T, "42");
+        
+        i++;
+        sr_val_build_xpath(&v[i], "%s/%s", xpath, "out-errors");
+        sr_val_set_str_data(&v[i], SR_UINT32_T, "42");
         
         *values = v;
-        *values_cnt = 1;
+        *values_cnt = fields;
+        
+        cout << "prepared " << fields << " elements" << endl;
+        return SR_ERR_OK;
         
     } else {
-        cout << "general request" << endl;
+        cout << "GENERAL XP: " << xpath << endl;
         
         *values = NULL;
         values_cnt = 0;
