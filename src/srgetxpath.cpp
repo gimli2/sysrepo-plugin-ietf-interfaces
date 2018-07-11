@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
             sr_val_iter_t *iter = NULL;
             rc = SR_ERR_OK;
  
-            //"/ietf-interfaces:interfaces-state/interface//*"
+            // "/ietf-interfaces:interfaces-state/interface//*"
             
             rc = sr_get_items_iter(session, argv[1], &iter);
             if (SR_ERR_OK != rc) {

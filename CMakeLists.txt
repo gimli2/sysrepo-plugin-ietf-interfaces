@@ -11,12 +11,14 @@ include(GNUInstallDirs)
 find_package(PkgConfig)
 pkg_check_modules(SYSREPO REQUIRED libsysrepo)
 
-#set(DSTPATH "/etc/systemd/network")
+set(DSTPATH "/etc/systemd/network" CACHE STRING "Destination directory for systemd network related configuration - defaulting to '/etc/systemd/network'.")
 add_definitions(-DDSTPATH="${DSTPATH}")
 
-set(CMAKE_CFLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
-set(CMAKE_C_FLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
+message(STATUS "Provided DSTPATH = ${DSTPATH}") 
+
+set(CMAKE_CFLAGS "-Wall -Wno-unused-function -pedantic -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_C_FLAGS "-Wall -Wno-unused-function -pedantic -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -Wno-unused-function -pedantic -g -O0 ${CMAKE_CFLAGS}")
 
 add_definitions(${SYSREPO_CFLAGS})
 include_directories(${SYSREPO_INCLUDE_DIRS})
@@ -63,6 +65,23 @@ foreach(file ${files})
     add_executable(${file_without_ext} ${file})
     target_link_libraries(${file_without_ext} ${PROJECT_LIBS})
     add_test(${file_without_ext} ${file_without_ext})
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION "Test passed")
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        FAIL_REGULAR_EXPRESSION "(Exception|Test failed)")
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        TIMEOUT 120)
+endforeach()
+# copy testing datafiles
+file(GLOB datafiles "tests/*.json")
+file(COPY ${datafiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# scripted/non-compiled tests
+file(GLOB files "tests/test_*.sh")
+foreach(file ${files})   
+    add_test(${file} ${file})
     set_tests_properties(${file_without_ext}
         PROPERTIES
         PASS_REGULAR_EXPRESSION "Test passed")
