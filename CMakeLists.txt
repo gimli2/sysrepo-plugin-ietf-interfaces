@@ -5,6 +5,7 @@ project(sysrepo-plugin-ietf-interfaces C CXX)
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(SET CMP0053 OLD) 
 
+include(CTest)
 include(GNUInstallDirs)
 
 find_package(PkgConfig)
@@ -13,9 +14,9 @@ pkg_check_modules(SYSREPO REQUIRED libsysrepo)
 #set(DSTPATH "/etc/systemd/network")
 add_definitions(-DDSTPATH="${DSTPATH}")
 
-set(CMAKE_CFLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
-set(CMAKE_C_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_CFLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_C_FLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-unused-variable -g -O0 ${CMAKE_CFLAGS}")
 
 add_definitions(${SYSREPO_CFLAGS})
 include_directories(${SYSREPO_INCLUDE_DIRS})
@@ -48,6 +49,30 @@ target_link_libraries(srgetxpath ${SYSREPO_LIBRARIES})
 # plugin *.so
 add_library(sysrepo-plugin-ietf-interfaces SHARED src/interfaces-plugin.cpp src/config.c)
 target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
+
+
+################################################################################
+# testing stuff
+################################################################################
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/tests)
+set(CTEST_BINARY_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
+file(GLOB files "tests/test_*.cc")
+foreach(file ${files})   
+    string(REGEX REPLACE "(^.*/|\\.[^.]*$)" "" file_without_ext ${file})
+    add_executable(${file_without_ext} ${file})
+    target_link_libraries(${file_without_ext} ${PROJECT_LIBS})
+    add_test(${file_without_ext} ${file_without_ext})
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION "Test passed")
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        FAIL_REGULAR_EXPRESSION "(Exception|Test failed)")
+    set_tests_properties(${file_without_ext}
+        PROPERTIES
+        TIMEOUT 120)
+endforeach()
+################################################################################
 
 
 # get sysrepo plugins directory
