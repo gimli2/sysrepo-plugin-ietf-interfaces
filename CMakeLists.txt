@@ -52,11 +52,12 @@ target_link_libraries(sysrepo-plugin-ietf-interfaces ${SYSREPO_LIBRARIES})
 
 
 ################################################################################
-# testing stuff
+# testing stuff, CMake code inspired here:
+# https://people.ece.cornell.edu/skand/post/intro-to-ctest/
 ################################################################################
 #set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/tests)
 set(CTEST_BINARY_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
-file(GLOB files "tests/test_*.cc")
+file(GLOB files "tests/test_*.cpp")
 foreach(file ${files})   
     string(REGEX REPLACE "(^.*/|\\.[^.]*$)" "" file_without_ext ${file})
     add_executable(${file_without_ext} ${file})
