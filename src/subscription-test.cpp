@@ -23,6 +23,7 @@ extern "C"
 
 #include "sysrepo.h"
 #include "sysrepo/values.h"
+#include "sysrepo/xpath.h"
 
 #ifdef __cplusplus
 }
@@ -92,31 +93,35 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
     sr_val_t *new_value = NULL;
     char change_path[XPATH_MAX_LEN] = {0,};
 
-
+    // handle only APPLY event
     printf("\n\n ========== Notification  %s =============================================", ev_to_str(event));
     if (SR_EV_APPLY == event) {
         printf("\n\n ========== CONFIG HAS CHANGED, CURRENT RUNNING CONFIG: ==========\n\n");
         print_current_config(session);
+    
+        printf("\n\n ========== CHANGES: =============================================\n\n");
+        snprintf(change_path, XPATH_MAX_LEN, "/%s:*", module_name);
+        rc = sr_get_changes_iter(session, change_path , &it);
+        if (handle_sr_return(rc) == ERR) {
+            printf("Get changes iter failed for xpath %s", change_path);
+            goto cleanup;
+        }
+        
+        sr_xpath_ctx_t xp_ctx = {0};
+        while (SR_ERR_OK == (rc = sr_get_change_next(session, it, &oper, &old_value, &new_value))) {
+            // deleting node
+            if (SR_OP_DELETED == oper && old_value != NULL) {
+                if ( 0 == strcmp(sr_xpath_node(old_value->xpath, "interface", &xp_ctx), "interface") ) {
+                    printf("node name = %s\n", sr_xpath_node_name(old_value->xpath));
+                }
+                sr_xpath_recover(&xp_ctx); // sr_xpath_node modified context
+            }
+            print_change(oper, old_value, new_value);
+            sr_free_val(old_value);
+            sr_free_val(new_value);
+        }
+        printf("\n\n ========== END OF CHANGES =======================================\n\n");
     }
-
-    printf("\n\n ========== CHANGES: =============================================\n\n");
-
-
-    snprintf(change_path, XPATH_MAX_LEN, "/%s:*", module_name);
-
-    rc = sr_get_changes_iter(session, change_path , &it);
-    if (handle_sr_return(rc) == ERR) {
-        printf("Get changes iter failed for xpath %s", change_path);
-        goto cleanup;
-    }
-
-    while (SR_ERR_OK == (rc = sr_get_change_next(session, it, &oper, &old_value, &new_value))) {
-        print_change(oper, old_value, new_value);
-        sr_free_val(old_value);
-        sr_free_val(new_value);
-    }
-    printf("\n\n ========== END OF CHANGES =======================================\n\n");
-
 
 cleanup:
     sr_free_change_iter(it);

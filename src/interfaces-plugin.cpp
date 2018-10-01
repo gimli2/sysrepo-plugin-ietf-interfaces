@@ -48,7 +48,7 @@ int exec_rpc_cb(const char *xpath, const sr_val_t *input, const size_t input_cnt
     syslog(LOG_DEBUG, "exec_rpc_cb called");
     
     //system((const char*)private_ctx);
-    //system(private_ctx);
+    //system(private_ctx);  
     return SR_ERR_OK;
 }
 */
