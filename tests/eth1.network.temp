@@ -1,0 +1,12 @@
+[Match]
+; Ethernet 1 jen tak dal a porad
+Name = eth1
+
+[Network]
+IPForward = no
+DHCP = no
+Address = 10.10.1.5/16
+DNS = 8.8.8.8
+
+[Link]
+MTUBytes = 1500

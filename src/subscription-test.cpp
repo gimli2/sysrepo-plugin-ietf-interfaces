@@ -98,6 +98,7 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
     if (SR_EV_APPLY == event) {
         printf("\n\n ========== CONFIG HAS CHANGED, CURRENT RUNNING CONFIG: ==========\n\n");
         print_current_config(session);
+        apply_current_config(session);
     
         printf("\n\n ========== CHANGES: =============================================\n\n");
         snprintf(change_path, XPATH_MAX_LEN, "/%s:*", module_name);
@@ -113,6 +114,7 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
             if (SR_OP_DELETED == oper && old_value != NULL) {
                 if ( 0 == strcmp(sr_xpath_node(old_value->xpath, "interface", &xp_ctx), "interface") ) {
                     printf("node name = %s\n", sr_xpath_node_name(old_value->xpath));
+                    //TODO identify interface name and delete config file
                 }
                 sr_xpath_recover(&xp_ctx); // sr_xpath_node modified context
             }

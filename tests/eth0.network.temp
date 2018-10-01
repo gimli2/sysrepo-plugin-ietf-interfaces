@@ -1,0 +1,14 @@
+[Match]
+; Ethernet 0
+Name = eth0
+
+[Network]
+IPForward = no
+DHCP = no
+Address = 192.168.2.100/24
+Address = fe80::/64
+IPv6DuplicateAddressDetection = 3
+DNS = 8.8.8.8
+
+[Link]
+MTUBytes = 1666

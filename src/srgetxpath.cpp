@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
         if (argc < 2) {
             cleanup(connection, session, subscription);
             cout << "Usage: " << argv[0] << " XPATH\n" << endl;
+            cout << "Reads data from RUNNING datastore matching the XPATH.\n" << endl;
             return rc;
         } else {
             cout << "XPATH: " << argv[1] << endl;
