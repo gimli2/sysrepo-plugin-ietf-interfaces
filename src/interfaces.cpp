@@ -33,6 +33,7 @@ extern "C"
 }
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
@@ -537,7 +538,7 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
     printf("Creating interface %s\n", name);
     char dst[PATH_MAX_LEN];
     sprintf(dst, "%s/%s.%s", DSTPATH, name, IFEXT);
-    printf("Ouput file = %s\n", dst);
+    printf("Output file = %s\n", dst);
 
     string xpath = "";
 
@@ -563,20 +564,21 @@ static void create_interface(sr_session_ctx_t *session, char *name) {
         if (ipv4enabled != NULL && ipv4enabled->data.bool_val) {
             interface_ipv4(session, ifcfg, name);
         }
-        sr_free_val(ipv4enabled);
 
         sr_val_t *ipv6enabled = get_val(session, "/ietf-interfaces:interfaces/interface[name='"+(string)name+"']/ietf-ip:ipv6/enabled");
         // iface has ipv6 enabled
         if (ipv6enabled != NULL && ipv6enabled->data.bool_val) {
             interface_ipv6(session, ifcfg, name);
         }
-        sr_free_val(ipv6enabled);
         
         // if at least one routing is enabled
         if ((ipv4enabled != NULL && ipv4enabled->data.bool_val) || (ipv6enabled != NULL && ipv6enabled->data.bool_val)) {
             set_dns(session, ifcfg, name);
             set_gateway(session, ifcfg, name);
         }
+        
+        sr_free_val(ipv4enabled);
+        sr_free_val(ipv6enabled);
 
         // write cfg to file
         ini_table_write_to_file(ifcfg, dst);

@@ -1,0 +1,35 @@
+{
+  "ietf-system:system": {
+    "authentication": {
+      "user": [
+        {
+          "name": "root",
+          "authorized-key": [
+            {
+              "name": "prvni klic",
+              "algorithm": "ssh-rsa",
+              "key-data": "AAAAB3NzaC1yc2EAAAABIwAAAgEAwdsjuEhb9VoyYWncwYcAtwXwHNwDFq6KGKd0RHaeqiYIR9NyQcxCSQiB6CmLx4V0P2OMas5jn868/UuUBe8bNa9ZB1VVoPDfWPRVNhQGUSaKbF2BReZLBHWBvZKrI6QqjHyVs0MMAMxFd8RrrbuNylychb6DL7t39AcCRS9oFb4rRYkOG6FeTdUo+d+GW1y1h+PIC1E+uS6aJVDx+01wn/4iwpO3UfL2Z64jifsjgKE8ee9brg1dTGX5D/nt3CiutlSETwWh0Hp5yQQDjECM+/SlPbO334kjdOFxfGe2zrsJVVl2Y4y3ornQJ5dpkrfwuw9fE0ymUxRirGzCAGtKioz71IoUTsWNF1kToGunMSaQdIrjLclfICVWj1avoHaeS/LXbA+9x85I99+pSs5Jw4AjeSVSSXT5R1RTAUv62FMIomGDt8SIlYo9ACZbUAiwVrNUWaF/FEOtaeaVi3yMset7t6RQP6kQoJN32Hc2lP1e5vhsWWdNaNfVRfezj1KOzSy7wjxjymhDDAMfIHyeA8dM927gu6m2ah3TBbrHMkPUVe52ht8rdbLJMM2NbE16DixVX/s5RQg+YvY5nVBBIFRdcNvO/wMdJIequJUfnoBcJ1Rmh7nMgMo8gVLKGgoAfnzaPhOp75f4n+poyrHwdt0M6UIy8AQs1dowQPHfPzU="
+            },
+            {
+              "name": "druhy klic",
+              "algorithm": "ssh-rsa",
+              "key-data": "AAAAB3NzaC1yc2EAAAABIwAAAgEA3ZRDNJrT9aKbG7HFUucgPlDD7qk4COZJP2xq1/qLygSuDDO0KeY4q//gIrAvijix2E1kII4P5WhdF7nR0NyfGmWiEa+dfUnczve2Vnr42IBi4aLyScefQlo5ihhAkaww4pcetZ8ZycEtD/jakpqBj/hVhFKcLZ1ENfqT1CZYvfEiW0h4DpFSE1NUYEJ7Nreice0jA5D62C7I61hAi//K1S6IFVlYFUvzPhU3p5IY488bNt1FEW+7727ecA/p3w75WUmacK1IKdhkX+Oubft21sXKUjHZpXvXI+dH1R7AYgQcoL4XMRsvdLiRQxoOcbMn4dhdT+1Jt2/42vihymtDMju84pXdPczgtcUD0JLupvuInljsK3iqZNLxI1qfqaZmxBrwyiqvFAR+A5hPcBbof3TlgkXpFHK8JqNpT0K1FA+BG9ogiOKJpZls7IiwffcALgbgBagKlQBI+V2rkA4ni0h6/L8f/YsRKoK9LfWDtkSvglqiq3KWG7+xOnStCKJrEURY3nbtqmr9jTgFe4QFwTAlOsbbWjhsh5LjFgmLCAmkHVst8zGwDivJU+s5NyWzaElDl3ES3qiSyIl4qZpG0Pl2fq6NnIy0rVxbJRCkzwTRCKjqrR2wuC4ZRW1eSJZltgA/09pesUpbysnnhj5vcGYy4MlcyGv6lOsoVVRbEV0="
+            }
+          ]
+        }
+      ]
+    },
+    "hostname": "paraguay",
+    "dns-resolver": {
+      "server": [
+        {
+          "name": "dnsko",
+          "udp-and-tcp": {
+            "address": "8.8.8.8",
+            "port": 53
+          }
+        }
+      ]
+    }
+  }
+}

@@ -78,6 +78,8 @@ endforeach()
 # copy testing datafiles
 file(GLOB datafiles "tests/*.json")
 file(COPY ${datafiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(GLOB datafiles "tests/*.tmp")
+file(COPY ${datafiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 # scripted/non-compiled tests
 file(GLOB files "tests/test_*.sh")
 foreach(file ${files})   

@@ -110,14 +110,32 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
         
         sr_xpath_ctx_t xp_ctx = {0};
         while (SR_ERR_OK == (rc = sr_get_change_next(session, it, &oper, &old_value, &new_value))) {
-            // deleting node
+            // when deleting whole interface node, we need to remove proper configuration file
+            char cfg_delete_fn[PATH_MAX_LEN];
+            cfg_delete_fn[0] = '\0';
             if (SR_OP_DELETED == oper && old_value != NULL) {
-                if ( 0 == strcmp(sr_xpath_node(old_value->xpath, "interface", &xp_ctx), "interface") ) {
-                    printf("node name = %s\n", sr_xpath_node_name(old_value->xpath));
-                    //TODO identify interface name and delete config file
-                }
+                
+                // is node interface?
+                char *xxx = sr_xpath_node(old_value->xpath, "interface", &xp_ctx);
                 sr_xpath_recover(&xp_ctx); // sr_xpath_node modified context
+                //printf("xxx = 0x%08x\n", xxx);
+                
+                if (xxx != NULL && 0 == strcmp(xxx, "interface") ) {    
+                    // check that current element is string "name"
+                    if ( (old_value->type == SR_STRING_T) && 0 == strcmp(sr_xpath_node_name(old_value->xpath), "name") ) {
+                        sprintf(cfg_delete_fn, "%s/%s.%s", DSTPATH, old_value->data, IFEXT);
+                        printf("cfg_del_file = %s\n", cfg_delete_fn);
+                        
+                        if ( remove(cfg_delete_fn) != 0 ) {
+                            printf("Error deleting file %s.\n", cfg_delete_fn);
+                        } else {
+                            printf("File %s successfully deleted.\n", cfg_delete_fn);
+                        }
+                    }
+                        
+                }
             }
+            
             print_change(oper, old_value, new_value);
             sr_free_val(old_value);
             sr_free_val(new_value);
