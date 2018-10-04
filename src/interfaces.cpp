@@ -168,6 +168,22 @@ static sr_val_t *get_val(sr_session_ctx_t *session, string xpath) {
 
 /*******************************************************************************/
 /*
+ * Converts sysrepo event constant to string.
+ */
+const char *ev_to_str(sr_notif_event_t ev) {
+    switch (ev) {
+        case SR_EV_VERIFY:
+            return "verify";
+        case SR_EV_APPLY:
+            return "apply";
+        case SR_EV_ABORT:
+        default:
+            return "abort";
+    }
+}
+
+/*******************************************************************************/
+/*
  * Create dir path sequentially
  */
 // source & inspiration: https://stackoverflow.com/a/12904145
@@ -475,7 +491,8 @@ static void interface_ipv4(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     }
 
     // create ARP cache entries defined by ipv{4|6}/neighbor*
-    create_arp_cache_entries(session, name, 4);
+    // TODO: temporarily disabled
+    //create_arp_cache_entries(session, name, 4);
 }
 
 /*******************************************************************************/
@@ -519,7 +536,8 @@ static void interface_ipv6(sr_session_ctx_t *session, ini_table_s* ifcfg, char *
     }
     
     // create ARP cache entries defined by ipv{4|6}/neighbor*
-    create_arp_cache_entries(session, name, 6);
+    // TODO: temporarily disabled
+    //create_arp_cache_entries(session, name, 6);
     
     // duplicite address detection
     sr_val_t *ipv6detectdup = get_val(session, ifipv6xpath + "/dup-addr-detect-transmits");

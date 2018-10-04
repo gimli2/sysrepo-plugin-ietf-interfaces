@@ -73,18 +73,6 @@ static void print_change(sr_change_oper_t op, sr_val_t *old_val, sr_val_t *new_v
     }
 }
 
-const char *ev_to_str(sr_notif_event_t ev) {
-    switch (ev) {
-        case SR_EV_VERIFY:
-            return "verify";
-        case SR_EV_APPLY:
-            return "apply";
-        case SR_EV_ABORT:
-        default:
-            return "abort";
-    }
-}
-
 static int module_change_cb(sr_session_ctx_t *session, const char *module_name, sr_notif_event_t event, void *private_ctx) {
     sr_change_iter_t *it = NULL;
     int rc = SR_ERR_OK;
@@ -119,11 +107,13 @@ static int module_change_cb(sr_session_ctx_t *session, const char *module_name, 
                 char *xxx = sr_xpath_node(old_value->xpath, "interface", &xp_ctx);
                 sr_xpath_recover(&xp_ctx); // sr_xpath_node modified context
                 //printf("xxx = 0x%08x\n", xxx);
+                //printf("xxx = %s\n", xxx);
                 
-                if (xxx != NULL && 0 == strcmp(xxx, "interface") ) {    
+                // match only fisrt 9 chars...
+                if (xxx != NULL && 0 == strncmp(xxx, "interface", 9) ) {    
                     // check that current element is string "name"
                     if ( (old_value->type == SR_STRING_T) && 0 == strcmp(sr_xpath_node_name(old_value->xpath), "name") ) {
-                        sprintf(cfg_delete_fn, "%s/%s.%s", DSTPATH, old_value->data, IFEXT);
+                        sprintf(cfg_delete_fn, "%s/%s.%s", DSTPATH, old_value->data.string_val, IFEXT);
                         printf("cfg_del_file = %s\n", cfg_delete_fn);
                         
                         if ( remove(cfg_delete_fn) != 0 ) {

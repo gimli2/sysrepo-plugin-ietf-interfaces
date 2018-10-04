@@ -35,11 +35,75 @@ using namespace std;
 
 #include "interfaces.cpp"
 
+//1. variant: #define syslog(priority, ...) printf(__VA_ARGS__)
+//2. variant
+// ## __VA_ARGS__ is black magic that allows you to use this macro also with static strings without variables 
+#define MYLOG(fmt, ...) { \
+  syslog(LOG_DEBUG, fmt, ## __VA_ARGS__); \
+  printf(fmt, ## __VA_ARGS__); \
+}
+
 extern "C" {
 
 static int module_change_cb(sr_session_ctx_t *session, const char *module_name, sr_notif_event_t event, void *private_ctx) {
-    syslog(LOG_DEBUG, "configuration has changed. Event=%s", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
-    printf("configuration has changed. Event=%s\n", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
+    MYLOG("configuration has changed. Event=%s", event==SR_EV_APPLY?"apply":event==SR_EV_VERIFY?"verify":"unknown");
+
+    sr_change_iter_t *it = NULL;
+    int rc = SR_ERR_OK;
+    sr_change_oper_t oper;
+    sr_val_t *old_value = NULL;
+    sr_val_t *new_value = NULL;
+    char change_path[XPATH_MAX_LEN] = {0,};
+
+    // handle only APPLY event
+    if (SR_EV_APPLY == event) {
+        // create full configuration from sysrepo val
+        apply_current_config(session);
+    
+        snprintf(change_path, XPATH_MAX_LEN, "/%s:*", module_name);
+        rc = sr_get_changes_iter(session, change_path , &it);
+        if (handle_sr_return(rc) == ERR) {
+            MYLOG("Get changes iter failed for xpath %s", change_path);
+            goto cleanup;
+        }
+        
+        sr_xpath_ctx_t xp_ctx = {0};
+        while (SR_ERR_OK == (rc = sr_get_change_next(session, it, &oper, &old_value, &new_value))) {
+            // when deleting whole interface node, we need to remove proper configuration file
+            char cfg_delete_fn[PATH_MAX_LEN];
+            cfg_delete_fn[0] = '\0';
+                        
+            if (SR_OP_DELETED == oper && old_value != NULL) {
+                // is node interface?
+                char *nodetype = sr_xpath_node(old_value->xpath, "interface", &xp_ctx);
+                sr_xpath_recover(&xp_ctx); // sr_xpath_node modified context
+                //MYLOG("nodetype = %s.\n", nodetype);
+                
+                // match only fisrt 9 chars...
+                if (nodetype != NULL && 0 == strncmp(nodetype, "interface", 9) ) {    
+                    // check that current element is string "name"
+                    if ( (old_value->type == SR_STRING_T) && 0 == strcmp(sr_xpath_node_name(old_value->xpath), "name") ) {
+                        sprintf(cfg_delete_fn, "%s/%s.%s", DSTPATH, old_value->data.string_val, IFEXT);
+                        
+                        MYLOG("There is a redundant config file to deletion: %s\n", cfg_delete_fn);
+                        
+                        if ( remove(cfg_delete_fn) != 0 ) {
+                            MYLOG("Error deleting file %s.\n", cfg_delete_fn);
+                        } else {
+                            MYLOG("File %s successfully deleted.\n", cfg_delete_fn);
+                        }
+                    }
+                        
+                }
+            }
+            
+            sr_free_val(old_value);
+            sr_free_val(new_value);
+        }
+    }
+
+cleanup:
+    sr_free_change_iter(it);
     return SR_ERR_OK;
 }
 
@@ -58,6 +122,7 @@ int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
     sr_subscription_ctx_t *subscription = NULL;
     sr_subscription_ctx_t *subscription_oper = NULL;
     int rc = SR_ERR_OK;
+    int r;
 
     // changes
     rc = sr_module_change_subscribe(session, "ietf-interfaces", module_change_cb, NULL, 0, SR_SUBSCR_CTX_REUSE, &subscription);
@@ -73,11 +138,16 @@ int sr_plugin_init_cb(sr_session_ctx_t *session, void **private_ctx) {
     */
 
     syslog(LOG_DEBUG, "plugin initialized successfully with destination %s", DSTPATH);
-    if (mkpath(DSTPATH, 0755) == 0) {
+    r = mkpath(DSTPATH, 0755);
+    if (r == 0) {
         syslog(LOG_DEBUG, "DSTDIR %s created successfuly.", DSTPATH);
+    } else if (r == EEXIST) {
+        syslog(LOG_DEBUG, "DSTDIR %s already exists.", DSTPATH);
+    } else {
+        syslog(LOG_DEBUG, "mkpath returned = %d", r);
     }
+    
 
-    print_current_config(session);
     apply_current_config(session);
 
     /* set subscription as our private context */
